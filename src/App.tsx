@@ -1,12 +1,19 @@
-import { Button } from "@/components/ui/button"
-const App = () => {
+// src/App.tsx
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { MainLayout } from "./layout";
+import Home from "./pages/home";
+import About from "./pages/platform/about";
+import Contact from "./pages/platform/contact";
 
-  return (
-    <div className="flex h-screen items-center justify-center">
-      <Button className="bg-blue-500 text-white hover:bg-blue-600">
-        Click Me
-      </Button>
-    </div> 
-  )
-}
-export default App
+const App = () => (
+  <Router>
+    <Routes>
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<Home />} />
+        <Route path="about" element={<About />} />
+        <Route path="contact" element={<Contact />} />
+      </Route>
+    </Routes>
+  </Router>
+);
+export default App;
