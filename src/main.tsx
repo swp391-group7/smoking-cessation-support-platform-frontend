@@ -7,9 +7,13 @@ import { Header } from './components/header.tsx'
 import MainLayout from './layout.tsx'
 import LoginForm from './components/login-form.tsx'
 import SignUpForm from './components/sign-in-form.tsx'
+import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <LoginForm />
+    
+    <App />
+   
+   
   </StrictMode>,
 )

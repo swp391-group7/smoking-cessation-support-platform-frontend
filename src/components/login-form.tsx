@@ -1,10 +1,11 @@
 // src/pages/auth/LoginPage.tsx
 
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export const LoginPage: React.FC = () => {
 
-
+ const navigate = useNavigate();
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
@@ -72,7 +73,8 @@ export const LoginPage: React.FC = () => {
           {/* Sign up */}
           <p className="text-center text-sm text-gray-600 mt-4">
             Don't have an account?{" "}
-            <button className="text-blue-600 hover:underline">
+            <button className="text-blue-600 hover:underline"
+             onClick={() => navigate("/register")}>
               Sign up
             </button>
           </p>

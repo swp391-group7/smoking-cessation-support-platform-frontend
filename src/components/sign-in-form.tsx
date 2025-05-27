@@ -1,9 +1,10 @@
 // src/components/ui/SignUpForm.tsx
 
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export const SignUpForm: React.FC = () => {
- 
+ const navigate = useNavigate();
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="max-w-lg w-full bg-white rounded-xl shadow-lg overflow-hidden">
@@ -102,9 +103,10 @@ export const SignUpForm: React.FC = () => {
           {/* Already have an account */}
           <p className="text-center text-sm text-gray-600 mt-4">
             Already have an account?{" "}
-            <a href="#" className="text-blue-600 hover:underline">
-              Login
-            </a>
+           <button className="text-blue-600 hover:underline"
+             onClick={() => navigate("/login")}>
+              Login 
+            </button>
           </p>
 
           {/* Divider */}
