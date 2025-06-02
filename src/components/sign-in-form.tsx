@@ -1,90 +1,85 @@
 // src/components/ui/SignUpForm.tsx
 
-import { FaFacebookF, FaGoogle } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
-// import hàm register từ auth.ts
+import { useNavigate } from "react-router-dom";
+import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { register as registerApi } from "../api/auth";
-// import toast và Toaster từ sonner
 import { Toaster, toast } from "sonner";
+
+// 1️ Import react-hook-form + zod + zodResolver
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// 2️ Định nghĩa Zod schema
+const signUpSchema = z
+  .object({
+    username: z
+      .string()
+      .min(3, "Username phải có ít nhất 3 ký tự")
+      .max(30, "Username tối đa 30 ký tự"),
+    fullName: z
+      .string()
+      .min(2, "Full Name phải có ít nhất 2 ký tự")
+      .max(50, "Full Name tối đa 50 ký tự"),
+    email: z.string().email("Email không hợp lệ"),
+    password: z
+      .string()
+      .min(6, "Password phải có ít nhất 6 ký tự")
+      .max(100, "Password tối đa 100 ký tự"),
+    confirmPassword: z.string(),
+    agreeTerms: z.literal(true, {
+      errorMap: () => ({ message: "Bạn phải đồng ý với Terms & Privacy" }),
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Mật khẩu và xác nhận mật khẩu không khớp",
+  });
+
+// 3️ Kế thừa type từ schema
+type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export const SignUpForm: React.FC = () => {
   const navigate = useNavigate();
 
-  // State cho các input
-  const [username, setUsername] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  // State cho lỗi (còn giữ để hiển thị dưới form nếu cần)
-  const [error, setError] = useState<string>("");
-
-  // State cho loading khi chờ API
+  // 4️ state loading
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Hàm xử lý khi submit form
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  // 5️ Khởi tạo useForm với zodResolver
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+  });
+
+  // 6️ Hàm onSubmit
+  const onSubmit = async (data: SignUpFormData) => {
     setLoading(true);
 
-    // 1. Kiểm tra các trường không được để trống
-    if (!username.trim() || !fullName.trim() || !email.trim() || !password) {
-      const msg = "Vui lòng điền đầy đủ tất cả các trường.";
-      setError(msg);
-      toast.error(msg);
-      setLoading(false);
-      return;
-    }
-
-    // 2. Kiểm tra định dạng email cơ bản (regex đơn giản)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      const msg = "Email không hợp lệ.";
-      setError(msg);
-      toast.error(msg);
-      setLoading(false);
-      return;
-    }
-
-    // 3. Kiểm tra password và confirmPassword
-    if (password !== confirmPassword) {
-      const msg = "Mật khẩu và xác nhận mật khẩu không khớp.";
-      setError(msg);
-      toast.error(msg);
-      setLoading(false);
-      return;
-    }
-
     try {
-      // Gọi API register, giả sử backend nhận { username, full_name, email, password }
       const response = await registerApi({
-        username: username.trim(),
-        full_name: fullName.trim(),
-        email: email.trim(),
-        password: password,
+        username: data.username.trim(),
+        fullName: data.fullName.trim(),
+        email: data.email.trim(),
+        password: data.password,
       });
 
-      // Nếu thành công, backend trả về { token, user }
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
 
       toast.success("Đăng ký thành công");
-      // Chờ 500ms để toast hiển thị trước khi chuyển trang
       setTimeout(() => {
-        navigate("/");
+        navigate("/login");
       }, 500);
     } catch (err: unknown) {
       console.error("Register failed:", err);
-
-      // Nếu là AxiosError, chúng ta có thể lấy message từ response
       let msg = "Đăng ký thất bại. Vui lòng thử lại.";
       if (err instanceof Error && err.message) {
         msg = err.message;
       }
-      setError(msg);
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -110,10 +105,21 @@ export const SignUpForm: React.FC = () => {
             Let’s get you all set up so you can access your personal account.
           </p>
 
-          {/* Hiển thị lỗi text (nếu cần), nhưng thông báo chính sẽ qua toast */}
-          {error && <div className="text-red-600 text-sm mb-4">{error}</div>}
+          {/* 7️ Hiển thị lỗi validation từ react-hook-form */}
+          {Object.keys(errors).length > 0 && (
+            <div className="text-red-600 text-sm mb-4">
+              {/* Hiển thị message đầu tiên tìm được */}
+              {errors.username?.message ||
+                errors.fullName?.message ||
+                errors.email?.message ||
+                errors.password?.message ||
+                errors.confirmPassword?.message ||
+                errors.agreeTerms?.message}
+            </div>
+          )}
 
-          <form onSubmit={handleRegister} className="space-y-4">
+          {/* 8️ Form sử dụng handleSubmit */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Username */}
             <div className="flex flex-col">
               <label htmlFor="username" className="mb-1 text-sm font-medium text-gray-700">
@@ -123,10 +129,14 @@ export const SignUpForm: React.FC = () => {
                 id="username"
                 type="text"
                 placeholder="yourusername"
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                className={`border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.username ? "ring-red-500 ring-1" : ""
+                }`}
+                {...register("username")}
               />
+              {errors.username && (
+                <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
+              )}
             </div>
 
             {/* Full Name */}
@@ -138,10 +148,14 @@ export const SignUpForm: React.FC = () => {
                 id="fullName"
                 type="text"
                 placeholder="John Doe"
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                className={`border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.fullName ? "ring-red-500 ring-1" : ""
+                }`}
+                {...register("fullName")}
               />
+              {errors.fullName && (
+                <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>
+              )}
             </div>
 
             {/* Email */}
@@ -153,10 +167,14 @@ export const SignUpForm: React.FC = () => {
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                className={`border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.email ? "ring-red-500 ring-1" : ""
+                }`}
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -168,10 +186,14 @@ export const SignUpForm: React.FC = () => {
                 id="password"
                 type="password"
                 placeholder="•••••••••••"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                className={`w-full border border-gray-300 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.password ? "ring-red-500 ring-1" : ""
+                }`}
+                {...register("password")}
               />
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+              )}
             </div>
 
             {/* Confirm Password */}
@@ -183,10 +205,16 @@ export const SignUpForm: React.FC = () => {
                 id="confirmPassword"
                 type="password"
                 placeholder="•••••••••••"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={`w-full border border-gray-300 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.confirmPassword ? "ring-red-500 ring-1" : ""
+                }`}
+                {...register("confirmPassword")}
               />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
 
             {/* Agree Terms */}
@@ -194,27 +222,30 @@ export const SignUpForm: React.FC = () => {
               <input
                 type="checkbox"
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded"
-                required
+                {...register("agreeTerms")}
               />
               <span>
                 I agree to all the{" "}
-                <a href="#" className="text-blue-600 hover:underline">
+                <a href="#" className="text-emerald-700 hover:underline">
                   Terms
                 </a>{" "}
                 and{" "}
-                <a href="#" className="text-blue-600 hover:underline">
+                <a href="#" className="text-emerald-700 hover:underline">
                   Privacy Policies
                 </a>
               </span>
             </label>
+            {errors.agreeTerms && (
+              <p className="text-red-500 text-sm mt-1">{errors.agreeTerms.message}</p>
+            )}
 
             {/* Create Account button */}
             <button
               type="submit"
               disabled={loading}
               className={`w-full ${
-                loading ? "bg-blue-400" : "bg-blue-600"
-              } text-white py-2 rounded-md font-medium hover:bg-blue-700 transition`}
+                loading ? "bg-emerald-600" : "bg-emerald-700"
+              } text-white py-2 rounded-md font-medium hover:bg-emerald-800 transition disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {loading ? "Processing..." : "Create account"}
             </button>
@@ -224,7 +255,7 @@ export const SignUpForm: React.FC = () => {
           <p className="text-center text-sm text-gray-600 mt-4">
             Already have an account?{" "}
             <button
-              className="text-blue-600 hover:underline"
+              className="text-emerald-700 hover:underline"
               onClick={() => navigate("/login")}
             >
               Login

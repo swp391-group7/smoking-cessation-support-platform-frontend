@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 //tạo instance của axios 
@@ -29,6 +30,7 @@ interface LoginResponse {
   user: {
     id: string;
     full_name: string;
+    avatarUrl?: string; // Có thể có hoặc không
   };
 }
 
@@ -37,6 +39,7 @@ export async function login(
 ): Promise<LoginResponse> {
 
   const { data } = await api.post<LoginResponse>("/auth/login", credentials);
+  console.log("Login API response:", data);
   return data;
 }
 
@@ -44,7 +47,7 @@ export async function login(
 interface SignUpCredentials {
   username: string;
   password: string;
-  full_name: string;
+  fullname: string;
   email: string;
 }
 interface SignUpResponse {
