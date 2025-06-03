@@ -213,8 +213,8 @@ export const HeaderNavbar: React.FC = () => {
         <div className="flex justify-center my-2 pointer-events-auto">
           <div
             className={`inline-flex px-6 py-2 transition-all duration-300 ${scrolled
-                ? "bg-white/50 backdrop-blur-md shadow-md rounded-full"
-                : ""
+              ? "bg-white/50 backdrop-blur-md shadow-md rounded-full"
+              : ""
               }`}
           >
             <ul className="flex items-center space-x-6 overflow-x-auto whitespace-nowrap">
@@ -222,15 +222,13 @@ export const HeaderNavbar: React.FC = () => {
                 <li key={s.id} className="flex-shrink-0">
                   <button
                     onClick={() => {
-                      // nếu đang không ở trang Home (/), chuyển ngay về "/#<id>"
                       if (location.pathname !== "/") {
-                        navigate(`/` + `#${s.id}`);
+                        navigate(`/#${s.id}`);
                       } else {
-                        // nếu đã ở Home, scroll thẳng
                         scrollTo(s.id);
                       }
                     }}
-                    className={`px-3 py-1 rounded-lg transition-colors duration-200 ${activeSection === s.id
+                    className={`px-3 py-1 rounded-lg transition-colors duration-200 ${location.pathname === "/" && activeSection === s.id
                         ? "text-emerald-600 font-medium"
                         : "text-gray-800 hover:bg-emerald-100"
                       }`}
@@ -240,13 +238,20 @@ export const HeaderNavbar: React.FC = () => {
                 </li>
               ))}
 
+
               <li className="flex-shrink-0">
                 <NavLink
                   to="/quit"
-                  className="px-3 py-1 rounded-lg transition-colors duration-200 text-gray-800 hover:bg-emerald-100"
+                  end
+                  className={({ isActive }) =>
+                    isActive
+                      ? "px-3 py-1 rounded-lg text-emerald-600 font-medium"
+                      : "px-3 py-1 rounded-lg text-gray-800 hover:bg-emerald-100"
+                  }
                 >
                   Quit
                 </NavLink>
+
               </li>
             </ul>
           </div>
