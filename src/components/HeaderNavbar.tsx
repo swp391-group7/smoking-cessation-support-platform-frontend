@@ -16,6 +16,8 @@ interface User {
 }
 
 const midSections = [
+
+  { id: "hero", label: "Home" },
   { id: "harms", label: "harmful" },
   { id: "benefits", label: "Benefit" },
   { id: "why", label: "Why AirBloom" },
@@ -45,7 +47,7 @@ export const HeaderNavbar: React.FC = () => {
         const el = document.getElementById(sec.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= 80 && rect.bottom > 80) {
+          if (rect.top <= 50 && rect.bottom > 80) {
             setActiveSection(sec.id);
           }
         }
@@ -206,31 +208,46 @@ export const HeaderNavbar: React.FC = () => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-       className="sticky top-0 z-60 pointer-events-none w-[300px] mx-auto"
+        className="sticky top-0 z-60 pointer-events-none w-[300px] mx-auto"
       >
         <div className="flex justify-center my-2 pointer-events-auto">
           <div
-            className={`inline-flex px-6 py-2 transition-all duration-300 ${
-              scrolled
+            className={`inline-flex px-6 py-2 transition-all duration-300 ${scrolled
                 ? "bg-white/50 backdrop-blur-md shadow-md rounded-full"
                 : ""
-            }`}
+              }`}
           >
             <ul className="flex items-center space-x-6 overflow-x-auto whitespace-nowrap">
               {midSections.map((s) => (
                 <li key={s.id} className="flex-shrink-0">
                   <button
-                    onClick={() => scrollTo(s.id)}
-                    className={`px-3 py-1 rounded-lg transition-colors duration-200 ${
-                      activeSection === s.id
+                    onClick={() => {
+                      // nếu đang không ở trang Home (/), chuyển ngay về "/#<id>"
+                      if (location.pathname !== "/") {
+                        navigate(`/` + `#${s.id}`);
+                      } else {
+                        // nếu đã ở Home, scroll thẳng
+                        scrollTo(s.id);
+                      }
+                    }}
+                    className={`px-3 py-1 rounded-lg transition-colors duration-200 ${activeSection === s.id
                         ? "text-emerald-600 font-medium"
                         : "text-gray-800 hover:bg-emerald-100"
-                    }`}
+                      }`}
                   >
                     {s.label}
                   </button>
                 </li>
               ))}
+
+              <li className="flex-shrink-0">
+                <NavLink
+                  to="/quit"
+                  className="px-3 py-1 rounded-lg transition-colors duration-200 text-gray-800 hover:bg-emerald-100"
+                >
+                  Quit
+                </NavLink>
+              </li>
             </ul>
           </div>
         </div>
