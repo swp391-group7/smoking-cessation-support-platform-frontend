@@ -1,12 +1,26 @@
-import { Button } from "@/components/ui/button"
-const App = () => {
+// src/App.tsx
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import MainLayout from "./layout";
+import Home from "./pages/home";
+import LoginForm from './components/login-form.tsx'
+import SignUpForm from './components/sign-in-form.tsx'
+import Quit_Plan from "./pages/platform/quit_plan.tsx";
 
-  return (
-    <div className="flex h-screen items-center justify-center">
-      <Button className="bg-blue-500 text-white hover:bg-blue-600">
-        Click Me
-      </Button>
-    </div> 
-  )
-}
-export default App
+export const App = () => (
+ 
+  <Router>
+    <Routes>
+      <Route path="/" element={<MainLayout />}>
+        {/* Trang chính */}
+        <Route index element={<Home />} />
+        {/* Public routes */}       
+        <Route path="login" element={<LoginForm />} />
+        <Route path="register" element={<SignUpForm />} />
+        <Route path="quit" element={<Quit_Plan/>} />
+        {/* 404: tự redirect về home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  </Router> 
+)
+export default App ;
