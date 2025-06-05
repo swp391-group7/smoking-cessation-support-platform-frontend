@@ -8,6 +8,7 @@ import {
   LogOut as LogOutIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { QuitDropdown } from "./quit_drop_down";
 
 interface User {
   id: string;
@@ -229,8 +230,8 @@ export const HeaderNavbar: React.FC = () => {
                       }
                     }}
                     className={`px-3 py-1 rounded-lg transition-colors duration-200 ${location.pathname === "/" && activeSection === s.id
-                        ? "text-emerald-600 font-medium"
-                        : "text-gray-800 hover:bg-emerald-100"
+                      ? "text-emerald-600 font-medium"
+                      : "text-gray-800 hover:bg-emerald-100"
                       }`}
                   >
                     {s.label}
@@ -240,17 +241,10 @@ export const HeaderNavbar: React.FC = () => {
 
 
               <li className="flex-shrink-0">
-                <NavLink
-                  to="/quit"
-                  end
-                  className={({ isActive }) =>
-                    isActive
-                      ? "px-3 py-1 rounded-lg text-emerald-600 font-medium"
-                      : "px-3 py-1 rounded-lg text-gray-800 hover:bg-emerald-100"
-                  }
-                >
-                  Quit
-                </NavLink>
+              
+                  <QuitDropdown />
+                
+
 
               </li>
             </ul>
