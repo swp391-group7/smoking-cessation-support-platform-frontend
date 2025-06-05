@@ -4,29 +4,47 @@ import { motion } from 'framer-motion';
 
 const HarmsSection: React.FC = () => {
   return (
-    <motion.section
-      id="harms"
-      className="py-12 bg-white"
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="max-w-4xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-green-800 mb-4">Tác hại của thuốc lá</h2>
-        <p className="mb-4 text-gray-700">
-          Thuốc lá gây ra nhiều hậu quả nghiêm trọng cho sức khỏe. Dưới đây là một số tác hại chính:
-        </p>
-        <ul className="list-disc list-inside space-y-2 text-gray-700">
-          <li>Ung thư phổi và nhiều loại ung thư khác (vòm họng, thực quản...)</li>
-          <li>Bệnh tim mạch: tăng nguy cơ đau tim, đột quỵ và xơ vữa động mạch.</li>
-          <li>Suy giảm chức năng phổi: ho mãn tính, khó thở và các bệnh hô hấp khác.</li>
-          <li>Lão hóa da nhanh chóng, răng ố vàng và các vấn đề về sức khỏe ngoài da.</li>
-          <li>Ảnh hưởng xấu đến người xung quanh do khói thuốc thụ động.</li>
-        </ul>
+    <section className="px-4 py-20">
+      
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-6xl font-serif font-semibold leading-tight mb-6">
+            Where quitting<br />feels like <span className="text-emerald-500">blooming</span>
+          </h1>
+          <p className="text-xl text-gray-700 mb-6">
+            Quit smoking for good with the help of AirBloom - <br />
+            a guided journey to a smoke-free life, improved health and a clearer mind.
+          </p>
+          <button className="bg-emerald-600 text-white px-6 py-2 rounded-full text-sm font-medium">
+            Start your journey
+          </button>
+        </div>
+      
+
+       <div className="mt-16 border-t pt-10">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-gray-800 text-center">
+          <div>
+            <h3 className="text-emerald-600 font-semibold mb-2 text-lg">Real health, real gains</h3>
+            <p className="text-gray-600 text-base">
+              Breathing easier, saving money<br />and feeling more alive.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-emerald-600 font-semibold mb-2 text-lg">Support that sticks</h3>
+            <p className="text-gray-600 text-base">
+              Get tailored plans, daily guidance<br />and a community that’s always<br />there when it gets tough.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-emerald-600 font-semibold mb-2 text-lg">Mindful but not stressful</h3>
+            <p className="text-gray-600 text-base">
+              Track progress, manage cravings<br />and stay motivated with simple tools<br />designed for calm and clarity.
+            </p>
+          </div>
+        </div>
       </div>
-    </motion.section>
+    </section>
   );
 };
+
 
 export default HarmsSection;
