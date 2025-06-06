@@ -4,54 +4,47 @@ import { motion } from 'framer-motion';
 
 const HarmsSection: React.FC = () => {
   return (
-    <motion.section
-      id="harms"
-      className="py-24 bg-gradient-to-br from-white via-emerald-50 to-emerald-100"
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8 }}
-    >
-      <div className="max-w-4xl mx-auto px-6">
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-5xl font-bold text-emerald-800 mb-4">
-            🚭 Tác hại của thuốc lá
-          </h2>
-          <p className="text-lg text-emerald-900 max-w-2xl mx-auto">
-            Thuốc lá không chỉ ảnh hưởng nghiêm trọng đến sức khỏe bản thân mà còn gây hại đến những người xung quanh. Dưới đây là những tác hại phổ biến nhất:
+    <section className="px-4 py-20">
+      
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-6xl font-serif font-semibold leading-tight mb-6">
+            Where quitting<br />feels like <span className="text-emerald-500">blooming</span>
+          </h1>
+          <p className="text-xl text-gray-700 mb-6">
+            Quit smoking for good with the help of AirBloom - <br />
+            a guided journey to a smoke-free life, improved health and a clearer mind.
           </p>
-        </motion.div>
+          <button className="bg-emerald-600 text-white px-6 py-2 rounded-full text-sm font-medium">
+            Start your journey
+          </button>
+        </div>
+      
 
-        <ul className="space-y-4 text-lg text-gray-800">
-          {[
-            'Ung thư phổi và nhiều loại ung thư khác (vòm họng, thực quản...)',
-            'Bệnh tim mạch: tăng nguy cơ đau tim, đột quỵ và xơ vữa động mạch.',
-            'Suy giảm chức năng phổi: ho mãn tính, khó thở và các bệnh hô hấp khác.',
-            'Lão hóa da nhanh, răng ố vàng và các vấn đề về da, tóc.',
-            'Ảnh hưởng xấu đến người xung quanh do khói thuốc thụ động.'
-          ].map((harm, index) => (
-            <motion.li
-              key={index}
-              className="flex items-start space-x-3 bg-white/60 p-4 rounded-xl border border-emerald-200 shadow-sm hover:shadow-md transition-all"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-            >
-              <span className="text-red-500 text-xl">🚫</span>
-              <span>{harm}</span>
-            </motion.li>
-          ))}
-        </ul>
+       <div className="mt-16 border-t pt-10">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-gray-800 text-center">
+          <div>
+            <h3 className="text-emerald-600 font-semibold mb-2 text-lg">Real health, real gains</h3>
+            <p className="text-gray-600 text-base">
+              Breathing easier, saving money<br />and feeling more alive.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-emerald-600 font-semibold mb-2 text-lg">Support that sticks</h3>
+            <p className="text-gray-600 text-base">
+              Get tailored plans, daily guidance<br />and a community that’s always<br />there when it gets tough.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-emerald-600 font-semibold mb-2 text-lg">Mindful but not stressful</h3>
+            <p className="text-gray-600 text-base">
+              Track progress, manage cravings<br />and stay motivated with simple tools<br />designed for calm and clarity.
+            </p>
+          </div>
+        </div>
       </div>
-    </motion.section>
+    </section>
   );
 };
+
 
 export default HarmsSection;
