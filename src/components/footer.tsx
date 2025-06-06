@@ -13,11 +13,13 @@ export const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
         
         {/* Logo Section */}
-        <div className="flex flex-col items-start">
-          <img src={Logo} alt="AirBloom Logo" className="w-20 mb-4" />
-          <span className="text-2xl font-bold text-white">AirBloom</span>
-          <p className="text-sm text-gray-400 mt-2">Vì một tương lai không khói thuốc</p>
-        </div>
+<div className="flex items-center space-x-3 mb-6">
+  <img src={Logo} alt="AirBloom Logo" className="w-12 h-12 rounded-xl object-contain" />
+  <div>
+    <span className="text-2xl font-bold text-white">AirBloom</span>
+    <p className="text-sm text-gray-300">Vì một tương lai không khói thuốc</p>
+  </div>
+</div>
 
         {/* About Section */}
         <div>

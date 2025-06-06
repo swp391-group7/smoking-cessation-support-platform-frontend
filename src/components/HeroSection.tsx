@@ -2,13 +2,17 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Activity } from 'lucide-react';
+import LogoIMG from '../assets/logo.png'; // Adjust the path to your logo image
 
 // Mock logo component
 const Logo = () => (
-  <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-green-600 rounded-xl flex items-center justify-center">
-    <div className="text-white font-bold text-lg">🌱</div>
+  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+    <span className="flex items-center">
+  <img src={LogoIMG} alt="AirBloom Logo" className="w-6 h-6" />
+</span>
   </div>
 );
+
 
 const HeroSection = () => {
   const { scrollYProgress } = useScroll();
