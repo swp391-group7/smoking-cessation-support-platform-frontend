@@ -47,7 +47,7 @@ export async function login(
 interface SignUpCredentials {
   username: string;
   password: string;
-  fullname: string;
+  fullName: string;
   email: string;
 }
 interface SignUpResponse {

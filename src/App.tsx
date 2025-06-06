@@ -5,6 +5,7 @@ import Home from "./pages/home";
 import LoginForm from './components/login-form.tsx'
 import SignUpForm from './components/sign-in-form.tsx'
 import Quit_Plan from "./pages/platform/quit_plan.tsx";
+import Quit_Survey from "./pages/platform/quit_survey.tsx";
 
 export const App = () => (
  
@@ -14,9 +15,11 @@ export const App = () => (
         {/* Trang chính */}
         <Route index element={<Home />} />
         {/* Public routes */}       
-        <Route path="login" element={<LoginForm />} />
+        <Route path="login" element={<LoginForm/>} />
         <Route path="register" element={<SignUpForm />} />
-        <Route path="quit" element={<Quit_Plan/>} />
+        
+        <Route path="quit_plan" element={<Quit_Plan/>} />
+        <Route path="quit_survey" element={<Quit_Survey/>} />
         {/* 404: tự redirect về home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

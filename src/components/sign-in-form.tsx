@@ -1,6 +1,6 @@
 // src/components/ui/SignUpForm.tsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { register as registerApi } from "../api/auth";
@@ -37,16 +37,12 @@ const signUpSchema = z
     message: "Mật khẩu và xác nhận mật khẩu không khớp",
   });
 
-// 3️ Kế thừa type từ schema
 type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export const SignUpForm: React.FC = () => {
   const navigate = useNavigate();
-
-  // 4️ state loading
   const [loading, setLoading] = useState<boolean>(false);
 
-  // 5️ Khởi tạo useForm với zodResolver
   const {
     register,
     handleSubmit,
@@ -55,10 +51,17 @@ export const SignUpForm: React.FC = () => {
     resolver: zodResolver(signUpSchema),
   });
 
-  // 6️ Hàm onSubmit
+  // Hiển thị lỗi bằng toast khi có error
+  useEffect(() => {
+    Object.values(errors).forEach((fieldError) => {
+      if (fieldError?.message) {
+        toast.error(fieldError.message.toString());
+      }
+    });
+  }, [errors]);
+
   const onSubmit = async (data: SignUpFormData) => {
     setLoading(true);
-
     try {
       const response = await registerApi({
         username: data.username.trim(),
@@ -66,10 +69,8 @@ export const SignUpForm: React.FC = () => {
         email: data.email.trim(),
         password: data.password,
       });
-
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
-
       toast.success("Đăng ký thành công");
       setTimeout(() => {
         navigate("/login");
@@ -87,199 +88,125 @@ export const SignUpForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      {/* Toaster hiển thị thông báo ở đầu trang */}
-      <Toaster position="top-center" />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-2">
+      <Toaster position="bottom-right" />
 
-      <div className="max-w-lg w-full bg-white rounded-xl shadow-lg overflow-hidden">
-        {/* Header với logo */}
-        <div className="py-8 px-6 flex items-center justify-center">
-          <img src="/logo192.png" alt="Your Logo" className="h-8 w-8 mr-2" />
-          <span className="text-2xl font-semibold">Your Logo</span>
-        </div>
+      <div className="max-w-sm w-full bg-white rounded-lg shadow-md px-4 py-6">
+        {/* Tiêu đề “Sign up” nhỏ và căn giữa */}
+        <h1 className="text-2xl font-semibold text-center text-emerald-800 mb-4">
+          Sign up
+        </h1>
 
-        {/* Body */}
-        <div className="px-8 pb-8">
-          <h1 className="text-3xl font-bold mb-1">Sign up</h1>
-          <p className="text-gray-500 mb-6">
-            Let’s get you all set up so you can access your personal account.
-          </p>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Username */}
+          <div className="flex justify-center">
+            <input
+              id="username"
+              type="text"
+              placeholder="Username"
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                errors.username ? "ring-red-500 ring-1" : ""
+              }`}
+              {...register("username")}
+            />
+          </div>
 
-          {/* 7️ Hiển thị lỗi validation từ react-hook-form */}
-          {Object.keys(errors).length > 0 && (
-            <div className="text-red-600 text-sm mb-4">
-              {/* Hiển thị message đầu tiên tìm được */}
-              {errors.username?.message ||
-                errors.fullName?.message ||
-                errors.email?.message ||
-                errors.password?.message ||
-                errors.confirmPassword?.message ||
-                errors.agreeTerms?.message}
-            </div>
-          )}
+          {/* Full Name */}
+          <div className="flex justify-center">
+            <input
+              id="fullName"
+              type="text"
+              placeholder="Full Name"
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                errors.fullName ? "ring-red-500 ring-1" : ""
+              }`}
+              {...register("fullName")}
+            />
+          </div>
 
-          {/* 8️ Form sử dụng handleSubmit */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Username */}
-            <div className="flex flex-col">
-              <label htmlFor="username" className="mb-1 text-sm font-medium text-gray-700">
-                Username
-              </label>
-              <input
-                id="username"
-                type="text"
-                placeholder="yourusername"
-                className={`border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.username ? "ring-red-500 ring-1" : ""
-                }`}
-                {...register("username")}
-              />
-              {errors.username && (
-                <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
-              )}
-            </div>
+          {/* Email */}
+          <div className="flex justify-center">
+            <input
+              id="email"
+              type="email"
+              placeholder="Email"
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                errors.email ? "ring-red-500 ring-1" : ""
+              }`}
+              {...register("email")}
+            />
+          </div>
 
-            {/* Full Name */}
-            <div className="flex flex-col">
-              <label htmlFor="fullName" className="mb-1 text-sm font-medium text-gray-700">
-                Full Name
-              </label>
-              <input
-                id="fullName"
-                type="text"
-                placeholder="John Doe"
-                className={`border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.fullName ? "ring-red-500 ring-1" : ""
-                }`}
-                {...register("fullName")}
-              />
-              {errors.fullName && (
-                <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>
-              )}
-            </div>
+          {/* Password */}
+          <div className="flex justify-center">
+            <input
+              id="password"
+              type="password"
+              placeholder="Password"
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                errors.password ? "ring-red-500 ring-1" : ""
+              }`}
+              {...register("password")}
+            />
+          </div>
 
-            {/* Email */}
-            <div className="flex flex-col">
-              <label htmlFor="email" className="mb-1 text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                className={`border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.email ? "ring-red-500 ring-1" : ""
-                }`}
-                {...register("email")}
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-              )}
-            </div>
+          {/* Confirm Password */}
+          <div className="flex justify-center">
+            <input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm Password"
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                errors.confirmPassword ? "ring-red-500 ring-1" : ""
+              }`}
+              {...register("confirmPassword")}
+            />
+          </div>
 
-            {/* Password */}
-            <div className="flex flex-col relative">
-              <label htmlFor="password" className="mb-1 text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="•••••••••••"
-                className={`w-full border border-gray-300 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.password ? "ring-red-500 ring-1" : ""
-                }`}
-                {...register("password")}
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-              )}
-            </div>
-
-            {/* Confirm Password */}
-            <div className="flex flex-col relative">
-              <label htmlFor="confirmPassword" className="mb-1 text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                placeholder="•••••••••••"
-                className={`w-full border border-gray-300 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.confirmPassword ? "ring-red-500 ring-1" : ""
-                }`}
-                {...register("confirmPassword")}
-              />
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.confirmPassword.message}
-                </p>
-              )}
-            </div>
-
-            {/* Agree Terms */}
-            <label className="flex items-center space-x-2 text-sm">
-              <input
-                type="checkbox"
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded"
-                {...register("agreeTerms")}
-              />
-              <span>
-                I agree to all the{" "}
-                <a href="#" className="text-emerald-700 hover:underline">
-                  Terms
-                </a>{" "}
-                and{" "}
-                <a href="#" className="text-emerald-700 hover:underline">
-                  Privacy Policies
-                </a>
-              </span>
-            </label>
-            {errors.agreeTerms && (
-              <p className="text-red-500 text-sm mt-1">{errors.agreeTerms.message}</p>
-            )}
-
-            {/* Create Account button */}
+          {/* Create account button, nhỏ gọn và căn giữa */}
+          <div className="flex justify-center">
             <button
               type="submit"
               disabled={loading}
-              className={`w-full ${
-                loading ? "bg-emerald-600" : "bg-emerald-700"
-              } text-white py-2 rounded-md font-medium hover:bg-emerald-800 transition disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`w-48 text-white py-1.5 rounded-full text-sm font-medium transition ${
+                loading
+                  ? "bg-emerald-400 cursor-not-allowed"
+                  : "bg-emerald-600 hover:bg-emerald-700"
+              }`}
             >
               {loading ? "Processing..." : "Create account"}
             </button>
-          </form>
-
-          {/* Already have an account */}
-          <p className="text-center text-sm text-gray-600 mt-4">
-            Already have an account?{" "}
-            <button
-              className="text-emerald-700 hover:underline"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </button>
-          </p>
-
-          {/* Divider */}
-          <div className="flex items-center my-6">
-            <div className="flex-grow h-px bg-gray-200" />
-            <span className="px-3 text-gray-500 text-sm">Or sign up with</span>
-            <div className="flex-grow h-px bg-gray-200" />
           </div>
+        </form>
 
-          {/* Social buttons */}
-          <div className="flex space-x-4">
-            <button className="flex-1 flex items-center justify-center border border-gray-300 py-2 rounded-md hover:bg-gray-50 transition">
-              <FaFacebookF className="text-blue-600 mr-2" />
-              Facebook
-            </button>
-            <button className="flex-1 flex items-center justify-center border border-gray-300 py-2 rounded-md hover:bg-gray-50 transition">
-              <FaGoogle className="text-red-500 mr-2" />
-              Google
-            </button>
-          </div>
+        {/* “Already have an account?” */}
+        <p className="text-center text-xs text-gray-600 mt-4">
+          Already have an account?{" "}
+          <button
+            className="text-emerald-600 hover:underline"
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </button>
+        </p>
+
+        {/* Divider “Or sign up with” */}
+        <div className="flex items-center my-4">
+          <div className="flex-grow h-px bg-gray-200" />
+          <span className="px-2 text-gray-500 text-xs">Or sign up with</span>
+          <div className="flex-grow h-px bg-gray-200" />
+        </div>
+
+        {/* Social buttons, nhỏ và căn giữa */}
+        <div className="flex justify-center space-x-6">
+          <button className="w-28 flex items-center justify-center border border-gray-300 py-1 rounded-2xl hover:bg-gray-50 transition text-sm">
+            <FaFacebookF className="text-blue-600 mr-1" />
+            Facebook
+          </button>
+          <button className="w-28 flex items-center justify-center border border-gray-300 py-1 rounded-2xl hover:bg-gray-50 transition text-sm">
+            <FaGoogle className="text-red-500 mr-1" />
+            Google
+          </button>
         </div>
       </div>
     </div>
