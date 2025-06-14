@@ -63,3 +63,4 @@ export async function register (
   const { data } = await api.post<SignUpResponse>("/auth/signup", credentials);
   return data;
 }
+export default api;
