@@ -2,9 +2,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const HarmsSection: React.FC = () => {
+export const HarmsSection: React.FC = () => {
   return (
-    <section className="px-4 py-20">
+    <section className="px-4 py-20" id='harms' >
       
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-6xl font-serif font-semibold leading-tight mb-6">
