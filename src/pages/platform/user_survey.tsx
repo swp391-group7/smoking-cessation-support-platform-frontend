@@ -45,21 +45,21 @@ const user_survey: React.FC = () => {
     <div className="bg-white border-green-400 shadow-md rounded-xl p-6 border">
       <form onSubmit={handleSubmit} className="max-w-6xl mx-auto px-6 py-12 text-black">
         <h1 className="text-5xl font-extrabold text-center text-green-700 mb-10">
-          KHẢO SÁT TẦN SUẤT SỬ DỤNG
+          SURVEY OF FREQUENCY OF USE
         </h1>
 
-        <label className="block text-3xl font-bold mb-3">Thời gian hút thuốc</label>
+        <label className="block text-3xl font-bold mb-3">Smoking duration</label>
 
         <input
           name="smoke_duration"
-          placeholder="Ví dụ: 3 năm"
+          placeholder="Ex: 5 years, 10 months"
           value={formData.smoke_duration}
           onChange={handleChange}
           className="w-full p-2 text-xl border border-green-400 rounded mb-3"
         />
 
         <div className="flex items-center text-xl gap-2 mb-3">
-          <label className="min-w-[100px]">Số gói</label>
+          <label className="min-w-[150px]">Number of packs</label>
           <input
             name="cigarettes_per_day"
             type="number"
@@ -67,11 +67,11 @@ const user_survey: React.FC = () => {
             onChange={handleChange}
             className="w-24 p-2 border border-green-400 rounded text-center"
           />
-          <span>/ngày</span>
+          <span>/day</span>
         </div>
 
         <div className="flex items-center text-xl gap-2 mb-3">
-          <label className="min-w-[100px]">Giá tiền</label>
+          <label className="min-w-[150px]">Price</label>
           <input
             name="price_each"
             type="number"
@@ -79,7 +79,7 @@ const user_survey: React.FC = () => {
             onChange={handleChange}
             className="w-24 p-2 border border-green-400 rounded text-center"
           />
-          <span>/gói</span>
+          <span>/packs</span>
         </div>
 
         <label className="flex items-center text-xl gap-2 mb-4">
@@ -90,15 +90,15 @@ const user_survey: React.FC = () => {
             onChange={handleChange}
             className="accent-green-500"
           />
-          Bạn đã từng cố bỏ thuốc chưa?
+          Have you ever tried to quit smoking?
         </label>
 
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Cột trái */}
           <div className="space-y-4">
-            <label className="block text-3xl font-bold mb-3">Lí do chưa thể bỏ thuốc</label>
+            <label className="block text-3xl font-bold mb-3">Reasons</label>
             <div className="space-y-2 mb-4">
-              {['Stress', 'Thói quen', 'Thiếu sự hỗ trợ', 'Khác'].map((reason) => (
+              {['Stress', 'Habits', 'Lack of support', 'Other'].map((reason) => (
                 <label key={reason} className="flex items-center text-xl space-x-2">
                   <input
                     type="checkbox"
@@ -116,33 +116,33 @@ const user_survey: React.FC = () => {
             </div>
           </div>
 
-        {/* Cột phải */}
+          {/* Cột phải */}
 
-        <div className="space-y-4">
-          <label className="block text-3xl font-bold mb-3">Tình trạng sức khỏe</label>
-          <div className="space-y-2 mb-4">
-            {['Tốt', 'Trung bình', 'Kém'].map((status) => (
-              <label key={status} className="flex items-center text-xl space-x-2">
-                <input
-                  type="checkbox"
-                  name="health_status"
-                  value={status}
-                  checked={formData.health_status === status}
-                  onChange={(e) =>
-                    setFormData({ ...formData, health_status: e.target.value })
-                  }
-                  className="accent-green-500"
-                />
-                <span>{status}</span>
-              </label>
-            ))}
+          <div className="space-y-4">
+            <label className="block text-3xl font-bold mb-3">Health status</label>
+            <div className="space-y-2 mb-4">
+              {['Good', 'Average', 'Poor'].map((status) => (
+                <label key={status} className="flex items-center text-xl space-x-2">
+                  <input
+                    type="checkbox"
+                    name="health_status"
+                    value={status}
+                    checked={formData.health_status === status}
+                    onChange={(e) =>
+                      setFormData({ ...formData, health_status: e.target.value })
+                    }
+                    className="accent-green-500"
+                  />
+                  <span>{status}</span>
+                </label>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-        <label className="block text-3xl font-bold mb-3">Mức độ phụ thuộc</label>
+        <label className="block text-3xl font-bold mb-3">Dependency level</label>
         <div className="flex items-center text-xl gap-4 mb-6">
-          <span>Nhẹ</span>
+          <span>Mild</span>
           {[1, 2, 3, 4, 5].map((level) => (
             <div
               key={level}
@@ -153,13 +153,13 @@ const user_survey: React.FC = () => {
               onClick={() => handleDependencyClick(level)}
             />
           ))}
-          <span>Nặng</span>
+          <span>Severe</span>
         </div>
 
-        <label className="block text-3xl font-bold mb-4">Ghi chú thêm (nếu có)</label>
+        <label className="block text-3xl font-bold mb-4">Notes (optional)</label>
         <textarea
           name="note"
-          placeholder="Bạn có thể ghi chú thêm về thói quen hút thuốc hoặc bất kỳ thông tin nào khác bạn muốn chia sẻ"
+          placeholder="You can add notes about your smoking habits or any other information you would like to share"
           value={formData.note}
           onChange={handleChange}
           className="w-full p-2 text-xl border border-green-500 rounded mb-6"
@@ -167,14 +167,14 @@ const user_survey: React.FC = () => {
 
         <div className="text-center">
           <p className="text-xl text-gray-700 mb-4">
-            Cảm ơn bạn đã tham gia khảo sát!<br />
-            Chúng tôi sẽ sử dụng thông tin này để giúp đỡ bạn.
+            Thank you for taking the survey!<br />
+            Your feedback is valuable for us.
           </p>
           <button
             className="bg-emerald-600 text-xl text-white px-6 py-2 rounded-full text-sm font-medium"
             onClick={() => console.log(formData)}
           >
-            Gửi khảo sát
+            Submit
           </button>
         </div>
 
