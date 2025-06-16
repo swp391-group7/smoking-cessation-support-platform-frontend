@@ -1,89 +1,117 @@
-// src/components/QuitGuideSection.tsx
 import React from "react";
 import { motion } from "framer-motion";
-import { Target, Clipboard, Shield, Users, Award } from "lucide-react";
-const QuitGuideSection = () => {
-  const steps = [
-    {
-      title: "Bước 1: Chuẩn bị tinh thần",
-      content: "Xác định lý do và tạo động lực bỏ thuốc (ví dụ: sức khỏe, gia đình, tài chính).",
-      icon: <Target className="w-6 h-6" />
-    },
-    {
-      title: "Bước 2: Lập kế hoạch",
-      content: "Lên kế hoạch chi tiết: đặt ngày bỏ thuốc và các mốc nhỏ để giảm dần.",
-      icon: <Clipboard className="w-6 h-6" />
-    },
-    {
-      title: "Bước 3: Tìm hỗ trợ",
-      content: "Tìm phương pháp hỗ trợ thay thế: nhai kẹo cao su nicotine, trị liệu thay thế, tập thể dục.",
-      icon: <Shield className="w-6 h-6" />
-    },
-    {
-      title: "Bước 4: Xây dựng mạng lưới",
-      content: "Nhờ sự hỗ trợ của gia đình, bạn bè hoặc tham gia nhóm hỗ trợ để chia sẻ kinh nghiệm.",
-      icon: <Users className="w-6 h-6" />
-    },
-    {
-      title: "Bước 5: Theo dõi & động viên",
-      content: "Theo dõi tiến độ và tự khen thưởng sau mỗi cột mốc đạt được để duy trì động lực.",
-      icon: <Award className="w-6 h-6" />
-    }
-  ];
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
+// Membership tiers
+const memberships = [
+  {
+    name: 'Free Plan',
+    price: '$0',
+    features: [
+      'Basic quit tracking',
+      'Daily motivational tips',
+      'Community forum access'
+    ]
+  },
+  {
+    name: 'Pro Plan',
+    price: '$9.99/mo',
+    features: [
+      'All Free features',
+      'Personalized coaching',
+      'Progress analytics dashboard',
+      'Premium support'
+    ]
+  }
+];
+
+// Quit steps
+const steps = [
+  {
+    title: 'Step 1: Survey & Self-Assessment',
+    content: 'Complete our quick survey to identify your smoking patterns, triggers, and motivations.'
+  },
+  {
+    title: 'Step 2: Create Your Plan',
+    content: 'Set your quit date, define daily goals, and choose coping strategies.'
+  },
+  {
+    title: 'Step 3: Choose Membership',
+    content: 'Select between Free or Pro plan to unlock tailored features and support.'
+  },
+  {
+    title: 'Step 4: Guided Quit Journey',
+    content: 'Follow interactive lessons, habit trackers, and community encouragement.'
+  }
+];
+
+const QuitGuideSection: React.FC = () => {
   return (
-    <section id="guide" className="py-24 bg-gradient-to-br from-gray-50 to-emerald-50">
-      <div className="max-w-5xl mx-auto px-6">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 50 }}
+    <section id="guide" className="py-16 bg-gradient-to-b from-green-50 via-white to-green-100 font-serif">
+      <div className="max-w-5xl mx-auto px-4">
+
+        {/* Header animates once */}
+        <motion.h2
+          className="text-4xl font-bold text-green-700 text-center mb-6 tracking-tight"
+          initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
         >
-          <h2 className="text-5xl font-bold text-gray-800 mb-6">
-            🗺️ Lộ trình cai nghiện
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            5 bước thiết yếu giúp bạn từ bỏ thuốc lá một cách hiệu quả và bền vững
-          </p>
-        </motion.div>
+          🌱 Your Personalized Quit Journey
+        </motion.h2>
+        <p className="text-lg text-gray-700 text-center mb-10">
+          Follow these four essential steps to quit smoking effectively and sustainably.
+        </p>
 
-        <div className="relative">
-          {/* Timeline line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-400 to-teal-500" />
+        {/* Steps: static reveal once with hover effect */}
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
+          {steps.map((step, idx) => (
+            <motion.div
+              key={idx}
+              className="bg-white rounded-2xl shadow-lg border border-green-100 p-6 hover:shadow-2xl hover:scale-105 transition-transform duration-300"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
+            >
+              <div className="flex items-start space-x-4">
+                <CheckCircleIcon className="w-7 h-7 text-green-600 flex-shrink-0 mt-1" />
+                <div>
+                  <h3 className="text-lg font-semibold text-green-800 mb-2">{step.title}</h3>
+                  <p className="text-gray-700">{step.content}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
-          <div className="space-y-12">
-            {steps.map((step, index) => (
+        {/* Membership plans: static reveal once with hover */}
+        <div className="mb-8">
+          <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">Membership Plans</h3>
+          <div className="flex flex-col sm:flex-row justify-center items-stretch gap-6">
+            {memberships.map((plan, idx) => (
               <motion.div
-                key={index}
-                className="relative flex items-start space-x-8"
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                key={idx}
+                className="flex-1 bg-white rounded-2xl shadow-lg p-6 border border-green-200 hover:shadow-2xl hover:scale-105 transition-transform duration-300"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
+                transition={{ duration: 0.5, delay: idx * 0.15 }}
               >
-                {/* Timeline dot */}
-                <motion.div
-                  className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center text-white shadow-lg"
-                  whileHover={{ scale: 1.1, rotate: 360 }}
-                  transition={{ duration: 0.6 }}
-                >
-                  {step.icon}
-                </motion.div>
-
-                {/* Content */}
-                <motion.div
-                  className="flex-1 bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
-                  whileHover={{ y: -5, scale: 1.02 }}
-                >
-                  <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                    {step.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {step.content}
-                  </p>
-                </motion.div>
+                <p className="text-3xl font-semibold text-gray-800 mb-2">{plan.name}</p>
+                <p className="text-2xl text-green-600 font-bold mb-4">{plan.price}</p>
+                <ul className="text-gray-600 mb-6 space-y-2">
+                  {plan.features.map((f, i) => (
+                    <li key={i} className="flex items-start">
+                      <CheckCircleIcon className="w-5 h-5 text-green-600 mr-2 mt-1" />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button className="w-full bg-green-600 text-white py-2 rounded-full font-semibold hover:bg-green-700 transition">
+                  {plan.name === 'Free Plan' ? 'Get Started' : 'Upgrade Now'}
+                </button>
               </motion.div>
             ))}
           </div>

@@ -20,6 +20,7 @@ const midSections = [
 
   { id: "hero", label: "Home" },
   { id: "harms", label: "harmful" },
+  
   { id: "benefits", label: "Benefit" },
   { id: "why", label: "Why AirBloom" },
   { id: "guide", label: "Route" },

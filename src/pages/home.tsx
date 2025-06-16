@@ -30,9 +30,14 @@ const Home: React.FC = () => {
     <> 
       <HeroSection />
       <HarmsSection />
+      
       <BenefitsSection />
+
       <WhyChooseSection />
       <QuitGuideSection />
+
+    
+
       <ContactSection />
     </>
   );

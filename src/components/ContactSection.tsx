@@ -1,138 +1,104 @@
-// src/components/ContactSection.tsx
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Send, CheckCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/ui/accordion';
+import { ChevronDown } from 'lucide-react';
 
-const ContactSection = () => {
-  const [submitted, setSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
+const faqData = [
+  {
+    question: 'When will I have access to the lectures and assignments?',
+    answer:
+      'You will have access immediately after enrollment. All materials are available 24/7 for self-paced learning.',
+  },
+  {
+    question: 'What will I get if I subscribe to this program?',
+    answer:
+      'You will receive a verified certificate upon completion, access to community forums, and lifelong access to course materials.',
+  },
+  {
+    question: 'What is the refund policy?',
+    answer:
+      'Full refund is available within the first 14 days of subscription if you are not satisfied.',
+  },
+  {
+    question: 'Can I switch between plans?',
+    answer:
+      'Yes, you can upgrade or downgrade your subscription at any time through your account settings.',
+  },
+];
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
-    setFormData({ name: '', email: '', message: '' });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+const ContactSection: React.FC = () => {
+  const [open, setOpen] = useState<string>(faqData[0].question);
 
   return (
-    <section id="contact" className="py-24 bg-gradient-to-br from-emerald-900 to-teal-800">
-      <div className="max-w-4xl mx-auto px-6">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+    <section id="faq" className="py-28 bg-white">
+      <div className="max-w-6xl mx-auto px-8">
+        <motion.h2
+          className="text-5xl font-bold text-center text-gray-800 mb-16"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <h2 className="text-5xl font-bold text-white mb-6">💌 Liên hệ với chúng tôi</h2>
-          <p className="text-xl text-emerald-100 max-w-2xl mx-auto">
-            Chúng tôi luôn sẵn sàng hỗ trợ bạn trong hành trình cai thuốc
-          </p>
-        </motion.div>
+          Câu hỏi thường gặp
+        </motion.h2>
 
-        <motion.div
-          className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-              >
-                <label className="block text-white font-medium mb-2">Tên của bạn</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Nhập tên..."
-                  className="w-full px-4 py-3 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-all"
-                  required
-                />
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                <label className="block text-white font-medium mb-2">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Nhập email..."
-                  className="w-full px-4 py-3 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-all"
-                  required
-                />
-              </motion.div>
-            </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Left: FAQ list */}
+          <div className="md:col-span-2 bg-white rounded-2xl p-8 shadow-md">
+            <Accordion
+              type="single"
+              collapsible
+              value={open}
+              onValueChange={(val) => setOpen(val)}
+              className="space-y-6"
+            >
+              {faqData.map((item, idx) => (
+                <AccordionItem key={idx} value={item.question}>
+                  <AccordionTrigger className="flex justify-between items-center bg-gray-50 hover:bg-gray-100 rounded-lg px-6 py-4 text-left text-lg font-medium text-gray-800 focus:outline-none">
+                    <span>{item.question}</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pt-0 pb-5 text-gray-600 text-base">
+                    {item.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              className="mt-6 text-center"
+              initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
+              transition={{ delay: faqData.length * 0.1 }}
             >
-              <label className="block text-white font-medium mb-2">Tin nhắn</label>
-              <textarea
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                placeholder="Nhập tin nhắn..."
-                rows={5}
-                className="w-full px-4 py-3 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-all resize-none"
-                required
-              />
+              <button className="inline-flex items-center space-x-2 text-green-600 hover:underline text-base">
+                <span>Hiển thị tất cả {faqData.length} câu hỏi thường gặp</span>
+                <ChevronDown className="w-6 h-6" />
+              </button>
             </motion.div>
+          </div>
 
-            <motion.button
-              type="submit"
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-            >
-              <Send className="w-5 h-5" />
-              <span>Gửi tin nhắn</span>
-            </motion.button>
-
-            <AnimatePresence>
-              {submitted && (
-                <motion.div
-                  className="text-center py-4"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <div className="inline-flex items-center space-x-2 bg-emerald-500 text-white px-6 py-3 rounded-full">
-                    <CheckCircle className="w-5 h-5" />
-                    <span>Cảm ơn bạn! Tin nhắn đã được gửi.</span>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </form>
-        </motion.div>
+          {/* Right: Add question box */}
+          <div className="bg-white rounded-2xl p-8 shadow-md">
+            <div className="flex items-center mb-4">
+              <ChevronDown className="w-6 h-6 text-gray-500 rotate-[-90deg]" />
+              <h3 className="ml-3 text-lg font-medium text-gray-800">Thêm câu hỏi</h3>
+            </div>
+            <a href="#" className="text-base text-blue-600 hover:underline">
+              Truy cập trung tâm trợ giúp dành cho học viên
+            </a>
+            <div className="border-t border-gray-200 my-5" />
+            <p className="text-base text-gray-500">
+              Hỗ trợ tài chính có sẵn,&nbsp;
+              <a href="#" className="text-blue-600 hover:underline">
+                tìm hiểu thêm
+              </a>
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
