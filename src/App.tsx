@@ -7,7 +7,7 @@ import SignUpForm from './components/sign-in-form.tsx'
 import Quit_Plan from "./pages/platform/quit_plan.tsx";
 import Quit_Survey from "./pages/platform/quit_survey.tsx";
 import UserSurvey from "./pages/platform/user_survey.tsx";
-
+// import UserProfile from "./pages/platform/user_profile.tsx";
 
 
 
@@ -21,6 +21,7 @@ export const App = () => (
         {/* Public routes */}       
         <Route path="login" element={<LoginForm/>} />
         <Route path="register" element={<SignUpForm />} />
+        {/* <Route path="user_profile" element={<UserProfile />} /> */}
         
         <Route path="quit_plan" element={<Quit_Plan/>} />
         <Route path="quit_survey" element={<Quit_Survey/>} />
