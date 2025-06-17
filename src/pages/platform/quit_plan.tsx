@@ -1,214 +1,270 @@
-// Ví dụ minh họa component structure (React + TSX)
-import React from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, LineChart, Line } from "recharts";
-import { useForm, Controller } from "react-hook-form";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+} from "recharts";
+import { useForm } from "react-hook-form";
 
 type DailyFormValues = {
   numCigarettes: number;
-  frequency: string;
-  pricePerUnit: number;
-  healthStatus: string[];
-  note: string;
 };
 
 export default function Quit_Plan() {
-  const { register, handleSubmit, control, reset } = useForm<DailyFormValues>();
+  const { register, handleSubmit, setValue, reset } = useForm<DailyFormValues>();
+  const [smokedToday, setSmokedToday] = useState<boolean | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [activeTab, setActiveTab] = useState<'cigarettes' | 'money'>("cigarettes");
 
   const onSubmit = (data: DailyFormValues) => {
-    // Gửi data lên API, sau đó reset form
     console.log("Submitted:", data);
     reset();
+    setSmokedToday(null);
+    setSubmitted(true);
   };
 
-  // Dữ liệu mẫu cho chart
   const chartData = [
-    { date: "05/26", smoked: 5 },
-    { date: "05/27", smoked: 4 },
-    { date: "05/28", smoked: 2 },
-    { date: "05/29", smoked: 0 },
-    { date: "05/30", smoked: 0 },
-    { date: "05/31", smoked: 0 },
-    { date: "06/01", smoked: 0 },
+    { date: "Jun 5", smoked: 1, saved: 5 },
+    { date: "Jun 6", smoked: 0, saved: 10 },
+    { date: "Jun 7", smoked: 2, saved: 20 },
+    { date: "Jun 8", smoked: 0, saved: 30 },
+    { date: "Jun 9", smoked: 0, saved: 40 },
+    { date: "Jun 10", smoked: 0, saved: 50 },
+    { date: "Jun 16", smoked: 1, saved: 60 },
   ];
 
-  const savingsData = [
-    { date: "05/26", saved: 100 },
-    { date: "05/27", saved: 200 },
-    { date: "05/28", saved: 350 },
-    { date: "05/29", saved: 500 },
-    { date: "05/30", saved: 650 },
-    { date: "05/31", saved: 800 },
-    { date: "06/01", saved: 950 },
+  const history = [
+    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "Jun 16, 2025", text: "Smoked 3 cigarettes", success: false },
+    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "Jun 16, 2025", text: "Smoke-free day", success: true },
+    { date: "Jun 16, 2025", text: "Smoke-free day", success: true },
+    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "Jun 10, 2025", text: "Smoke-free day", success: true },
+    { date: "Jun 9, 2025", text: "Smoke-free day", success: true },
+    { date: "Jun 8, 2025", text: "Smoked 2 cigarettes", success: false },
+    { date: "Jun 7, 2025", text: "Smoke-free day", success: true },
+    { date: "Jun 6, 2025", text: "Smoke-free day", success: true },
+    { date: "Jun 5, 2025", text: "Smoked 1 cigarette", success: false },
+  ];
+
+  const reminders = [
+    { time: "10:00 AM", text: "Stay strong! First week is the hardest", icon: "📘" },
+    { time: "2:30 PM", text: "Remember to drink water when you have cravings", icon: "💧" },
+    { time: "5:45 PM", text: "You've saved enough for a nice dinner!", icon: "🍽️" },
+  ];
+
+  const badges = [
+    { name: "First Day", description: "Completed your first smoke-free day", earned: true, icon: "🥇" },
+    { name: "One Week", description: "One week without smoking", earned: true, icon: "🎉" },
+    { name: "Money Saver", description: "Saved your first $50", earned: true, icon: "💰" },
+    { name: "Health Boost", description: "Your lungs are healing", earned: false, icon: "🫁" },
+    { name: "Two Weeks", description: "Two weeks smoke-free", earned: false, icon: "⚠️" },
+    { name: "Long Distance", description: "One month without smoking", earned: false, icon: "🏃" },
   ];
 
   return (
-    <div className="p-6 space-y-8">
-      {/* Header Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white shadow-md rounded-lg p-4 text-center">
-          <h3 className="text-gray-500 text-sm">Ngày không hút</h3>
-          <p className="text-3xl font-bold">15</p>
-        </div>
-        <div className="bg-white shadow-md rounded-lg p-4 text-center">
-          <h3 className="text-gray-500 text-sm">Tiền tiết kiệm</h3>
-          <p className="text-3xl font-bold">1,200,000 VND</p>
-        </div>
-        <div className="bg-white shadow-md rounded-lg p-4 text-center">
-          <h3 className="text-gray-500 text-sm">Tình trạng sức khỏe</h3>
-          <p className="text-3xl font-bold">Tốt</p>
-        </div>
-      </div>
+    <div className="flex p-6 gap-6 bg-gray-50 min-h-screen">
 
-      {/* Form Ghi Nhận */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="bg-white shadow-lg rounded-lg p-6"
-      >
-        <h2 className="text-xl font-semibold mb-4">Nhập Thông Tin Hôm Nay</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Số điếu thuốc</label>
-              <input
-                type="number"
-                {...register("numCigarettes", { valueAsNumber: true })}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                placeholder="VD: 5"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Tần suất</label>
-              <select
-                {...register("frequency")}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+      {/* Left Main Content */}
+      <div className="flex-1 space-y-6">
+
+        {/* Progress Overview */}
+        <div className="flex gap-6">
+          <div className="flex-1 bg-white rounded-md p-4 shadow">
+            <h3 className="font-semibold mb-2">Days Smoke-Free</h3>
+            <p className="text-4xl font-bold text-center text-blue-600">17</p>
+            <p className="text-center text-sm text-gray-500">You have been smoke-free for 17 days</p>
+          </div>
+
+          <div className="flex-1 bg-white rounded-md p-4 shadow">
+            <h3 className="font-semibold mb-2">Money Saved</h3>
+            <p className="text-4xl font-bold text-center text-green-600">$85</p>
+            <p className="text-center text-sm text-gray-500">By not smoking 340 cigarettes</p>
+          </div>
+        </div>
+
+        {/* Daily Check-In */}
+        <div className="bg-white rounded-md p-6 shadow relative overflow-hidden">
+          <h2 className="font-semibold text-lg mb-4">Daily Check-In</h2>
+          
+          {!submitted ? (
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 transition-all duration-500">
+              <div>
+                <label className="font-medium">Did you smoke today?</label>
+                <div className="flex gap-6 mt-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="radio" 
+                      checked={smokedToday === false} 
+                      onChange={() => { setSmokedToday(false); setValue("numCigarettes", 0); }}
+                      className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-green-600 font-medium">No</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="radio" 
+                      checked={smokedToday === true} 
+                      onChange={() => { setSmokedToday(true); setValue("numCigarettes", 1); }}
+                      className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-red-500 font-medium">Yes</span>
+                  </label>
+                </div>
+              </div>
+
+              {smokedToday === true && (
+                <div className="animate-fade-in">
+                  <label className="font-medium text-gray-700">How many cigarettes?</label>
+                  <input 
+                    type="number" 
+                    min={1} 
+                    {...register("numCigarettes", { valueAsNumber: true })} 
+                    className="border-2 border-gray-300 p-3 rounded-lg w-40 mt-2 focus:border-blue-500 focus:outline-none transition-colors" 
+                  />
+                </div>
+              )}
+
+              <button 
+                type="submit" 
+                disabled={smokedToday === null} 
+                className={`w-full py-3 rounded-lg text-white font-semibold transition-all duration-300 transform ${
+                  smokedToday !== null 
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:scale-105 shadow-lg hover:shadow-xl' 
+                    : 'bg-gray-300 cursor-not-allowed'
+                }`}
               >
-                <option value="daily">Mỗi ngày</option>
-                <option value="alternate">Cách ngày</option>
-                <option value="weekly">1-2 lần/tuần</option>
-                <option value="occasional">Thỉnh thoảng</option>
-              </select>
+                Submit Daily Check-In
+              </button>
+            </form>
+          ) : (
+            <div className="text-center py-12 animate-fade-in-scale">
+              <div className="mb-6">
+                <div className="text-6xl mb-4 animate-bounce">🎉</div>
+                <h3 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">
+                  Thank You!
+                </h3>
+                <p className="text-gray-600 text-lg font-medium">
+                  Your daily check-in has been recorded successfully
+                </p>
+              </div>
+              
+              <div className="flex justify-center space-x-4 mb-6">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+              </div>
+              
+              <button 
+                onClick={() => {setSubmitted(false); setSmokedToday(null);}} 
+                className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105"
+              >
+                New Check-In
+              </button>
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Giá tiền (/điếu hoặc/bao)</label>
-              <input
-                type="number"
-                {...register("pricePerUnit", { valueAsNumber: true })}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                placeholder="VD: 25,000"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Tình trạng sức khỏe</label>
-              <Controller
-                control={control}
-                name="healthStatus"
-                render={({ field }) => (
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {["Đau đầu", "Khó ngủ", "Tinh thần kém"].map((label) => (
-                      <label key={label} className="flex items-center space-x-1">
-                        <input
-                          type="checkbox"
-                          value={label}
-                          checked={field.value?.includes(label)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              field.onChange([...(field.value || []), label]);
-                            } else {
-                              field.onChange(field.value?.filter((v) => v !== label));
-                            }
-                          }}
-                        />
-                        <span className="text-sm">{label}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Ghi chú</label>
-            <textarea
-              {...register("note")}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              placeholder="Một vài ghi chú (nếu cần)..."
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-          >
-            Lưu lại
-          </button>
-        </form>
-      </motion.div>
-
-      {/* Biểu đồ */}
-      <div className="grid grid-cols-2 gap-6">
-        <div className="bg-white p-4 shadow-md rounded-lg">
-          <h3 className="text-lg font-medium mb-2">Số điếu hút từng ngày</h3>
-          <BarChart width={400} height={220} data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis label={{ value: "Điếu", angle: -90, position: "insideLeft" }} />
-            <Tooltip />
-            <Bar dataKey="smoked" fill="#8884d8" />
-          </BarChart>
+          )}
+          
+          <style>{`
+            @keyframes fade-in {
+              from { opacity: 0; transform: translateY(10px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+            
+            @keyframes fade-in-scale {
+              from { opacity: 0; transform: scale(0.9); }
+              to { opacity: 1; transform: scale(1); }
+            }
+            
+            .animate-fade-in {
+              animation: fade-in 0.5s ease-out;
+            }
+            
+            .animate-fade-in-scale {
+              animation: fade-in-scale 0.6s ease-out;
+            }
+          `}</style>
         </div>
-        <div className="bg-white p-4 shadow-md rounded-lg">
-          <h3 className="text-lg font-medium mb-2">Tiền tiết kiệm theo ngày</h3>
-          <LineChart width={400} height={220} data={savingsData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis label={{ value: "VND", angle: -90, position: "insideLeft" }} />
-            <Tooltip />
-            <Line type="monotone" dataKey="saved" stroke="#82ca9d" />
-          </LineChart>
+
+        {/* Progress Chart */}
+        <div className="bg-white rounded-md p-6 shadow">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-semibold text-lg">Progress Chart</h3>
+            <div className="space-x-2">
+              <button onClick={() => setActiveTab('cigarettes')} className={`${activeTab === 'cigarettes' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'} px-4 py-1 rounded-md`}>Cigarettes</button>
+              <button onClick={() => setActiveTab('money')} className={`${activeTab === 'money' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'} px-4 py-1 rounded-md`}>Money Saved</button>
+            </div>
+          </div>
+
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey={activeTab === 'cigarettes' ? 'smoked' : 'saved'}
+                stroke={activeTab === 'cigarettes' ? '#EF4444' : '#10B981'}
+                strokeWidth={3}
+                dot={{ r: 5 }}
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
+
       </div>
 
-      {/* Bảng liệt kê dữ liệu gần nhất */}
-      <div className="bg-white shadow-md rounded-lg p-4">
-        <h3 className="text-lg font-medium mb-2">Lịch sử 5 ngày gần nhất</h3>
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 text-left">Ngày</th>
-              <th className="px-4 py-2 text-left">Số điếu</th>
-              <th className="px-4 py-2 text-left">Chi phí (VND)</th>
-              <th className="px-4 py-2 text-left">Ghi chú</th>
-              <th className="px-4 py-2 text-center">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              { date: "05/28", num: 2, cost: 50_000, note: "Bị stress" },
-              { date: "05/29", num: 0, cost: 0, note: "Đúng kế hoạch" },
-              { date: "05/30", num: 0, cost: 0, note: "-" },
-              { date: "05/31", num: 0, cost: 0, note: "-" },
-              { date: "06/01", num: 0, cost: 0, note: "-" },
-            ].map((row, idx) => (
-              <tr key={idx} className="border-b">
-                <td className="px-4 py-2">{row.date}</td>
-                <td className="px-4 py-2">{row.num}</td>
-                <td className="px-4 py-2">{row.cost.toLocaleString()}</td>
-                <td className="px-4 py-2">{row.note}</td>
-                <td className="px-4 py-2 text-center">
-                  <button className="text-blue-500 hover:underline mr-2">Sửa</button>
-                  <button className="text-red-500 hover:underline">Xóa</button>
-                </td>
-              </tr>
+      {/* Sidebar */}
+      <div className="w-80 space-y-6">
+
+        <div className="bg-white rounded-md p-4 shadow h-fit">
+          <h3 className="font-semibold mb-3 text-gray-800">History</h3>
+          <div className="max-h-80 overflow-y-auto space-y-2">
+            {history.map((h, idx) => (
+              <div key={idx} className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-b-0">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold ${h.success ? 'bg-green-500' : 'bg-red-500'}`}>
+                  {h.success ? '✓' : '✗'}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-600">{h.date}</p>
+                  <p className={`text-sm ${h.success ? 'text-green-600' : 'text-red-600'}`}>{h.text}</p>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-md p-4 shadow h-fit">
+          <h3 className="font-semibold mb-3 text-gray-800">Reminders</h3>
+          <div className="space-y-3">
+            {reminders.map((r, idx) => (
+              <div key={idx} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <span className="text-lg">{r.icon}</span>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-800 text-sm">{r.text}</p>
+                  <p className="text-xs text-blue-600 mt-1">{r.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-md p-4 shadow h-fit">
+          <h3 className="font-semibold mb-3 text-gray-800">Badges</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {badges.map((badge, idx) => (
+              <div key={idx} className={`p-3 rounded-lg border-2 text-center transition-all ${badge.earned ? 'border-blue-300 bg-blue-50' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
+                <div className="text-2xl mb-1">{badge.icon}</div>
+                <p className={`text-xs font-semibold ${badge.earned ? 'text-blue-700' : 'text-gray-500'}`}>{badge.name}</p>
+                <p className={`text-xs mt-1 ${badge.earned ? 'text-blue-600' : 'text-gray-400'}`}>{badge.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );
