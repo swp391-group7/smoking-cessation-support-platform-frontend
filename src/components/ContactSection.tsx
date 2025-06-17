@@ -43,7 +43,7 @@ const ContactSection: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          Câu hỏi thường gặp
+          Frequently Asked Questions
         </motion.h2>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -75,7 +75,7 @@ const ContactSection: React.FC = () => {
               transition={{ delay: faqData.length * 0.1 }}
             >
               <button className="inline-flex items-center space-x-2 text-green-600 hover:underline text-base">
-                <span>Hiển thị tất cả {faqData.length} câu hỏi thường gặp</span>
+                <span>Show all {faqData.length} frequently asked questions</span>
                 <ChevronDown className="w-6 h-6" />
               </button>
             </motion.div>
@@ -85,16 +85,16 @@ const ContactSection: React.FC = () => {
           <div className="bg-white rounded-2xl p-8 shadow-md">
             <div className="flex items-center mb-4">
               <ChevronDown className="w-6 h-6 text-gray-500 rotate-[-90deg]" />
-              <h3 className="ml-3 text-lg font-medium text-gray-800">Thêm câu hỏi</h3>
+              <h3 className="ml-3 text-lg font-medium text-gray-800">Add a question</h3>
             </div>
             <a href="#" className="text-base text-blue-600 hover:underline">
-              Truy cập trung tâm trợ giúp dành cho học viên
+              Visit the student help center
             </a>
             <div className="border-t border-gray-200 my-5" />
             <p className="text-base text-gray-500">
-              Hỗ trợ tài chính có sẵn,&nbsp;
+              Financial aid is available,&nbsp;
               <a href="#" className="text-blue-600 hover:underline">
-                tìm hiểu thêm
+                learn more
               </a>
             </p>
           </div>

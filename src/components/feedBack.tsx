@@ -14,35 +14,35 @@ interface Feedback {
 const feedbacks: Feedback[] = [
   {
     id: 1,
-    name: 'Nguyễn A.',
-    role: 'Người dùng từ 2021',
+    name: 'Nguyen A.',
+    role: 'User since 2021',
     since: '2021',
     avatar: '/avatars/user1.jpg',
-    quote: 'AirBloom đã thay đổi hoàn toàn thói quen của tôi. Tôi cảm thấy khỏe mạnh và tự tin hơn mỗi ngày.'
+    quote: 'AirBloom has completely changed my habits. I feel healthier and more confident every day.'
   },
   {
     id: 2,
-    name: 'Trần B.',
-    role: 'Người dùng từ 2022',
+    name: 'Tran B.',
+    role: 'User since 2022',
     since: '2022',
     avatar: '/avatars/user2.jpg',
-    quote: 'Chương trình lộ trình cá nhân hóa rất hiệu quả, tôi đã bỏ thuốc hoàn toàn sau 3 tháng.'
+    quote: 'The personalized journey program is very effective. I quit smoking completely after 3 months.'
   },
   {
     id: 3,
-    name: 'Lê C.',
-    role: 'Người dùng từ 2020',
+    name: 'Le C.',
+    role: 'User since 2020',
     since: '2020',
     avatar: '/avatars/user3.jpg',
-    quote: 'Cộng đồng hỗ trợ 24/7 giúp tôi vượt qua những lúc khó khăn nhất.'
+    quote: 'The 24/7 support community helped me get through the toughest moments.'
   },
   {
     id: 4,
-    name: 'Phạm D.',
-    role: 'Người dùng từ 2019',
+    name: 'Pham D.',
+    role: 'User since 2019',
     since: '2019',
     avatar: '/avatars/user4.jpg',
-    quote: 'Tôi đánh giá cao tính bảo mật dữ liệu và sự chuyên nghiệp của đội ngũ AirBloom.'
+    quote: 'I really appreciate the data privacy and professionalism of the AirBloom team.'
   }
 ];
 
@@ -51,7 +51,7 @@ const FeedbackSection: React.FC = () => {
     <section className="py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6">
         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-10 text-center">
-          Tại sao mọi người chọn AirBloom
+          Why People Choose AirBloom
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {feedbacks.map((fb, idx) => (

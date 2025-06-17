@@ -13,7 +13,7 @@ interface Post {
   type: string;
 }
 
-const CATEGORIES = ['Được đề xuất', 'Chuyên ngành', 'Liên quan', 'Trình độ'];
+const CATEGORIES = ['Recommended', 'Specialized', 'Related', 'Proficiency'];
 const DEFAULT_COUNT = 4;
 const EXPAND_COUNT = 8;
 
@@ -29,8 +29,8 @@ const PostsGrid: React.FC = () => {
       const sample = Array.from({ length: 12 }, (_, i) => ({
         id: String(i + 1),
         image: `/images/image${(i % 6) + 1}.jpg`,
-        title: `Chủ đề cai thuốc lá ${i + 1}`,
-        subtitle: `Nguồn tài nguyên ${i + 1}`,
+        title: `Quit Smoking Topic ${i + 1}`,
+        subtitle: `Resource ${i + 1}`,
         type: category,
       }));
       setPosts(sample);
@@ -61,7 +61,7 @@ const PostsGrid: React.FC = () => {
           to="/blog"
           className="text-green-600 font-medium hover:underline text-sm"
         >
-          Xem thêm bài viết
+          View more articles
         </Link>
       </div>
 
@@ -112,7 +112,7 @@ const PostsGrid: React.FC = () => {
             className="rounded-full px-4 py-1 text-xs text-green-700 border-green-700 hover:bg-green-50"
             onClick={() => setExpanded(!expanded)}
           >
-            {expanded ? 'Thu gọn' : 'Hiển thị thêm'}
+            {expanded ? 'Show Less' : 'Show More'}
           </Button>
         </div>
       )}
