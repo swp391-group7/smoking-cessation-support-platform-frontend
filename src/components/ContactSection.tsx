@@ -35,7 +35,7 @@ const ContactSection: React.FC = () => {
   const [open, setOpen] = useState<string>(faqData[0].question);
 
   return (
-    <section id="faq" className="py-28 bg-white">
+    <section id="contact" className="py-28 bg-white">
       <div className="max-w-6xl mx-auto px-8">
         <motion.h2
           className="text-5xl font-bold text-center text-gray-800 mb-16"
