@@ -29,7 +29,7 @@ const signUpSchema = z
       .max(100, "Password tối đa 100 ký tự"),
     confirmPassword: z.string(),
     agreeTerms: z.literal(true, {
-      errorMap: () => ({ message: "Bạn phải đồng ý với Terms & Privacy" }),
+      errorMap: () => ({ message: "You must agree to Terms & Privacy" }),
     }),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -104,9 +104,8 @@ export const SignUpForm: React.FC = () => {
               id="username"
               type="text"
               placeholder="Username"
-              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                errors.username ? "ring-red-500 ring-1" : ""
-              }`}
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.username ? "ring-red-500 ring-1" : ""
+                }`}
               {...register("username")}
             />
           </div>
@@ -117,9 +116,8 @@ export const SignUpForm: React.FC = () => {
               id="fullName"
               type="text"
               placeholder="Full Name"
-              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                errors.fullName ? "ring-red-500 ring-1" : ""
-              }`}
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.fullName ? "ring-red-500 ring-1" : ""
+                }`}
               {...register("fullName")}
             />
           </div>
@@ -130,9 +128,8 @@ export const SignUpForm: React.FC = () => {
               id="email"
               type="email"
               placeholder="Email"
-              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                errors.email ? "ring-red-500 ring-1" : ""
-              }`}
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.email ? "ring-red-500 ring-1" : ""
+                }`}
               {...register("email")}
             />
           </div>
@@ -143,9 +140,8 @@ export const SignUpForm: React.FC = () => {
               id="password"
               type="password"
               placeholder="Password"
-              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                errors.password ? "ring-red-500 ring-1" : ""
-              }`}
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.password ? "ring-red-500 ring-1" : ""
+                }`}
               {...register("password")}
             />
           </div>
@@ -156,11 +152,30 @@ export const SignUpForm: React.FC = () => {
               id="confirmPassword"
               type="password"
               placeholder="Confirm Password"
-              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                errors.confirmPassword ? "ring-red-500 ring-1" : ""
-              }`}
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.confirmPassword ? "ring-red-500 ring-1" : ""
+                }`}
               {...register("confirmPassword")}
             />
+          </div>
+
+          {/* Agree to Terms and Privacy */}
+          <div className="flex items-start text-xs px-3">
+            <input
+              id="agreeTerms"
+              type="checkbox"
+              className="mt-1 mr-2"
+              {...register("agreeTerms")}
+            />
+            <label htmlFor="agreeTerms" className="text-gray-600">
+              I agree to the{" "}
+              <a href="/terms" target="_blank" className="text-emerald-600 hover:underline">
+                Terms of Use
+              </a>{" "}
+              and{" "}
+              <a href="/privacy" target="_blank" className="text-emerald-600 hover:underline">
+                Privacy Policy
+              </a>
+            </label>
           </div>
 
           {/* Create account button, nhỏ gọn và căn giữa */}
@@ -168,11 +183,10 @@ export const SignUpForm: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-48 text-white py-1.5 rounded-full text-sm font-medium transition ${
-                loading
+              className={`w-48 text-white py-1.5 rounded-full text-sm font-medium transition ${loading
                   ? "bg-emerald-400 cursor-not-allowed"
                   : "bg-emerald-600 hover:bg-emerald-700"
-              }`}
+                }`}
             >
               {loading ? "Processing..." : "Create account"}
             </button>
