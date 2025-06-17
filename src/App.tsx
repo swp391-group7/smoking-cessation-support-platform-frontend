@@ -7,6 +7,7 @@ import SignUpForm from './components/sign-in-form.tsx'
 import Quit_Plan from "./pages/platform/quit_plan.tsx";
 import Quit_Survey from "./pages/platform/quit_survey.tsx";
 import UserSurvey from "./pages/platform/user_survey.tsx";
+import BlogPost from "./pages/platform/blog.tsx";
 
 
 
@@ -24,6 +25,7 @@ export const App = () => (
         
         <Route path="quit_plan" element={<Quit_Plan/>} />
         <Route path="quit_survey" element={<Quit_Survey/>} />
+        <Route path="blog" element={<BlogPost/>} />
         {/* 404: tự redirect về home */}
         <Route path="*" element={<Navigate to="/" replace />} />
         <Route path="user_survey" element={<UserSurvey />} />

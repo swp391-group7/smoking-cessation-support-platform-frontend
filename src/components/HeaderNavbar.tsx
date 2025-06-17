@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { QuitDropdown } from "./quit_drop_down";
+import { ResourcDropdown } from "./resource_drop_down";
 
 interface User {
   id: string;
@@ -241,12 +242,15 @@ export const HeaderNavbar: React.FC = () => {
               ))}
 
 
+              <li className="flex-shrink-0">             
+                  
+                  <ResourcDropdown/>
+
+              </li>
               <li className="flex-shrink-0">
               
                   <QuitDropdown />
-                
-
-
+                  
               </li>
             </ul>
           </div>
