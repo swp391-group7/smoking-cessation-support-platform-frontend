@@ -3,7 +3,7 @@ import type { UserSurvey } from "@/api/usersurvey";
 
 const user_survey: React.FC = () => {
   const [formData, setFormData] = useState<UserSurvey>({
-    user_id: "",
+    user_id: "", // Add a default value or fetch the actual user id as needed
     smoke_duration: "",
     cigarettes_per_day: 0,
     price_each: 0,
@@ -42,119 +42,147 @@ const user_survey: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl mx-auto px-4 py-8 text-black">
-      <h1 className="text-3xl font-extrabold text-center text-green-700 mb-2">
-        KHẢO SÁT TẦN SUẤT SỬ DỤNG
-      </h1>
+    <div className="bg-white border-green-400 shadow-md rounded-xl p-6 border">
+      <form onSubmit={handleSubmit} className="max-w-6xl mx-auto px-6 py-12 text-black">
+        <h1 className="text-5xl font-extrabold text-center text-green-700 mb-10">
+          SURVEY OF FREQUENCY OF USE
+        </h1>
 
-      <label className="block text-xl font-bold mb-1">Thông tin cá nhân</label>
-      <input
-        name="user_id"
-        type="text"
-        value={formData.user_id}
-        onChange={handleChange}
-        placeholder="User ID"
-        className="w-full border-2 border-green-300 rounded px-3 py-2 mb-4"
-      />
+        <label className="block text-3xl font-bold mb-3">Smoking duration</label>
 
-      <input
-        name="smoke_duration"
-        placeholder="Thời gian hút thuốc (vd: 3 năm)"
-        value={formData.smoke_duration}
-        onChange={handleChange}
-        className="w-full p-2 border border-green-400 rounded mb-3"
-      />
-
-      <div className="flex items-center gap-2 mb-3">
-        <label className="min-w-[100px]">Số điếu</label>
         <input
-          name="cigarettes_per_day"
-          type="number"
-          value={formData.cigarettes_per_day}
+          name="smoke_duration"
+          placeholder="Ex: 5 years, 10 months"
+          value={formData.smoke_duration}
           onChange={handleChange}
-          className="w-24 p-2 border border-green-400 rounded text-center"
+          className="w-full p-2 text-xl border border-green-400 rounded mb-3"
         />
-        <span>/ngày</span>
-      </div>
 
-      <div className="flex items-center gap-2 mb-3">
-        <label className="min-w-[100px]">Giá tiền</label>
-        <input
-          name="price_each"
-          type="number"
-          value={formData.price_each}
-          onChange={handleChange}
-          className="w-24 p-2 border border-green-400 rounded text-center"
-        />
-        <span>/điếu</span>
-      </div>
+        <div className="flex items-center text-xl gap-2 mb-3">
+          <label className="min-w-[150px]">Number of packs</label>
+          <input
+            name="cigarettes_per_day"
+            type="number"
+            value={formData.cigarettes_per_day}
+            onChange={handleChange}
+            className="w-24 p-2 border border-green-400 rounded text-center"
+          />
+          <span>/day</span>
+        </div>
 
-      <label className="flex items-center gap-2 mb-3">
-        <input
-          type="checkbox"
-          name="tried_to_quit"
-          checked={formData.tried_to_quit}
-          onChange={handleChange}
-          className="accent-green-500"
-        />
-        Bạn đã từng cố bỏ thuốc chưa?
-      </label>
+        <div className="flex items-center text-xl gap-2 mb-3">
+          <label className="min-w-[150px]">Price</label>
+          <input
+            name="price_each"
+            type="number"
+            value={formData.price_each}
+            onChange={handleChange}
+            className="w-24 p-2 border border-green-400 rounded text-center"
+          />
+          <span>/packs</span>
+        </div>
 
-      <textarea
-        name="reasons_cant_quit"
-        placeholder="Lí do chưa thể bỏ thuốc hoàn toàn"
-        value={formData.reasons_cant_quit}
-        onChange={handleChange}
-        className="w-full p-2 border border-green-400 rounded mb-3"
-      />
+        <label className="flex items-center text-xl gap-2 mb-4">
+          <input
+            type="checkbox"
+            name="tried_to_quit"
+            checked={formData.tried_to_quit}
+            onChange={handleChange}
+            className="accent-green-500"
+          />
+          Have you ever tried to quit smoking?
+        </label>
 
-      <textarea
-        name="health_status"
-        placeholder="Tình trạng sức khỏe hiện tại"
-        value={formData.health_status}
-        onChange={handleChange}
-        className="w-full p-2 border border-green-400 rounded mb-6"
-      />
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Cột trái */}
+          <div className="space-y-4">
+            <label className="block text-3xl font-bold mb-3">Reasons</label>
+            <div className="space-y-2 mb-4">
+              {['Stress', 'Habits', 'Lack of support', 'Other'].map((reason) => (
+                <label key={reason} className="flex items-center text-xl space-x-2">
+                  <input
+                    type="checkbox"
+                    name="reasons_cant_quit"
+                    value={reason}
+                    checked={formData.reasons_cant_quit === reason}
+                    onChange={(e) =>
+                      setFormData({ ...formData, reasons_cant_quit: e.target.value })
+                    }
+                    className="accent-green-500"
+                  />
+                  <span>{reason}</span>
+                </label>
+              ))}
+            </div>
+          </div>
 
-      <label className="block text-xl font-bold mb-2">Mức độ phụ thuộc</label>
-      <div className="flex items-center gap-4 mb-6">
-        <span>Nhẹ</span>
-        {[1, 2, 3, 4, 5].map((level) => (
-          <div
-            key={level}
-            className={`w-8 h-8 rounded-full cursor-pointer transition ${formData.dependency_level === level
+          {/* Cột phải */}
+
+          <div className="space-y-4">
+            <label className="block text-3xl font-bold mb-3">Health status</label>
+            <div className="space-y-2 mb-4">
+              {['Good', 'Average', 'Poor'].map((status) => (
+                <label key={status} className="flex items-center text-xl space-x-2">
+                  <input
+                    type="checkbox"
+                    name="health_status"
+                    value={status}
+                    checked={formData.health_status === status}
+                    onChange={(e) =>
+                      setFormData({ ...formData, health_status: e.target.value })
+                    }
+                    className="accent-green-500"
+                  />
+                  <span>{status}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <label className="block text-3xl font-bold mb-3">Dependency level</label>
+        <div className="flex items-center text-xl gap-4 mb-6">
+          <span>Mild</span>
+          {[1, 2, 3, 4, 5].map((level) => (
+            <div
+              key={level}
+              className={`w-8 h-8 rounded-full cursor-pointer transition ${formData.dependency_level === level
                 ? "bg-green-600"
                 : "bg-green-200 hover:bg-green-400"
-              }`}
-            onClick={() => handleDependencyClick(level)}
-          />
-        ))}
-        <span>Nặng</span>
-      </div>
+                }`}
+              onClick={() => handleDependencyClick(level)}
+            />
+          ))}
+          <span>Severe</span>
+        </div>
 
-      <textarea
-        name="note"
-        placeholder="Ghi chú thêm (nếu có)"
-        value={formData.note}
-        onChange={handleChange}
-        className="w-full p-2 border border-green-500 rounded mb-6"
-      />
+        <label className="block text-3xl font-bold mb-4">Notes (optional)</label>
+        <textarea
+          name="note"
+          placeholder="You can add notes about your smoking habits or any other information you would like to share"
+          value={formData.note}
+          onChange={handleChange}
+          className="w-full p-2 text-xl border border-green-500 rounded mb-6"
+        />
 
-      <div className="text-center">
-        <p className="text-lg text-gray-700 mb-4">
-          Cảm ơn bạn đã tham gia khảo sát!<br />
-          Chúng tôi sẽ sử dụng thông tin này để giúp đỡ bạn.
-        </p>
-        <button
-          className="bg-emerald-600 text-white px-6 py-2 rounded-full text-sm font-medium"
-          onClick={() => console.log(formData)}
-        >
-          Gửi khảo sát
-        </button>
-      </div>
+        <div className="text-center">
+          <p className="text-xl text-gray-700 mb-4">
+            Thank you for taking the survey!<br />
+            Your feedback is valuable for us.
+          </p>
+          <button
+            className="bg-emerald-600 text-xl text-white px-6 py-2 rounded-full text-sm font-medium"
+            onClick={() => console.log(formData)}
+          >
+            Submit
+          </button>
+        </div>
 
 
-    </form>
+      </form>
+
+    </div>
+
   );
 };
 

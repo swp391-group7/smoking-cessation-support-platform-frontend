@@ -9,6 +9,7 @@ import Quit_Survey from "./pages/platform/quit_survey.tsx";
 import UserSurvey from "./pages/platform/user_survey.tsx";
 import BlogPost from "./pages/platform/blog.tsx";
 
+// import UserProfile from "./pages/platform/user_profile.tsx";
 
 
 
@@ -22,6 +23,7 @@ export const App = () => (
         {/* Public routes */}       
         <Route path="login" element={<LoginForm/>} />
         <Route path="register" element={<SignUpForm />} />
+        {/* <Route path="user_profile" element={<UserProfile />} /> */}
         
         <Route path="quit_progress" element={<Quit_Progress/>} />
         <Route path="quit_survey" element={<Quit_Survey/>} />

@@ -31,9 +31,8 @@ export const QuitDropdown: React.FC = () => {
           Quit
           {/* Icon xoay ngược khi open === true */}
           <ChevronDown
-            className={`ml-1 h-4 w-4 transform transition-transform ${
-              open ? "rotate-180" : ""
-            }`}
+            className={`ml-1 h-4 w-4 transform transition-transform ${open ? "rotate-180" : ""
+              }`}
           />
         </button>
       </DropdownMenuTrigger>
@@ -59,6 +58,7 @@ export const QuitDropdown: React.FC = () => {
             Cessation Progress
           </NavLink>
         </DropdownMenuItem>
+
         <DropdownMenuItem asChild>
           <NavLink
             to="/quit_survey"
@@ -67,6 +67,16 @@ export const QuitDropdown: React.FC = () => {
             Quit Plan
           </NavLink>
         </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <NavLink
+            to="/user_survey"
+            className="block w-full px-2 py-1 text-sm text-gray-700 hover:bg-emerald-100"
+          >
+            User Survey
+          </NavLink>
+        </DropdownMenuItem>
+        
       </DropdownMenuContent>
     </DropdownMenu>
   );
