@@ -8,7 +8,7 @@ type DailyFormValues = {
   numCigarettes: number;
 };
 
-export default function Quit_Plan() {
+export default function Quit_Progress() {
   const { register, handleSubmit, setValue, reset } = useForm<DailyFormValues>();
   const [smokedToday, setSmokedToday] = useState<boolean | null>(null);
   const [submitted, setSubmitted] = useState(false);

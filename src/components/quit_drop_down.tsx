@@ -53,7 +53,7 @@ export const QuitDropdown: React.FC = () => {
       >
         <DropdownMenuItem asChild>
           <NavLink
-            to="/quit_plan"
+            to="/quit_progress"
             className="block w-full px-2 py-1 text-sm text-gray-700 hover:bg-emerald-100"
           >
             Cessation Progress
