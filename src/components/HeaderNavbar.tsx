@@ -20,12 +20,12 @@ interface User {
 const midSections = [
 
   { id: "hero", label: "Home" },
-  { id: "harms", label: "harmful" },
+  { id: "harms", label: "AirBloom" },
   
-  { id: "benefits", label: "Benefit" },
-  { id: "why", label: "Why AirBloom" },
-  { id: "guide", label: "Route" },
-  { id: "contact", label: "Contact" },
+  { id: "benefits", label: "Benefits" },
+  { id: "why", label: "About us" },
+  { id: "guide", label: "Journey" },
+  { id: "contact", label: "FAQs" },
 ];
 
 export const HeaderNavbar: React.FC = () => {
