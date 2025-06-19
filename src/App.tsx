@@ -8,6 +8,7 @@ import Quit_Progress from "./pages/platform/quit_progress.tsx";
 import Quit_Plan from "./pages/platform/quit_plan.tsx";
 import UserSurvey from "./pages/platform/user_survey.tsx";
 import BlogPost from "./pages/platform/blog.tsx";
+import UserInfo from "./pages/platform/user_info.tsx";
 
 // import UserProfile from "./pages/platform/user_profile.tsx";
 
@@ -31,6 +32,7 @@ export const App = () => (
         {/* 404: tự redirect về home */}
         <Route path="*" element={<Navigate to="/" replace />} />
         <Route path="user_survey" element={<UserSurvey />} />
+        <Route path="user_info" element={<UserInfo />} />
       </Route>
     </Routes>
   </Router> 
