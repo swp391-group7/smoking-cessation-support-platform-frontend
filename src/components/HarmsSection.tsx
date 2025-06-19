@@ -34,7 +34,7 @@ export const HarmsSection: React.FC = () => {
           a guided journey to a smoke-free life, improved health and a clearer mind.
         </motion.p>
 
-        <motion.button
+        {/* <motion.button
           className="bg-emerald-600 text-white px-6 py-3 rounded-full text-sm font-medium shadow-lg hover:bg-emerald-700 transition"
           initial="hidden"
           whileInView="visible"
@@ -43,7 +43,7 @@ export const HarmsSection: React.FC = () => {
           variants={itemVariants}
         >
           Start Your Journey
-        </motion.button>
+        </motion.button> */}
       </div>
 
       <div className="mt-16 border-t pt-10">
