@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Stage, PlanType } from "@/api/plantype";
@@ -19,54 +19,12 @@ interface PlanFormType {
 }
 
 export const PlanForm: React.FC<PlanFormProps> = ({ planType, onBack }) => {
-  const { register, handleSubmit, control, watch, setValue, reset } = useForm<PlanFormType>();
+  const { register, handleSubmit, control, watch, reset } = useForm<PlanFormType>();
   const [stages, setStages] = useState<Stage[]>([]);
 
   const today = new Date();
   const overallStart = watch("overallStart");
   const overallEnd = watch("overallEnd");
-
-  useEffect(() => {
-    if (planType === "FAST" && overallStart) {
-      const startDate = new Date(overallStart);
-      const endDate = new Date(startDate);
-      endDate.setDate(startDate.getDate() + 56);
-      setValue("overallEnd", endDate);
-
-      const defaultStages: Stage[] = [
-        {
-          id: "stage-1",
-          title: "Giảm Liều",
-          description: "Cắt giảm 50% số liều",
-          start: new Date(startDate),
-          end: new Date(startDate.getTime() + 14 * 86400000),
-        },
-        {
-          id: "stage-2",
-          title: "Giảm Ngày",
-          description: "Cắt giảm 50% số ngày hút",
-          start: new Date(startDate.getTime() + 15 * 86400000),
-          end: new Date(startDate.getTime() + 28 * 86400000),
-        },
-        {
-          id: "stage-3",
-          title: "Kiêng Ngắn Ngày",
-          description: "Sau 1 tuần mới được sử dụng thuốc lá",
-          start: new Date(startDate.getTime() + 29 * 86400000),
-          end: new Date(startDate.getTime() + 42 * 86400000),
-        },
-        {
-          id: "stage-4",
-          title: "Kết Thúc",
-          description: "Dừng hoàn toàn việc sử dụng thuốc",
-          start: new Date(startDate.getTime() + 43 * 86400000),
-          end: new Date(startDate.getTime() + 56 * 86400000),
-        },
-      ];
-
-      setStages(defaultStages);
-    }
-  }, [planType, overallStart, setValue]);
 
   const onSubmit = (data: PlanFormType) => {
     console.log("Plan Info:", data, "Stages:", stages);
@@ -97,13 +55,10 @@ export const PlanForm: React.FC<PlanFormProps> = ({ planType, onBack }) => {
   };
 
   const removeStage = (id: string) => {
-    if (planType === "FAST") return;
     setStages((prev) => prev.filter((s) => s.id !== id));
   };
 
   const updateStage = (id: string, field: keyof Stage, value: any) => {
-    if (planType === "FAST") return;
-
     setStages((prev) =>
       prev.map((s) => {
         if (s.id !== id) return s;
@@ -142,7 +97,7 @@ export const PlanForm: React.FC<PlanFormProps> = ({ planType, onBack }) => {
       <div className="bg-white p-6 rounded-lg shadow-lg space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-gray-800">
-            {planType === "FAST" ? "FAST Plan" : "OPTIONAL Plan"}
+            Gradual Reduction Plan
           </h2>
           <Button onClick={onBack} variant="default" size="sm">
             Quay lại
@@ -180,7 +135,7 @@ export const PlanForm: React.FC<PlanFormProps> = ({ planType, onBack }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Ngày dự kiến cai {planType === "OPTIONAL" && "(tối thiểu 8 tuần)"}
+              Ngày dự kiến cai (tối thiểu 8 tuần)
             </label>
             <Controller
               control={control}
@@ -189,29 +144,18 @@ export const PlanForm: React.FC<PlanFormProps> = ({ planType, onBack }) => {
                 <DatePicker
                   selected={field.value}
                   onChange={field.onChange}
-                  minDate={planType === "OPTIONAL" ? getMinEndDate() : overallStart || today}
+                  minDate={getMinEndDate()}
                   className="mt-2 w-full border border-gray-300 rounded-md p-2"
                   placeholder="Chọn ngày"
-                  readOnly={planType === "FAST"}
-                  disabled={planType === "FAST"}
                 />
               )}
             />
           </div>
         </div>
 
-        {planType === "FAST" && overallStart && (
-          <motion.div className="bg-blue-50 p-4 rounded-lg" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <h3 className="font-medium text-blue-800">Kế hoạch FAST - 4 giai đoạn</h3>
-            <p className="text-sm text-blue-600">8 tuần, không chỉnh sửa.</p>
-          </motion.div>
-        )}
-
-        {planType === "OPTIONAL" && (
-          <Button onClick={addStage} disabled={!overallStart || !overallEnd} className="bg-blue-500 hover:bg-blue-600">
-            + Thêm giai đoạn
-          </Button>
-        )}
+        <Button onClick={addStage} disabled={!overallStart || !overallEnd} className="bg-blue-500 hover:bg-blue-600">
+          + Thêm giai đoạn
+        </Button>
 
         <AnimatePresence>
           <div className="mt-4 space-y-4">
