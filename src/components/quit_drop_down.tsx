@@ -61,7 +61,7 @@ export const QuitDropdown: React.FC = () => {
 
         <DropdownMenuItem asChild>
           <NavLink
-            to="/quit_survey"
+            to="/quit_plan"
             className="block w-full px-2 py-1 text-sm text-gray-700 hover:bg-emerald-100"
           >
             Quit Plan
