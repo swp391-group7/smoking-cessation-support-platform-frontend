@@ -27,18 +27,14 @@ const Home: React.FC = () => {
   }, [location.hash]); // chạy mỗi khi hash thay đổi
 
   return (
-    <> 
     
-      <HeroSection />
-      <HarmsSection />
+    <> 
       
+      <HeroSection />
+      <HarmsSection />    
       <BenefitsSection />
-
       <WhyChooseSection />
       <QuitGuideSection />
-
-    
-
       <ContactSection />
     </>
   );

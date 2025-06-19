@@ -70,17 +70,17 @@ const HeroSection = () => {
 
         {/* Floating Icons */}
         <div className="flex justify-center gap-6 mt-12">
-          <motion.div {...textFloat}>
+          <motion.div className="flex flex-col items-center" {...textFloat}>
             <RefreshCw size={50} className="text-green-600 mb-2" />
-            <span className="text-sm font-semibold text-green-600">Journey of Change</span>
+            <span className="text-sm font-semibold text-green-600 text-center">Journey of Change</span>
           </motion.div>
-          <motion.div {...textFloat} transition={{ delay: 0.4, ...textFloat.transition }}>
+          <motion.div className="flex flex-col items-center" {...textFloat} transition={{ delay: 0.4, ...textFloat.transition }}>
             <Leaf size={50} className="text-green-600 mb-2" />
-            <span className="text-sm font-semibold text-green-600">Fresh Air Freedom</span>
+            <span className="text-sm font-semibold text-green-600 text-center">Fresh Air Freedom</span>
           </motion.div>
-          <motion.div {...textFloat} transition={{ delay: 0.8, ...textFloat.transition }}>
+          <motion.div className="flex flex-col items-center" {...textFloat} transition={{ delay: 0.8, ...textFloat.transition }}>
             <HeartPulse size={50} className="text-green-600 mb-2" />
-            <span className="text-sm font-semibold text-green-600">Lasting Health</span>
+            <span className="text-sm font-semibold text-green-600 text-center">Lasting Health</span>
           </motion.div>
         </div>
       </div>

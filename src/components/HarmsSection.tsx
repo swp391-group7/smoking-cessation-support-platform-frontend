@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Users, DollarSign } from 'lucide-react';
-import AnimatedElements from './AnimatedElements';
+
 
 export const HarmsSection: React.FC = () => {
   const itemVariants = {
@@ -11,7 +11,7 @@ export const HarmsSection: React.FC = () => {
   
   return (
     <section className="px-4 py-20 bg-green-50 font-serif" id="harms">
-        <AnimatedElements />
+       
       <div className="max-w-4xl mx-auto text-center">
         <motion.h1
           className="text-6xl font-semibold leading-tight mb-6 text-gray-800"
