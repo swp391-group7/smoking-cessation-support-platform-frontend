@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
-// Membership tiers
+// Membership tiers (Giữ nguyên)
 const memberships = [
   {
     name: 'Free Plan',
@@ -25,7 +25,7 @@ const memberships = [
   }
 ];
 
-// Quit steps
+// Quit steps (Giữ nguyên)
 const steps = [
   {
     title: 'Step 1: Survey & Self-Assessment',
@@ -46,11 +46,27 @@ const steps = [
 ];
 
 const QuitGuideSection: React.FC = () => {
+  // Animation variants for each step - Tăng duration, sử dụng easeOut
+  const stepVariants = {
+    hidden: (idx: number) => ({
+      opacity: 0,
+      x: idx % 2 === 0 ? -120 : 120, // Tăng khoảng cách di chuyển một chút
+    }),
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.9, // Tăng thời lượng animation lên 0.9 giây (mượt hơn)
+        ease: "easeOut", // Kiểu easeOut cho chuyển động tự nhiên
+      },
+    },
+  };
+
   return (
-    <section id="guide" className="py-16 bg-gradient-to-b from-green-50 via-white to-green-100 font-serif">
+    <section id="guide" className="py-16 bg-gradient-to-b from-green-50 via-white to-green-100 relative">
       <div className="max-w-5xl mx-auto px-4">
 
-        {/* Header animates once */}
+        {/* Header */}
         <motion.h2
           className="text-4xl font-bold text-green-700 text-center mb-6 tracking-tight"
           initial={{ opacity: 0, y: -20 }}
@@ -64,29 +80,53 @@ const QuitGuideSection: React.FC = () => {
           Follow these four essential steps to quit smoking effectively and sustainably.
         </p>
 
-        {/* Steps: static reveal once with hover effect */}
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
-          {steps.map((step, idx) => (
-            <motion.div
-              key={idx}
-              className="bg-white rounded-2xl shadow-lg border border-green-100 p-6 hover:shadow-2xl hover:scale-105 transition-transform duration-300"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-            >
-              <div className="flex items-start space-x-4">
-                <CheckCircleIcon className="w-7 h-7 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <h3 className="text-lg font-semibold text-green-800 mb-2">{step.title}</h3>
-                  <p className="text-gray-700">{step.content}</p>
+        {/* Steps: Timeline Layout with central line and alternating cards */}
+        <div className="relative mb-12">
+          {/* Vertical Line in the middle (hidden on small screens) */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-green-300 rounded-full h-full hidden md:block z-0"></div>
+
+          {/* Container for all steps, stacking them vertically */}
+          <div className="flex flex-col items-center space-y-8 md:space-y-12">
+            {steps.map((step, idx) => (
+              <motion.div
+                key={idx}
+                // Apply custom variants and set custom prop 'idx'
+                variants={stepVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: false, amount: 0.4 }} // Giảm amount xuống 0.4 để animation bắt đầu sớm hơn một chút
+                custom={idx} // Pass index as custom prop to variants
+                // Điều chỉnh transition delay cho hiệu ứng tuần tự
+                transition={{ delay: idx * 0.2 }} // Tăng độ trễ giữa các bước lên 0.2 giây
+                className={`relative w-full max-w-lg md:max-w-none md:w-1/2 flex items-center z-10 ${
+                  idx % 2 === 0 // Even index: for the left side
+                    ? 'md:self-start md:pr-8'
+                    : 'md:self-end md:pl-8'
+                }`}
+              >
+                {/* Step Card */}
+                <div
+                  className={`bg-white rounded-2xl shadow-lg border border-green-100 p-6 w-full hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300 ${
+                    idx % 2 === 0 ? 'md:text-right' : 'md:text-left'
+                  }`}
+                >
+                  <div className={`flex items-center space-x-4 mb-3 ${idx % 2 === 0 ? 'md:flex-row-reverse md:space-x-reverse' : ''}`}>
+                    <CheckCircleIcon className="w-7 h-7 text-green-600 flex-shrink-0" />
+                    <h3 className="text-lg font-semibold text-green-800">{step.title}</h3>
+                  </div>
+                  <p className="text-gray-700 text-sm md:text-base">{step.content}</p>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+
+                {/* Connector Dot (hidden on small screens, appears on md+) */}
+                <div className="absolute top-1/2 transform -translate-y-1/2 w-6 h-6 bg-green-500 rounded-full border-4 border-white hidden md:block z-20"
+                     style={idx % 2 === 0 ? { right: '-12px' } : { left: '-12px' }}>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
-        {/* Membership plans: static reveal once with hover */}
+        {/* Membership plans (Giữ nguyên) */}
         <div className="mb-8">
           <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">Membership Plans</h3>
           <div className="flex flex-col sm:flex-row justify-center items-stretch gap-6">

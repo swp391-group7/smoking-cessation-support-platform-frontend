@@ -48,7 +48,7 @@ const feedbacks: Feedback[] = [
 
 const FeedbackSection: React.FC = () => {
   return (
-    <section className="py-24 bg-gray-50">
+    <section className="py-24 bg-green-50">
       <div className="max-w-7xl mx-auto px-6">
         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-10 text-center">
           Why People Choose AirBloom

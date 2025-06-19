@@ -77,7 +77,7 @@ const stats = [
 
 const WhyChooseSection: React.FC = () => {
   return (
-    <section id="why" className="py-24 bg-gray-50">
+    <section id="why" className="py-24 bg-green-50 font-sans">
       <div className="max-w-7xl mx-auto px-6">
         {/* Section header */}
         <motion.div
