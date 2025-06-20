@@ -42,7 +42,7 @@ const AnimatedElements = () => {
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
         initial={{ scale: 0, opacity: 0.5 }}
         animate={{
-          scale: [0, 1.2, 1.5],
+          scale: [0, 1],
           opacity: [0.5, 0.2, 0],
           transition: {
             duration: 4,
@@ -61,7 +61,7 @@ const AnimatedElements = () => {
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
         initial={{ scale: 0, opacity: 0.4 }}
         animate={{
-          scale: [0, 1, 1.3],
+          scale: [0, 1],
           opacity: [0.4, 0.1, 0],
           transition: {
             duration: 4,

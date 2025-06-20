@@ -1,6 +1,6 @@
 // src/components/QuitDropdown.tsx
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Navigate, NavLink, Route, Router } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -25,6 +25,7 @@ export const ResourcDropdown: React.FC = () => {
           // Khi chuột rời khỏi button, tạm thời setOpen(false) 
           // Nhưng nếu người dùng di chuột xuống menu content thì 
           // sẽ bị đóng quá sớm. Chúng ta sẽ bổ sung onMouseEnter/onMouseLeave cho Content.
+          
           onMouseLeave={() => setOpen(false)}
           className="flex items-center px-3 py-1 rounded-2xl text-gray-800 hover:bg-emerald-100"
         >

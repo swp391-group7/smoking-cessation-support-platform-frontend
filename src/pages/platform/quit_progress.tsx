@@ -5,7 +5,7 @@ import ProgressChart from '../../components/ProgressChart';
 import HistorySidebar from '../../components/HistorySidebar';
 import RemindersSidebar from '../../components/RemindersSidebar';
 import BadgesSidebar from '../../components/BadgesSidebar';
-import AnimatedElements from '@/components/AnimatedElements';
+
 
 type DailyFormValues = {
   numCigarettes: number;
@@ -71,7 +71,7 @@ export default function Quit_Progress() {
 
   return (
     <div className="flex p-6 gap-6 bg-gray-50 min-h-screen">
-      <AnimatedElements />
+      
       {/* Left Main Content */}
       <div className="flex-1 space-y-6">
         <ProgressOverview 
