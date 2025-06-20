@@ -1,8 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from './ui/button'; // Import Button từ Shadcn UI
+import { useNavigate, NavLink } from "react-router-dom";
+
 
 const CTAButton = () => {
+  const navigate = useNavigate();
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
@@ -13,7 +16,7 @@ const CTAButton = () => {
     >
       <Button
         className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-10 rounded-full text-xl shadow-lg transition-all duration-300 ease-in-out"
-        onClick={() => console.log('CTA Clicked!')}
+        onClick={() => navigate('/user_survey')} // Thay đổi đường dẫn nếu cần
       >
         Start your journey now!
       </Button>

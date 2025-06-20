@@ -1,6 +1,6 @@
 // src/components/QuitDropdown.tsx
 import React, { useState } from "react";
-import { Navigate, NavLink, Route, Router } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
