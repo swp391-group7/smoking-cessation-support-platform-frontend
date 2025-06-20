@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Users, DollarSign } from 'lucide-react';
 
+
 export const HarmsSection: React.FC = () => {
   const itemVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -9,7 +10,8 @@ export const HarmsSection: React.FC = () => {
   };
   
   return (
-    <section className="px-4 py-20 bg-white font-serif" id="harms">
+    <section className="px-4 py-20 bg-green-50 font-serif" id="harms">
+       
       <div className="max-w-4xl mx-auto text-center">
         <motion.h1
           className="text-6xl font-semibold leading-tight mb-6 text-gray-800"
@@ -34,7 +36,7 @@ export const HarmsSection: React.FC = () => {
           a guided journey to a smoke-free life, improved health and a clearer mind.
         </motion.p>
 
-        <motion.button
+        {/* <motion.button
           className="bg-emerald-600 text-white px-6 py-3 rounded-full text-sm font-medium shadow-lg hover:bg-emerald-700 transition"
           initial="hidden"
           whileInView="visible"
@@ -43,7 +45,7 @@ export const HarmsSection: React.FC = () => {
           variants={itemVariants}
         >
           Start Your Journey
-        </motion.button>
+        </motion.button> */}
       </div>
 
       <div className="mt-16 border-t pt-10">

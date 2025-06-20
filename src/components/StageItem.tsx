@@ -19,7 +19,7 @@ export function StageItem({
   onUpdate,
   onRemove
 }: StageItemProps) {
-  const isReadonly = planType === "FAST"
+  const isReadonly = planType === "Cold Turkey"
 
   return (
     <motion.div

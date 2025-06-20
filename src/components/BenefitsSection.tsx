@@ -38,7 +38,7 @@ const BenefitsSection: React.FC = () => {
   const { videoId, title, desc } = testimonials[current];
 
   return (
-    <section id="benefits" className="bg-white py-16">
+    <section id="benefits" className="bg-green-50 py-16">
       <div className="max-w-6xl mx-auto px-6">
         {/* Hero Banner */}
         <motion.div

@@ -4,9 +4,10 @@ import { Card } from "@/components/ui/card"
 
 interface PlanTypeSelectorProps {
   onSelectPlanType: (type: PlanType) => void
+  onColdTurkeySelect: () => void
 }
 
-export function PlanTypeSelector({ onSelectPlanType }: PlanTypeSelectorProps) {
+export function PlanTypeSelector({ onSelectPlanType, onColdTurkeySelect }: PlanTypeSelectorProps) {
   return (
     <div className="flex items-center justify-center min-h-[80vh] px-4">
       <motion.div
@@ -16,11 +17,11 @@ export function PlanTypeSelector({ onSelectPlanType }: PlanTypeSelectorProps) {
         transition={{ duration: 0.5 }}
       >
         <Card
-          onClick={() => onSelectPlanType("FAST")}
+          onClick={onColdTurkeySelect}
           className="cursor-pointer bg-blue-50 hover:shadow-md hover:scale-[1.01] transition-all border-2 border-blue-200"
         >
           <div className="p-6 space-y-4">
-            <h3 className="text-xl font-bold text-blue-600">FAST</h3>
+            <h3 className="text-xl font-bold text-blue-600">Cold Turkey</h3>
             <ul className="list-disc list-inside text-muted-foreground space-y-1">
               <li>Plan by coaches and doctors</li>
               <li>Auto-tailored schedule</li>
@@ -32,11 +33,11 @@ export function PlanTypeSelector({ onSelectPlanType }: PlanTypeSelectorProps) {
         </Card>
 
         <Card
-          onClick={() => onSelectPlanType("OPTIONAL")}
+          onClick={() => onSelectPlanType("Gradual Reduction")}
           className="cursor-pointer bg-green-50 hover:shadow-md hover:scale-[1.01] transition-all border-2 border-green-200"
         >
           <div className="p-6 space-y-4">
-            <h3 className="text-xl font-bold text-green-600">OPTIONAL</h3>
+            <h3 className="text-xl font-bold text-green-600">Gradual Reduction</h3>
             <ul className="list-disc list-inside text-muted-foreground space-y-1">
               <li>Flexible health-based schedule</li>
               <li>Adapts to mood/preferences</li>

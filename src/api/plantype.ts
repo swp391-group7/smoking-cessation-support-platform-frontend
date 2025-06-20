@@ -12,4 +12,4 @@ export type PlanForm = {
   overallEnd: Date | null;
 };
 
-export type PlanType = "FAST" | "OPTIONAL";
+export type PlanType = "Cold Turkey" | "Gradual Reduction";
