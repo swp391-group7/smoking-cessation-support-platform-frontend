@@ -32,7 +32,7 @@ export const App = () => (
         {/* 404: tự redirect về home */}
         <Route path="*" element={<Navigate to="/" replace />} />
         <Route path="user_survey" element={<UserSurvey />} />
-        <Route path="user_info" element={<UserInfo />} />
+        <Route path="/user_info" element={<UserInfo />} />
       </Route>
     </Routes>
   </Router> 
