@@ -1,5 +1,6 @@
 // src/App.tsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "sonner";
 import MainLayout from "./layout";
 import Home from "./pages/home";
 import LoginForm from './components/login-form.tsx'
@@ -15,26 +16,28 @@ import UserInfo from "./pages/platform/user_info.tsx";
 
 
 export const App = () => (
- 
-  <Router>
-    <Routes>
-      <Route path="/" element={<MainLayout />}>
-        {/* Trang chính */}
-        <Route index element={<Home />} />
-        {/* Public routes */}       
-        <Route path="login" element={<LoginForm/>} />
-        <Route path="register" element={<SignUpForm />} />
-        {/* <Route path="user_profile" element={<UserProfile />} /> */}
-        
-        <Route path="quit_progress" element={<Quit_Progress/>} />
-        <Route path="quit_plan" element={<Quit_Plan/>} />
-        <Route path="blog" element={<BlogPost/>} />
-        {/* 404: tự redirect về home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-        <Route path="user_survey" element={<UserSurvey />} />
-        <Route path="/user_info" element={<UserInfo />} />
-      </Route>
-    </Routes>
-  </Router> 
+  <>
+    <Toaster />
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          {/* Trang chính */}
+          <Route index element={<Home />} />
+          {/* Public routes */}
+          <Route path="login" element={<LoginForm />} />
+          <Route path="register" element={<SignUpForm />} />
+          {/* <Route path="user_profile" element={<UserProfile />} /> */}
+
+          <Route path="quit_progress" element={<Quit_Progress />} />
+          <Route path="quit_plan" element={<Quit_Plan />} />
+          <Route path="blog" element={<BlogPost />} />
+          {/* 404: tự redirect về home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="user_survey" element={<UserSurvey />} />
+          <Route path="/user_info" element={<UserInfo />} />
+        </Route>
+      </Routes>
+    </Router>
+  </>
 )
-export default App ;
+export default App;

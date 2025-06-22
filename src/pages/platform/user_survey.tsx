@@ -44,8 +44,8 @@ const user_survey: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-8 border border-green-100 ">
       <form onSubmit={handleSubmit} className="max-w-6xl mx-auto px-6 py-12 text-black">
-        <h1 className="text-4xl font-semibold text-center text-green-800 mb-10">
-          SURVEY OF FREQUENCY OF USE
+        <h1 className="text-4xl font-bold text-center text-green-800 mb-10">
+          Survey of frequency of use
         </h1>
 
         <label className="block text-2xl font-medium text-gray-700 mb-3">Smoking duration</label>

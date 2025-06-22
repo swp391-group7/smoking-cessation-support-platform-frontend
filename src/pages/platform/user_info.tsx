@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Pencil } from "lucide-react";
+import { toast } from "sonner";
 
 interface UserInfo {
   email: string;
@@ -49,11 +50,10 @@ export default function UserProfile() {
   const handleSave = async () => {
     try {
       await axios.put("/users/update-peronal-info", formData);
-      alert("Cập nhật thành công!");
+      toast.success("🎉 Cập nhật thành công!");
       setEditing(null);
     } catch (err) {
-      console.error(err);
-      alert("Cập nhật thất bại.");
+      toast.error("❌ Lỗi khi cập nhật thông tin.");
     }
   };
 
@@ -69,7 +69,7 @@ export default function UserProfile() {
     }
   };
 
-const renderField = (field: EditingField, label: string, type: string = "text") => (
+  const renderField = (field: EditingField, label: string, type: string = "text") => (
     <div className="flex items-center justify-between py-2">
       <div className="flex flex-col">
         <span className="text-sm font-medium text-gray-500">{label}</span>
@@ -102,30 +102,34 @@ const renderField = (field: EditingField, label: string, type: string = "text") 
       transition={{ duration: 0.5 }}
       className="container mx-auto p-4 md:p-8 max-w-2xl"
     >
-      <Card className="p-6 md:p-8 shadow-lg">
-        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Thông tin cá nhân</h1>
-
+      <Card className="p-6 md:p-8 shadow-lg border-green-100">
+        <h1 className="text-3xl font-bold mb-6 text-center text-green-800">Thông tin cá nhân</h1>
         <div className="flex flex-col items-center mb-6">
-          <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-blue-400 shadow-md mb-4">
-            {avatarPreview ? (
-              <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-6xl">
-                👤
-              </div>
-            )}
-            <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full cursor-pointer hover:bg-blue-600 transition-colors">
-              <Pencil className="h-4 w-4 text-white" />
-              <input
-                id="avatar-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarChange}
-              />
-            </label>
-          </div>
+
+          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+            <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-green-700 shadow-md mb-4">
+              {avatarPreview ? (
+                <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-green-700 text-5xl font-bold uppercase">
+                  {formData.fullName ? formData.fullName.charAt(0) : "?"}
+                </div>
+              )}
+              <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 bg-green-500 p-2 rounded-full cursor-pointer hover:bg-green-600 transition-colors">
+                <Pencil className="h-4 w-4 text-white" />
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
+              </label>
+            </div>
+          </motion.div>
+
           <span className="text-xl font-semibold text-gray-700">{formData.fullName || "Tên người dùng"}</span>
+
           <span className="text-md text-gray-500">{formData.email}</span>
         </div>
 
