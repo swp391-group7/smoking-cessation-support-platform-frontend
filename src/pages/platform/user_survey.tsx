@@ -65,10 +65,9 @@ const UserSurveyForm: React.FC = () => { // Đổi tên component thành PascalC
   // Và cập nhật onChange của checkbox group: onChange={handleCheckboxGroupChange}
 
   return (
-    // Giảm max-w và padding/margin tổng thể
-    <div className="max-w-3xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-6 border border-green-100">
-      <form onSubmit={handleSubmit} className="px-4 py-8 text-black"> {/* Giảm px và py */}
-        <h1 className="text-3xl font-semibold text-center text-green-800 mb-8"> {/* Giảm kích thước và margin-bottom */}
+    <div className="max-w-5xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-8 border border-green-100 ">
+      <form onSubmit={handleSubmit} className="max-w-6xl mx-auto px-6 py-12 text-black">
+        <h1 className="text-4xl font-semibold text-center text-green-800 mb-10">
           SURVEY OF FREQUENCY OF USE
         </h1>
 
