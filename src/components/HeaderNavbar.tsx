@@ -147,7 +147,7 @@ export const HeaderNavbar: React.FC = () => {
                         <button
                           onClick={() => {
                             setDropdownVisible(false);
-                            navigate("/profile");
+                            navigate("/user_info");
                           }}
                           className="w-full flex items-center px-3 py-2 hover:bg-gray-50 text-gray-700 text-sm"
                         >
