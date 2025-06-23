@@ -1,7 +1,6 @@
-// src/api/usersurveyApi.ts
 import axios from 'axios';
 
-// Tạo instance axios giống blogApi, gắn JWT tự động
+// Create an axios instance similar to blogApi, with automatic JWT attachment
 export const usersurveyApi = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
   headers: { 'Content-Type': 'application/json' },
@@ -15,7 +14,7 @@ usersurveyApi.interceptors.request.use(config => {
   return config;
 });
 
-// DTO trả về từ backend
+// DTO returned from backend for answers
 export interface AnswerDTO {
   id: string;
   answerText: string;
@@ -23,6 +22,7 @@ export interface AnswerDTO {
   createAt: string;
 }
 
+// DTO returned from backend for questions with answers
 export interface QuestionWithAnswersDTO {
   id: string;
   content: string;
@@ -30,6 +30,7 @@ export interface QuestionWithAnswersDTO {
   answers: AnswerDTO[];
 }
 
+// DTO returned from backend for survey details
 export interface SurveyDetailDTO {
   id: string;
   userId: string;
@@ -38,14 +39,47 @@ export interface SurveyDetailDTO {
   questions: QuestionWithAnswersDTO[];
 }
 
+// Request DTO for creating a new survey (matches API schema)
+export interface CreateSurveyRequest {
+  smokeDuration: string;
+  cigarettesPerDay: number;
+  priceEach: number;
+  triedToQuit: boolean;
+  healthStatus: string;
+  a1: string; // Answer text for question 1
+  a2: string; // Answer text for question 2
+  a3: string; // Answer text for question 3
+  a4: string; // Answer text for question 4
+  a5: string; // Answer text for question 5
+  a6: string; // Answer text for question 6
+  a7: string; // Answer text for question 7
+  a8: string; // Answer text for question 8
+  dependencyLevel: number;
+  note: string;
+}
+
 /**
- * Lấy chi tiết survey (câu hỏi + đáp án) theo surveyId
+ * Fetches survey details (questions + answers) by surveyId.
  */
 export async function getSurveyDetailById(
   surveyId: string
 ): Promise<SurveyDetailDTO> {
   const { data } = await usersurveyApi.get<SurveyDetailDTO>(
     `/surveys/${surveyId}/detail`
+  );
+  return data;
+}
+
+/**
+ * Creates a new smoke survey.
+ * @param surveyData The data for the new survey.
+ */
+export async function createSurvey(
+  surveyData: CreateSurveyRequest
+): Promise<SurveyDetailDTO> { // Changed from 'any' to 'SurveyDetailDTO'
+  const { data } = await usersurveyApi.post<SurveyDetailDTO>(
+    '/user-surveys/create-survey',
+    surveyData
   );
   return data;
 }
