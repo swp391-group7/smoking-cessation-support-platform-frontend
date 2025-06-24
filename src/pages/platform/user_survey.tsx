@@ -3,11 +3,15 @@ import type { SurveyDetailDTO, CreateSurveyRequest, GetSurveyRequest } from "@/a
 import { getSurveyDetailById, createSurvey, getSurveyByUserId } from "@/api/usersurveyApi";
 import { AxiosError } from "axios"; // Import AxiosError
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
+import { useNavigate } from 'react-router-dom';
 
 // ID khảo sát cố định
 const FIXED_SURVEY_ID = "bff1b96e-74e9-46a3-b46e-1b625531c1ad";
 
 type SurveyKey = "a1" | "a2" | "a3" | "a4" | "a5" | "a6" | "a7" | "a8";
+
+
+
 
 interface FullSurvey {
   smoke_duration: string;
@@ -246,7 +250,11 @@ const UserSurveyForm: React.FC = () => {
     setSubmissionError(null);
     setIsSubmitted(false);
   };
+  const navigate = useNavigate();
+  const handleNextStep = () => {
 
+    navigate('/quit_plan'); // React Router
+  };
 
   // Hiển thị loading khi đang kiểm tra survey
   if (isCheckingExistingSurvey) {
@@ -271,7 +279,7 @@ const UserSurveyForm: React.FC = () => {
         <p className="text-lg text-gray-800 mb-6">{checkSurveyError}</p>
         <button
           onClick={handleRetryCheck}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+          className="bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-800 transition"
         >
           Thử lại
         </button>
@@ -332,11 +340,20 @@ const UserSurveyForm: React.FC = () => {
           <p className="text-gray-600 text-sm mb-4">
             Cảm ơn bạn đã tham gia khảo sát. Nếu có thay đổi, vui lòng liên hệ với chúng tôi.
           </p>
+          <div className="flex justify-center gap-4 mb-4">
+            <button
+              onClick={handleNextStep}
+              className="bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-800 transition"
+            >
+              Tiếp tục lên kế hoạch →
+            </button>
+          </div>
+
 
           {/* Nút khảo sát lại với AlertDialog */}
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <button className="bg-emerald-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-700 transition">
+              <button className="bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-800 transition">
                 Bạn có muốn khảo sát lại không?
               </button>
             </AlertDialogTrigger>
@@ -356,7 +373,7 @@ const UserSurveyForm: React.FC = () => {
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleConfirmResurvey}
-                  className="bg-emerald-600 text-white hover:bg-emerald-800 transition rounded-md px-4 py-2"
+                  className="bg-emerald-700 text-white hover:bg-emerald-800 transition rounded-md px-4 py-2"
                 >
                   Xác nhận
                 </AlertDialogAction>
