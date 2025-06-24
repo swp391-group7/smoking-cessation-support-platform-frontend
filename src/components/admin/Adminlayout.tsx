@@ -1,8 +1,8 @@
 // components_admin/AdminLayout.tsx
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
+import Sidebar from "@/components/admin/Sidebar";
+import Topbar from "@/components/admin/Topbar";
 import { Award, BarChart3, Bell, Calendar, CreditCard, FileText, Heart, LayoutDashboard, MessageCircle, Star, Target, Users } from "lucide-react";
 
 const menuItems = [
@@ -42,6 +42,8 @@ const menuItems = [
     ]
   }
 ];
+//co the sua them tuy y cac trang và nhớ cập nhật App.tsx là dc
+
 
 const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
