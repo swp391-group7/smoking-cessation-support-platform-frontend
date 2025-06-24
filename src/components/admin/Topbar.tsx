@@ -1,7 +1,7 @@
 // components_admin/Topbar.tsx
 import React from "react";
 import { Bell, Menu, Search, X } from "lucide-react";
-import ProfileDropdown from "@/components_admin/ProfileDropdown";
+import ProfileDropdown from "@/components/admin/ProfileDropdown";
 
 interface TopbarProps {
   sidebarOpen: boolean;

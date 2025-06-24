@@ -15,7 +15,7 @@ import UserInfo from "./pages/platform/user_info.tsx";
 
 
 // Admin layout + pages
-import AdminLayout from "./components_admin/Adminlayout.tsx";
+import AdminLayout from "./components/admin/Adminlayout.tsx";
 import Dashboard from "./pages/admin/Dashboard.tsx";
 import Users from "./pages/admin/Users.tsx";
 import Plans from "./pages/admin/Plans.tsx";
