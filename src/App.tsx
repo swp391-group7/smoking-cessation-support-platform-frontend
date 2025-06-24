@@ -14,6 +14,21 @@ import UserInfo from "./pages/platform/user_info.tsx";
 // import UserProfile from "./pages/platform/user_profile.tsx";
 
 
+// Admin layout + pages
+import AdminLayout from "./components_admin/Adminlayout.tsx";
+import Dashboard from "./pages/admin/Dashboard.tsx";
+import Users from "./pages/admin/Users.tsx";
+import Plans from "./pages/admin/Plans.tsx";
+import QuitProfiles from "./pages/admin/QuitProfiles.tsx";
+import QuitPlans from "./pages/admin/QuitPlans.tsx";
+import Blog from "./pages/admin/Blog.tsx";
+import Notifications from "./pages/admin/Notifications.tsx";
+import Community from "./pages/admin/Community.tsx";
+import Consultations from "./pages/admin/Consultations.tsx";
+import Reports from "./pages/admin/Reports.tsx";
+import UserProfiles from "./pages/admin/UserProfiles.tsx";
+import Settings from "./pages/admin/Settings.tsx";
+import Badges from "./pages/admin/Badges.tsx";
 
 export const App = () => (
   <>
@@ -35,6 +50,25 @@ export const App = () => (
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="user_survey" element={<UserSurvey />} />
           <Route path="/user_info" element={<UserInfo />} />
+        </Route>
+
+
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="users" element={<Users />} />
+          <Route path="plans" element={<Plans />} />
+          <Route path="quit-profiles" element={<QuitProfiles />} />
+          <Route path="quit-plans" element={<QuitPlans />} />
+          <Route path="blog" element={<Blog />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="community" element={<Community />} />
+          <Route path="consultations" element={<Consultations />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="user-profiles" element={<UserProfiles />} />
+          <Route path="badges" element={<Badges />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
         </Route>
       </Routes>
     </Router>
