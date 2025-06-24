@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import type { SurveyDetailDTO, CreateSurveyRequest } from "@/api/usersurveyApi";
-import { getSurveyDetailById, createSurvey } from "@/api/usersurveyApi";
+import type { SurveyDetailDTO, CreateSurveyRequest, GetSurveyRequest } from "@/api/usersurveyApi";
+import { getSurveyDetailById, createSurvey, getSurveyByUserId } from "@/api/usersurveyApi";
 import { AxiosError } from "axios"; // Import AxiosError
 
 // ID khảo sát cố định
@@ -49,6 +49,41 @@ const UserSurveyForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false); // Trạng thái tải mới
   const [submissionError, setSubmissionError] = useState<string | null>(null); // Trạng thái lỗi mới
   const [surveyQuestions, setSurveyQuestions] = useState<SurveyQuestion[]>([]);
+
+   // Thêm state mới để kiểm tra survey đã tồn tại
+  const [hasExistingSurvey, setHasExistingSurvey] = useState<boolean>(false);
+  const [existingSurveyData, setExistingSurveyData] = useState<GetSurveyRequest | null>(null);
+  const [isCheckingExistingSurvey, setIsCheckingExistingSurvey] = useState<boolean>(true);
+  const [checkSurveyError, setCheckSurveyError] = useState<string | null>(null);
+
+  // Kiểm tra survey đã tồn tại khi component mount
+  useEffect(() => {
+    const checkExistingSurvey = async () => {
+      try {
+        setIsCheckingExistingSurvey(true);
+        const existingData = await getSurveyByUserId();
+        setHasExistingSurvey(true);
+        setExistingSurveyData(existingData);
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          // Nếu lỗi 404 có nghĩa là chưa có survey
+          if (error.response?.status === 404) {
+            setHasExistingSurvey(false);
+          } else {
+            console.error("Lỗi khi kiểm tra survey đã tồn tại:", error);
+            setCheckSurveyError("Không thể kiểm tra trạng thái survey. Vui lòng thử lại sau.");
+          }
+        } else {
+          console.error("Lỗi không mong muốn khi kiểm tra survey:", error);
+          setCheckSurveyError("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+        }
+      } finally {
+        setIsCheckingExistingSurvey(false);
+      }
+    };
+
+    checkExistingSurvey();
+  }, []);
 
   // Lấy 8 câu hỏi đầu từ API
   useEffect(() => {
@@ -182,6 +217,107 @@ const UserSurveyForm: React.FC = () => {
       setIsLoading(false); // Kết thúc tải
     }
   };
+    // Hàm để thử lại kiểm tra survey
+  const handleRetryCheck = () => {
+    setCheckSurveyError(null);
+    setIsCheckingExistingSurvey(true);
+    // Trigger useEffect để kiểm tra lại
+    window.location.reload(); // Hoặc có thể tạo một function riêng để check lại
+  };
+
+  // Hiển thị loading khi đang kiểm tra survey
+  if (isCheckingExistingSurvey) {
+    return (
+      <div className="max-w-3xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-blue-100 text-center">
+        <div className="flex items-center justify-center mb-4">
+          <svg className="animate-spin h-8 w-8 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span className="text-lg font-medium text-gray-700">Đang kiểm tra trạng thái khảo sát...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Hiển thị lỗi khi kiểm tra survey
+  if (checkSurveyError) {
+    return (
+      <div className="max-w-3xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-red-100 text-center">
+        <h1 className="text-2xl font-semibold text-red-700 mb-4">Có lỗi xảy ra</h1>
+        <p className="text-lg text-gray-800 mb-6">{checkSurveyError}</p>
+        <button
+          onClick={handleRetryCheck}
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+        >
+          Thử lại
+        </button>
+      </div>
+    );
+  }
+
+  // Hiển thị thông báo đã có survey
+  if (hasExistingSurvey && existingSurveyData) {
+    return (
+      <div className="max-w-4xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-yellow-100">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-semibold text-yellow-700 mb-4 flex items-center justify-center">
+            <svg className="w-8 h-8 mr-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            Bạn đã hoàn thành khảo sát
+          </h1>
+          <p className="text-lg text-gray-700 mb-6">
+            Bạn đã thực hiện khảo sát này rồi. Dưới đây là thông tin khảo sát của bạn:
+          </p>
+        </div>
+
+        {/* Hiển thị thông tin survey đã có */}
+        <div className="bg-yellow-50 rounded-lg p-6 border border-yellow-200">
+          <h2 className="text-xl font-semibold text-yellow-800 mb-4">Thông tin khảo sát của bạn:</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+            <div>
+              <p><strong>Thời gian hút thuốc:</strong> {existingSurveyData.smokeDuration}</p>
+              <p><strong>Số điếu/ngày:</strong> {existingSurveyData.cigarettesPerDay}</p>
+              <p><strong>Giá mỗi bao:</strong> {existingSurveyData.priceEach} VNĐ</p>
+              <p><strong>Đã từng cố bỏ:</strong> {existingSurveyData.triedToQuit ? 'Có' : 'Không'}</p>
+            </div>
+            <div>
+              <p><strong>Tình trạng sức khỏe:</strong> {existingSurveyData.healthStatus}</p>
+              <p><strong>Mức độ phụ thuộc:</strong> {existingSurveyData.dependencyLevel}/5</p>
+            </div>
+          </div>
+          
+          {/* Hiển thị các câu trả lời */}
+          <div className="mt-4">
+            <h3 className="font-semibold text-yellow-800 mb-2">Câu trả lời chi tiết:</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+              {[1,2,3,4,5,6,7,8].map(i => (
+                <p key={i}><strong>Câu {i}:</strong> {existingSurveyData[`a${i}` as keyof GetSurveyRequest]}</p>
+              ))}
+            </div>
+          </div>
+
+          {existingSurveyData.note && (
+            <div className="mt-4">
+              <p><strong>Ghi chú:</strong> {existingSurveyData.note}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="text-center mt-8">
+          <p className="text-gray-600 text-sm">
+            Cảm ơn bạn đã tham gia khảo sát. Nếu có thay đổi, vui lòng liên hệ với chúng tôi.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+
+
+
+
 
   if (isSubmitted) {
     return (

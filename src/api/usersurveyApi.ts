@@ -57,6 +57,33 @@ export interface CreateSurveyRequest {
   dependencyLevel: number;
   note: string;
 }
+export interface GetSurveyRequest {
+  smokeDuration: string;
+  cigarettesPerDay: number;
+  priceEach: number;
+  triedToQuit: boolean;
+  healthStatus: string;
+  a1: string; // Answer text for question 1
+  a2: string; // Answer text for question 2
+  a3: string; // Answer text for question 3
+  a4: string; // Answer text for question 4
+  a5: string; // Answer text for question 5
+  a6: string; // Answer text for question 6
+  a7: string; // Answer text for question 7
+  a8: string; // Answer text for question 8
+  dependencyLevel: number;
+  note: string;
+}
+
+
+
+export async function getSurveyByUserId(): Promise<GetSurveyRequest> {
+  const { data } = await usersurveyApi.get<GetSurveyRequest>(
+    `/user-surveys/get-survey`
+  );
+  return data;
+}
+
 
 /**
  * Fetches survey details (questions + answers) by surveyId.
@@ -76,8 +103,8 @@ export async function getSurveyDetailById(
  */
 export async function createSurvey(
   surveyData: CreateSurveyRequest
-): Promise<SurveyDetailDTO> { // Changed from 'any' to 'SurveyDetailDTO'
-  const { data } = await usersurveyApi.post<SurveyDetailDTO>(
+): Promise<CreateSurveyRequest> { // Changed from 'any' to 'SurveyDetailDTO'
+  const { data } = await usersurveyApi.post<CreateSurveyRequest>(
     '/user-surveys/create-survey',
     surveyData
   );
