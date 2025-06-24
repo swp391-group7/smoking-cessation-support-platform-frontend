@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "@/components/admin/Sidebar";
@@ -116,22 +117,50 @@ const menuItems = [
     ],
   },
 ];
-// You can freely modify these sections as you add more pages, just remember to update App.tsx
 
 const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  // Add this useEffect to prevent body scroll
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.documentElement.style.overflow = 'unset';
+    };
+  }, []);
+
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar open={sidebarOpen} menuItems={menuItems} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Topbar
-          sidebarOpen={sidebarOpen}
-          toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-        />
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-          <Outlet />
-        </main>
+    <div 
+      className="bg-gray-50" 
+      style={{ 
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        overflow: 'hidden'
+      }}
+    >
+      <div className="flex h-full">
+        <Sidebar open={sidebarOpen} menuItems={menuItems} />
+        <div className="flex-1 flex flex-col min-w-0">
+          <Topbar
+            sidebarOpen={sidebarOpen}
+            toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          />
+          <main 
+            className="flex-1 bg-gray-50 p-6"
+            style={{ 
+              overflow: 'auto',
+              height: 'calc(100vh - 64px)'
+            }}
+          >
+            <Outlet />
+          </main>
+        </div>
       </div>
     </div>
   );
