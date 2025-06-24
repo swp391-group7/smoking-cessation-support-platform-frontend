@@ -43,7 +43,7 @@ export const QuitDropdown: React.FC = () => {
           <button
             onMouseEnter={() => setOpen(true)}
             onMouseLeave={() => setOpen(false)}
-            onClick={() => handleProtectedNavigate("/user_survey")}
+            onClick={() => handleProtectedNavigate("/quit_progress")}
             className="flex items-center px-3 py-1 rounded-2xl text-gray-800 hover:bg-emerald-100"
           >
             Quit
