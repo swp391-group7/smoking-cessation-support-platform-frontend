@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import type { SurveyDetailDTO, CreateSurveyRequest, GetSurveyRequest } from "@/api/usersurveyApi";
 import { getSurveyDetailById, createSurvey, getSurveyByUserId } from "@/api/usersurveyApi";
 import { AxiosError } from "axios"; // Import AxiosError
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 
 // ID khảo sát cố định
 const FIXED_SURVEY_ID = "bff1b96e-74e9-46a3-b46e-1b625531c1ad";
 
-type SurveyKey = "a1"|"a2"|"a3"|"a4"|"a5"|"a6"|"a7"|"a8";
+type SurveyKey = "a1" | "a2" | "a3" | "a4" | "a5" | "a6" | "a7" | "a8";
 
 interface FullSurvey {
   smoke_duration: string;
@@ -42,19 +43,22 @@ const UserSurveyForm: React.FC = () => {
     health_status: "",
     dependency_level: 0,
     note: "",
-    a1:null, a2:null, a3:null, a4:null, a5:null, a6:null, a7:null, a8:null
+    a1: null, a2: null, a3: null, a4: null, a5: null, a6: null, a7: null, a8: null
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof FullSurvey,string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof FullSurvey, string>>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Trạng thái tải mới
   const [submissionError, setSubmissionError] = useState<string | null>(null); // Trạng thái lỗi mới
   const [surveyQuestions, setSurveyQuestions] = useState<SurveyQuestion[]>([]);
 
-   // Thêm state mới để kiểm tra survey đã tồn tại
+  // Thêm state mới để kiểm tra survey đã tồn tại
   const [hasExistingSurvey, setHasExistingSurvey] = useState<boolean>(false);
   const [existingSurveyData, setExistingSurveyData] = useState<GetSurveyRequest | null>(null);
   const [isCheckingExistingSurvey, setIsCheckingExistingSurvey] = useState<boolean>(true);
   const [checkSurveyError, setCheckSurveyError] = useState<string | null>(null);
+
+  // Thêm state mới để điều khiển việc hiển thị form khảo sát lại
+  const [allowResurvey, setAllowResurvey] = useState<boolean>(false);
 
   // Kiểm tra survey đã tồn tại khi component mount
   useEffect(() => {
@@ -89,8 +93,8 @@ const UserSurveyForm: React.FC = () => {
   useEffect(() => {
     getSurveyDetailById(FIXED_SURVEY_ID)
       .then((data: SurveyDetailDTO) => {
-        const first8 = data.questions.slice(0,8).map((q, idx) => ({
-          key: (`a${idx+1}`) as SurveyKey,
+        const first8 = data.questions.slice(0, 8).map((q, idx) => ({
+          key: (`a${idx + 1}`) as SurveyKey,
           question: q.content,
           options: q.answers.map(ans => ({ text: ans.answerText, point: ans.point }))
         }));
@@ -104,7 +108,7 @@ const UserSurveyForm: React.FC = () => {
 
   // Xử lý thay đổi input (text, số, checkbox, select)
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, type, value, checked } = e.target as HTMLInputElement;
     const newValue = type === "checkbox"
@@ -131,8 +135,8 @@ const UserSurveyForm: React.FC = () => {
 
       // 3) Quy tổng điểm thành level (1–5)
       let lvl = 1;
-      if (total > 4)  lvl = 2;
-      if (total > 8)  lvl = 3;
+      if (total > 4) lvl = 2;
+      if (total > 8) lvl = 3;
       if (total > 13) lvl = 4;
       if (total > 17) lvl = 5;
 
@@ -145,27 +149,27 @@ const UserSurveyForm: React.FC = () => {
 
   // Kiểm tra hợp lệ form trước khi submit
   const validateForm = () => {
-    const newErr: Partial<Record<keyof FullSurvey,string>> = {};
+    const newErr: Partial<Record<keyof FullSurvey, string>> = {};
     if (!formData.smoke_duration) newErr.smoke_duration = "Vui lòng nhập thời gian hút thuốc.";
     if (formData.cigarettes_per_day <= 0) newErr.cigarettes_per_day = "Số điếu/ngày phải lớn hơn 0.";
-    if (formData.price_each <= 0)         newErr.price_each = "Giá mỗi bao phải lớn hơn 0.";
-    if (!formData.health_status)           newErr.health_status = "Vui lòng chọn tình trạng sức khỏe.";
-    
+    if (formData.price_each <= 0) newErr.price_each = "Giá mỗi bao phải lớn hơn 0.";
+    if (!formData.health_status) newErr.health_status = "Vui lòng chọn tình trạng sức khỏe.";
+
     let allQuestionsAnswered = true;
     surveyQuestions.forEach(({ key }, i) => {
       if (formData[key] === null) {
-        newErr[key] = `Vui lòng trả lời câu ${i+1}.`;
+        newErr[key] = `Vui lòng trả lời câu ${i + 1}.`;
         allQuestionsAnswered = false;
       }
     });
 
     // Chỉ đặt lỗi dependency_level nếu các câu hỏi chưa được trả lời đầy đủ
     if (formData.dependency_level === 0 && allQuestionsAnswered) {
-        // Trường hợp này lý tưởng sẽ không xảy ra nếu tất cả các câu hỏi đều có điểm và được trả lời
-        // Nhưng nó là một phương án dự phòng tốt
-        newErr.dependency_level = "Không thể tính mức độ phụ thuộc. Vui lòng đảm bảo tất cả các câu hỏi đã được trả lời.";
+      // Trường hợp này lý tưởng sẽ không xảy ra nếu tất cả các câu hỏi đều có điểm và được trả lời
+      // Nhưng nó là một phương án dự phòng tốt
+      newErr.dependency_level = "Không thể tính mức độ phụ thuộc. Vui lòng đảm bảo tất cả các câu hỏi đã được trả lời.";
     } else if (!allQuestionsAnswered) {
-        newErr.dependency_level = "Vui lòng trả lời đủ 8 câu."; // Lỗi chính khi thiếu câu hỏi
+      newErr.dependency_level = "Vui lòng trả lời đủ 8 câu."; // Lỗi chính khi thiếu câu hỏi
     }
 
     setErrors(newErr);
@@ -217,13 +221,32 @@ const UserSurveyForm: React.FC = () => {
       setIsLoading(false); // Kết thúc tải
     }
   };
-    // Hàm để thử lại kiểm tra survey
+  // Hàm để thử lại kiểm tra survey
   const handleRetryCheck = () => {
     setCheckSurveyError(null);
     setIsCheckingExistingSurvey(true);
     // Trigger useEffect để kiểm tra lại
     window.location.reload(); // Hoặc có thể tạo một function riêng để check lại
   };
+  // Hàm xử lý khi người dùng xác nhận muốn khảo sát lại
+  const handleConfirmResurvey = () => {
+    setAllowResurvey(true);
+    // Reset form data về trạng thái ban đầu
+    setFormData({
+      smoke_duration: "",
+      cigarettes_per_day: 0,
+      price_each: 0,
+      tried_to_quit: false,
+      health_status: "",
+      dependency_level: 0,
+      note: "",
+      a1: null, a2: null, a3: null, a4: null, a5: null, a6: null, a7: null, a8: null
+    });
+    setErrors({});
+    setSubmissionError(null);
+    setIsSubmitted(false);
+  };
+
 
   // Hiển thị loading khi đang kiểm tra survey
   if (isCheckingExistingSurvey) {
@@ -256,8 +279,8 @@ const UserSurveyForm: React.FC = () => {
     );
   }
 
-  // Hiển thị thông báo đã có survey
-  if (hasExistingSurvey && existingSurveyData) {
+  // Hiển thị thông báo đã có survey (với tùy chọn khảo sát lại)
+  if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
     return (
       <div className="max-w-4xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-yellow-100">
         <div className="text-center mb-8">
@@ -287,12 +310,12 @@ const UserSurveyForm: React.FC = () => {
               <p><strong>Mức độ phụ thuộc:</strong> {existingSurveyData.dependencyLevel}/5</p>
             </div>
           </div>
-          
+
           {/* Hiển thị các câu trả lời */}
           <div className="mt-4">
             <h3 className="font-semibold text-yellow-800 mb-2">Câu trả lời chi tiết:</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-              {[1,2,3,4,5,6,7,8].map(i => (
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
                 <p key={i}><strong>Câu {i}:</strong> {existingSurveyData[`a${i}` as keyof GetSurveyRequest]}</p>
               ))}
             </div>
@@ -306,14 +329,45 @@ const UserSurveyForm: React.FC = () => {
         </div>
 
         <div className="text-center mt-8">
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-600 text-sm mb-4">
             Cảm ơn bạn đã tham gia khảo sát. Nếu có thay đổi, vui lòng liên hệ với chúng tôi.
           </p>
+
+          {/* Nút khảo sát lại với AlertDialog */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button className="bg-emerald-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-700 transition">
+                Bạn có muốn khảo sát lại không?
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-white text-emerald-700 border border-emerald-300 shadow-xl">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-emerald-800 text-lg font-semibold">
+                  Xác nhận khảo sát lại
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-emerald-600">
+                  Bạn có chắc chắn muốn thực hiện khảo sát lại không? Thao tác này sẽ tạo
+                  một bản khảo sát mới và có thể ghi đè lên kết quả hiện tại.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="bg-gray-200 text-gray-700 hover:bg-gray-300 transition rounded-md px-4 py-2">
+                  Hủy
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleConfirmResurvey}
+                  className="bg-emerald-600 text-white hover:bg-emerald-800 transition rounded-md px-4 py-2"
+                >
+                  Xác nhận
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
         </div>
       </div>
     );
   }
-
 
 
 
@@ -336,7 +390,7 @@ const UserSurveyForm: React.FC = () => {
         <div className="p-5 border border-gray-200 rounded-lg shadow-sm bg-gray-50 mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <svg className="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             Thói Quen của Bạn
           </h2>
@@ -349,9 +403,8 @@ const UserSurveyForm: React.FC = () => {
             placeholder="Ví dụ: 5 năm, 10 tháng"
             value={formData.smoke_duration}
             onChange={handleChange}
-            className={`w-full p-2 border rounded-md focus:ring-green-500 focus:border-green-500 ${
-              errors.smoke_duration ? "border-red-500" : "border-gray-300"
-            } mb-1`}
+            className={`w-full p-2 border rounded-md focus:ring-green-500 focus:border-green-500 ${errors.smoke_duration ? "border-red-500" : "border-gray-300"
+              } mb-1`}
           />
           {errors.smoke_duration && <p className="text-red-500 text-sm">{errors.smoke_duration}</p>}
           <p className="text-sm text-gray-500 mb-4">Ví dụ: "10 năm", "2 năm 6 tháng"</p>
@@ -368,9 +421,8 @@ const UserSurveyForm: React.FC = () => {
                 min="0"
                 value={formData.cigarettes_per_day}
                 onChange={handleChange}
-                className={`w-24 p-1 border rounded-md text-center ${
-                  errors.cigarettes_per_day ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-24 p-1 border rounded-md text-center ${errors.cigarettes_per_day ? "border-red-500" : "border-gray-300"
+                  }`}
               />
               {errors.cigarettes_per_day && <p className="text-red-500 text-sm">{errors.cigarettes_per_day}</p>}
             </div>
@@ -385,9 +437,8 @@ const UserSurveyForm: React.FC = () => {
                 min="0"
                 value={formData.price_each}
                 onChange={handleChange}
-                className={`w-24 p-1 border rounded-md text-center ${
-                  errors.price_each ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-24 p-1 border rounded-md text-center ${errors.price_each ? "border-red-500" : "border-gray-300"
+                  }`}
               />
               {errors.price_each && <p className="text-red-500 text-sm">{errors.price_each}</p>}
             </div>
@@ -418,9 +469,8 @@ const UserSurveyForm: React.FC = () => {
             name="health_status"
             value={formData.health_status}
             onChange={handleChange}
-            className={`w-full p-2 border rounded-md focus:ring-green-500 focus:border-green-500 ${
-              errors.health_status ? "border-red-500" : "border-gray-300"
-            } mb-1`}
+            className={`w-full p-2 border rounded-md focus:ring-green-500 focus:border-green-500 ${errors.health_status ? "border-red-500" : "border-gray-300"
+              } mb-1`}
           >
             <option value="">-- Chọn tình trạng sức khỏe --</option>
             <option>Xuất sắc</option>
@@ -441,11 +491,10 @@ const UserSurveyForm: React.FC = () => {
             Hiểu sâu về thói quen hút thuốc
           </h2>
           {surveyQuestions.map(({ key, question, options }, idx) => (
-            <div key={key} className={`mb-6 p-4 border rounded-md ${
-                errors[key] ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
+            <div key={key} className={`mb-6 p-4 border rounded-md ${errors[key] ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
               }`}>
               <p className="font-medium mb-3">
-                <span className="font-semibold text-green-700">{idx+1}.</span> {question} <span className="text-red-500">*</span>
+                <span className="font-semibold text-green-700">{idx + 1}.</span> {question} <span className="text-red-500">*</span>
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {options.map(({ text, point }, optionIndex) => (
@@ -475,21 +524,19 @@ const UserSurveyForm: React.FC = () => {
             </svg>
             Mức Độ Phụ Thuộc Chung <span className="text-red-500">*</span>
           </h2>
-          <div className={`flex items-center justify-between px-4 py-6 bg-white rounded-xl shadow-md ${
-                errors.dependency_level ? 'border-2 border-red-500' : ''
-              }`}>
+          <div className={`flex items-center justify-between px-4 py-6 bg-white rounded-xl shadow-md ${errors.dependency_level ? 'border-2 border-red-500' : ''
+            }`}>
             <span className="font-medium text-gray-700">Thấp</span>
             <div className="flex gap-4">
-              {[1,2,3,4,5].map(lvl => {
-                const colors = ["#A8E6CF","#DCE775","#FFF59D","#FFAB91","#EF9A9A"];
+              {[1, 2, 3, 4, 5].map(lvl => {
+                const colors = ["#A8E6CF", "#DCE775", "#FFF59D", "#FFAB91", "#EF9A9A"];
                 const isSel = formData.dependency_level === lvl;
                 return (
                   <div key={lvl} className="relative">
                     <div
                       title={`Level ${lvl}`}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold transition ${
-                        isSel ? 'ring-4 ring-offset-2 ring-green-700 scale-110' : ''
-                      }`}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold transition ${isSel ? 'ring-4 ring-offset-2 ring-green-700 scale-110' : ''
+                        }`}
                       style={{ backgroundColor: colors[lvl - 1] }}
                     >
                       {isSel && (
@@ -534,9 +581,9 @@ const UserSurveyForm: React.FC = () => {
           <p><strong>Mức độ phụ thuộc:</strong> {formData.dependency_level > 0 ? formData.dependency_level : 'Chưa chọn'}</p>
           {surveyQuestions.map((q, i) => (
             <p key={`summary-${i}`}>
-              <strong>Câu {i+1}:</strong> {
-                formData[`a${i+1}` as SurveyKey] !== null
-                  ? q.options.find(opt => opt.point === formData[`a${i+1}` as SurveyKey])?.text || 'Câu trả lời không hợp lệ'
+              <strong>Câu {i + 1}:</strong> {
+                formData[`a${i + 1}` as SurveyKey] !== null
+                  ? q.options.find(opt => opt.point === formData[`a${i + 1}` as SurveyKey])?.text || 'Câu trả lời không hợp lệ'
                   : 'Chưa trả lời'
               }
             </p>
