@@ -9,6 +9,7 @@ interface Props {
     type: "info" | "new" | "error";
   };
 }
+//CHIA RA cac type cho notification, thuc te co the nhieu hon 3
 
 export default function NotificationItem({ notification }: Props) {
   const color =

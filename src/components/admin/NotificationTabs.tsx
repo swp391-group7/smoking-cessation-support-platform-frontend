@@ -5,7 +5,7 @@ interface Props {
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }
-
+// dao dien cua NotificationTabs, nhan vao activeTab va setActiveTab
 const tabs = ["Messages", "Events", "System Errors"];
 
 export default function NotificationTabs({ activeTab, setActiveTab }: Props) {

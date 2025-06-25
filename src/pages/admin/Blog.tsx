@@ -3,6 +3,7 @@ import PaginationControl from '@/components/PaginationControl';
 import { Button } from '@/components/ui/button';
 import { PencilIcon, TrashIcon, PlusIcon } from 'lucide-react';
 
+//tai su dung form blog user
 export interface Post {
   id: number;
   title: string;
@@ -34,10 +35,12 @@ export default function BlogAdminPage() {
     }, 600);
   }, [page]);
 
+  // chuc nang edit va xoa cho admin
+  // Trong thuc te, se su dung API RIENG de cap nhat va xoa bai viet
   const handleEdit = (id: number) => {
     alert(`Edit post ${id}`);
   };
-
+  
   const handleDelete = (id: number) => {
     if (confirm(`Are you sure you want to delete post ${id}?`)) {
       setPosts((prev) => prev.filter((post) => post.id !== id));
