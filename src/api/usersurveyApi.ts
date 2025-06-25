@@ -79,7 +79,7 @@ export interface GetSurveyRequest {
 
 export async function getSurveyByUserId(): Promise<GetSurveyRequest> {
   const { data } = await usersurveyApi.get<GetSurveyRequest>(
-    `/user-surveys/get-survey`
+    `/user-surveys/get-first-survey`
   );
   return data;
 }
