@@ -1,6 +1,6 @@
 // src/pages/admin/Dashboard.tsx
 import { Eye, Target, Hand } from "lucide-react";
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, LineChart, Line, BarChart, Bar } from "recharts";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, LineChart, Line} from "recharts";
 
 const dealsData = [
   { date: "Oct 23", value: 60 },
@@ -40,15 +40,15 @@ const Dashboard = () => {
             <AreaChart data={dealsData}>
               <defs>
                 <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#7CFC00" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#7CFC00" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis dataKey="date" />
               <YAxis />
               <CartesianGrid strokeDasharray="3 3" />
               <Tooltip />
-              <Area type="monotone" dataKey="value" stroke="#3b82f6" fillOpacity={1} fill="url(#colorUv)" />
+              <Area type="monotone" dataKey="value" stroke="#66FF00" fillOpacity={1} fill="url(#colorUv)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -134,15 +134,15 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Product Table */}
+      {/* Customer Table */}
       <div className="bg-white p-6 rounded-xl shadow">
-        <h4 className="font-semibold mb-4">New Products</h4>
+        <h4 className="font-semibold mb-4">New Customers</h4>
         <table className="w-full text-sm text-left">
           <thead className="text-gray-500">
             <tr>
               <th>Name</th>
-              <th>Product Code</th>
-              <th>Customer</th>
+              <th>Phone</th>
+              <th>Email</th>
               <th>Status</th>
               <th>Rating</th>
             </tr>
