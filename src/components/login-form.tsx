@@ -43,35 +43,35 @@ const LoginPage: React.FC = () => {
   };
 
   // Mutation gọi API login (giữ nguyên)
-  const { mutate: login, isPending } = useMutation({
-    mutationFn: loginApi,
-    onSuccess: (response) => {
-  const { token, user } = response;
+const { mutate: login, isPending } = useMutation({
+  mutationFn: loginApi,
+  onSuccess: (response) => {
+    const { token, user } = response;
 
-  if (user.role !== "admin") {
-    toast.error("Bạn không có quyền truy cập trang quản trị!", {
+    // Lưu thông tin vào localStorage
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("role", user.role);
+
+    // Thông báo thành công
+    toast.success("Đăng nhập thành công!", {
       position: "top-center",
+      description: `Chào mừng ${user.full_name}`,
     });
-    return;
-  }
 
-  localStorage.setItem("token", token);
-  localStorage.setItem("user", JSON.stringify(user));
-  localStorage.setItem("role", user.role);
-
-  toast.success("Đăng nhập thành công!", {
-    position: "top-center",
-    description: `Chào mừng quản trị viên ${user.full_name}`,
-  });
-
-  setTimeout(() => navigate("/admin"), 700);
-},
-    onError: () => {
-      toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản hoặc mật khẩu.", {
-        position: "bottom-right",
-      });
-    },
-  });
+    // Điều hướng theo vai trò
+    if (user.role === "admin") {
+      setTimeout(() => navigate("/admin"), 700);
+    } else {
+      setTimeout(() => navigate("/"), 700); // hoặc /quit_progress nếu bạn muốn
+    }
+  },
+  onError: () => {
+    toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản hoặc mật khẩu.", {
+      position: "bottom-right",
+    });
+  },
+});
 
   // Hàm submit chính
   const onSubmit = (data: LoginData) => {
