@@ -29,6 +29,7 @@ import Reports from "./pages/admin/Reports.tsx";
 import UserProfiles from "./pages/admin/UserProfiles.tsx";
 import Settings from "./pages/admin/Settings.tsx";
 import Badges from "./pages/admin/Badges.tsx";
+import { PlanForm } from "./components/PlanForm.tsx";
 
 export const App = () => (
   <>
@@ -50,6 +51,7 @@ export const App = () => (
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="user_survey" element={<UserSurvey />} />
           <Route path="/user_info" element={<UserInfo />} />
+          <Route path="quit_form" element={<PlanForm />} />
         </Route>
 
 
