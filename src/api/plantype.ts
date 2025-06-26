@@ -15,7 +15,7 @@ export type Stage = {
   description: string;
   start: Date | null;
   end: Date | null;
-  targetCigarettes?: number;
+  targetCigarettes: number;
 };
 
 /**

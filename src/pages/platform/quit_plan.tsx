@@ -17,7 +17,8 @@ import {
 import {
   createImmediatePlan,
   createDraftPlan,
-} from "@/api/userPlanApi"; // <- import 2 hàm API
+  createDefaultStep,
+} from "@/api/userPlanApi";
 import { AxiosError } from "axios";
 
 export default function QuitPlanPage() {
@@ -30,41 +31,56 @@ export default function QuitPlanPage() {
     setError(null);
     setConfirmType("Cold Turkey");
   };
+  
   const handleGradualSelect = () => {
     setError(null);
     setConfirmType("Gradual Reduction");
   };
 
   const handleConfirm = async () => {
-  if (!confirmType) return;
-  setIsLoading(true);
-  setError(null);
+    if (!confirmType) return;
+    setIsLoading(true);
+    setError(null);
 
-  try {
-    if (confirmType === "Cold Turkey") {
-      await createImmediatePlan();
-      navigate("/quit_progress");
-    } else {
-      await createDraftPlan();
-      navigate("/quit_form", { state: { planType: confirmType } });
+    try {
+      if (confirmType === "Cold Turkey") {
+        await createImmediatePlan();
+        navigate("/quit_progress");
+      } else {
+        // Tạo draft plan trước
+        const draftPlan = await createDraftPlan();
+        
+        // Lưu planId vào sessionStorage để sử dụng trong PlanForm
+        sessionStorage.setItem('currentDraftPlanId', draftPlan.id);
+        
+        // Tạo step đầu tiên
+        await createDefaultStep(draftPlan.id);
+        
+        navigate("/quit_form", { 
+          state: { 
+            planType: confirmType,
+            planId: draftPlan.id 
+          } 
+        });
+      }
+    } catch (err: unknown) {
+      console.error(err);
+      // Narrowing err về AxiosError để lấy message nếu có
+      if (err instanceof AxiosError) {
+        setError(
+          err.response?.data?.message ||
+          err.message ||
+          "Có lỗi xảy ra, vui lòng thử lại sau."
+        );
+      } else {
+        setError("Có lỗi không xác định, vui lòng thử lại sau.");
+      }
+    } finally {
+      setIsLoading(false);
+      setConfirmType(null);
     }
-  } catch (err: unknown) {
-    console.error(err);
-    // Narrowing err về AxiosError để lấy message nếu có
-    if (err instanceof AxiosError) {
-      setError(
-        err.response?.data?.message ||
-        err.message ||
-        "Có lỗi xảy ra, vui lòng thử lại sau."
-      );
-    } else {
-      setError("Có lỗi không xác định, vui lòng thử lại sau.");
-    }
-  } finally {
-    setIsLoading(false);
-    setConfirmType(null);
-  }
-};
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen flex flex-col items-center justify-center">
       {/* Plan Selector */}
@@ -137,8 +153,8 @@ export default function QuitPlanPage() {
             </AlertDialogTitle>
             <AlertDialogDescription className="text-gray-700 text-lg leading-relaxed">
               {confirmType === "Cold Turkey"
-                ? "Bạn đã chọn “Cold Turkey”. Kế hoạch sẽ bắt đầu ngay lập tức."
-                : "Bạn đã chọn “Gradual Reduction”. Bạn sẽ điền thêm thông tin để tạo bản nháp."}
+                ? "Bạn đã chọn Cold Turkey. Kế hoạch sẽ bắt đầu ngay lập tức."
+                : "Bạn đã chọn Gradual Reduction. Bạn sẽ điền thêm thông tin để tạo bản nháp."}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
