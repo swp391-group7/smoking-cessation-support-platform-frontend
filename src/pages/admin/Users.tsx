@@ -85,4 +85,42 @@ export default function UserManagement() {
                 </div>
             )}
 
+{/* User Table */}
+      <div className="bg-white p-4 rounded-xl shadow overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="text-green-700">
+            <tr>
+              <th></th>
+              <th>Họ tên</th>
+              <th>Email</th>
+              <th>Mức độ</th>
+              <th>Lộ trình</th>
+              <th>Coach</th>
+              <th>Huy hiệu</th>
+              <th>Chi tiết</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredUsers.map((u) => (
+              <tr key={u.email} className="border-t">
+                <td>
+                  <input type="checkbox" checked={selectedUsers.includes(u.email)} onChange={() => toggleUser(u.email)} />
+                </td>
+                <td>{u.name}</td>
+                <td>{u.email}</td>
+                <td className="text-green-800 font-medium">{u.addictionLevel}</td>
+                <td>{u.plan}</td>
+                <td>{u.coach || <span className="text-red-500 italic">Chưa gán</span>}</td>
+                <td>{u.badges.map((b) => <span key={b} className="inline-block text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded mr-1">{b}</span>)}</td>
+                <td>
+                  <button onClick={() => setSelectedUser(u)} className="text-green-600 hover:underline flex items-center gap-1">
+                    <Eye size={14} /> Xem
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
+      
