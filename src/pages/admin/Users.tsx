@@ -43,3 +43,33 @@ export default function UserManagement() {
       prev.includes(email) ? prev.filter((e) => e !== email) : [...prev, email]
     );
   };
+
+  return (
+    <div className="p-6 space-y-6 bg-green-50 min-h-screen">
+      <h2 className="text-2xl font-bold text-green-700">User Management</h2>
+
+      {/* Filter Bar */}
+      <div className="bg-white p-4 rounded-xl shadow flex flex-wrap gap-4 items-center">
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-gray-700">Mức độ:</label>
+          <select className="border rounded px-2 py-1 text-sm" value={filter.level} onChange={(e) => setFilter({ ...filter, level: e.target.value })}>
+            <option value="">Tất cả</option>
+            {levels.map((l) => <option key={l}>{l}</option>)}
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-gray-700">Lộ trình:</label>
+          <select className="border rounded px-2 py-1 text-sm" value={filter.plan} onChange={(e) => setFilter({ ...filter, plan: e.target.value })}>
+            <option value="">Tất cả</option>
+            {plans.map((p) => <option key={p}>{p}</option>)}
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-gray-700">Coach:</label>
+          <select className="border rounded px-2 py-1 text-sm" value={filter.coach} onChange={(e) => setFilter({ ...filter, coach: e.target.value })}>
+            <option value="">Tất cả</option>
+            <option value="Đã gán">Đã gán</option>
+            <option value="Chưa gán">Chưa gán</option>
+          </select>
+        </div>
+      </div>
