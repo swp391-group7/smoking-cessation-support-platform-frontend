@@ -95,11 +95,11 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Sales Overview + Timeline */}
+      {/* Coach Overview + Timeline */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sales */}
-        <div className="bg-blue-500 text-white rounded-xl p-4 shadow">
-          <h4 className="text-lg">Sales In July</h4>
+        {/* Coach */}
+        <div className="bg-green-500 text-white rounded-xl p-4 shadow">
+          <h4 className="text-lg">Coaching Revenue</h4>
           <p className="text-2xl font-bold">$2665.00</p>
           <div className="flex justify-between text-sm mt-2">
             <span>Direct Sale: $1768</span>
