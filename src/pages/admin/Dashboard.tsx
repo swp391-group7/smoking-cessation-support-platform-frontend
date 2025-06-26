@@ -76,12 +76,11 @@ const Dashboard = () => {
       </div>
 
       {/* Progress Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { label: "Published Project", value: 532, change: "+1.69%", color: "text-green-500" },
-          { label: "Completed Task", value: 4569, change: "-0.5%", color: "text-red-500" },
-          { label: "Successful Task", value: "89%", change: "+0.99%", color: "text-green-500" },
-          { label: "Ongoing Project", value: 365, change: "+0.35%", color: "text-green-500" },
+          { label: "Unregistered Users", value: 4569, change: "-0.5%", color: "text-red-500" },
+          { label: "Active Participants", value: "89%", change: "+0.99%", color: "text-green-500" },
+          { label: "Completed Programs", value: 365, change: "+0.35%", color: "text-green-500" },
         ].map(({ label, value, change, color }, i) => (
           <div key={i} className="bg-white p-4 rounded-xl shadow">
             <h4 className="text-sm text-gray-600">{label}</h4>
