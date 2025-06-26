@@ -24,3 +24,22 @@ const mockUsers = [
 
 const levels = ["Nhẹ", "Vừa", "Nặng"];
 const plans = ["Cai từ từ", "Cai ngay"];
+
+export default function UserManagement() {
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [filter, setFilter] = useState({ level: "", plan: "", coach: "" });
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+
+  const filteredUsers = mockUsers.filter((u) => {
+    return (
+      (!filter.level || u.addictionLevel === filter.level) &&
+      (!filter.plan || u.plan === filter.plan) &&
+      (!filter.coach || (filter.coach === "Đã gán" ? u.coach : !u.coach))
+    );
+  });
+
+  const toggleUser = (email: string) => {
+    setSelectedUsers((prev) =>
+      prev.includes(email) ? prev.filter((e) => e !== email) : [...prev, email]
+    );
+  };
