@@ -5,8 +5,8 @@ const mockUsers = [
     {
         name: "Nguyen Van A",
         email: "a@example.com",
-        addictionLevel: "Nặng",
-        plan: "Cai ngay",
+        addictionLevel: "Severe",
+        plan: "Cold Turkey",
         badges: ["7 ngày", "14 ngày"],
         coach: "Coach Huy",
         status: "Đang hoạt động",
@@ -14,16 +14,16 @@ const mockUsers = [
     {
         name: "Tran Thi B",
         email: "b@example.com",
-        addictionLevel: "Vừa",
-        plan: "Cai từ từ",
+        addictionLevel: "Moderate",
+        plan: "Gradual Reduction",
         badges: ["7 ngày"],
         coach: null,
         status: "Chưa gán coach",
     },
 ];
 
-const levels = ["Nhẹ", "Vừa", "Nặng"];
-const plans = ["Cai từ từ", "Cai ngay"];
+const levels = ["Mild", "Moderate", "Severe"];
+const plans = ["Cold Turkey", "Gradual Reduction"];
 
 export default function UserManagement() {
     const [selectedUser, setSelectedUser] = useState<any | null>(null);
@@ -34,7 +34,7 @@ export default function UserManagement() {
         return (
             (!filter.level || u.addictionLevel === filter.level) &&
             (!filter.plan || u.plan === filter.plan) &&
-            (!filter.coach || (filter.coach === "Đã gán" ? u.coach : !u.coach))
+            (!filter.coach || (filter.coach === "Membership" ? u.coach : !u.coach))
         );
     });
 
@@ -51,25 +51,25 @@ export default function UserManagement() {
             {/* Filter Bar */}
             <div className="bg-white p-4 rounded-xl shadow flex flex-wrap gap-4 items-center">
                 <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-700">Mức độ:</label>
+                    <label className="text-sm text-gray-700">Dependency:</label>
                     <select className="border rounded px-2 py-1 text-sm" value={filter.level} onChange={(e) => setFilter({ ...filter, level: e.target.value })}>
-                        <option value="">Tất cả</option>
+                        <option value="">All</option>
                         {levels.map((l) => <option key={l}>{l}</option>)}
                     </select>
                 </div>
                 <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-700">Lộ trình:</label>
+                    <label className="text-sm text-gray-700">Progress:</label>
                     <select className="border rounded px-2 py-1 text-sm" value={filter.plan} onChange={(e) => setFilter({ ...filter, plan: e.target.value })}>
-                        <option value="">Tất cả</option>
+                        <option value="">All</option>
                         {plans.map((p) => <option key={p}>{p}</option>)}
                     </select>
                 </div>
                 <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-700">Coach:</label>
                     <select className="border rounded px-2 py-1 text-sm" value={filter.coach} onChange={(e) => setFilter({ ...filter, coach: e.target.value })}>
-                        <option value="">Tất cả</option>
-                        <option value="Đã gán">Đã gán</option>
-                        <option value="Chưa gán">Chưa gán</option>
+                        <option value="">All</option>
+                        <option value="Membership">Have coach</option>
+                        <option value="Chưa gán">None</option>
                     </select>
                 </div>
             </div>
@@ -77,10 +77,9 @@ export default function UserManagement() {
             {/* Bulk Actions */}
             {selectedUsers.length > 0 && (
                 <div className="bg-white p-3 rounded shadow border border-green-300 text-sm flex justify-between items-center">
-                    <span>{selectedUsers.length} người dùng được chọn</span>
+                    <span>{selectedUsers.length} member is selected</span>
                     <div className="flex gap-3">
-                        <button className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">Gán coach</button>
-                        <button className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">Gửi thông báo</button>
+                        <button className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">Send noti</button>
                     </div>
                 </div>
             )}
@@ -91,13 +90,13 @@ export default function UserManagement() {
                     <thead className="text-green-700">
                         <tr>
                             <th></th>
-                            <th>Họ tên</th>
+                            <th>Full Name</th>
                             <th>Email</th>
-                            <th>Mức độ</th>
-                            <th>Lộ trình</th>
+                            <th>Dependency</th>
+                            <th>Progress</th>
                             <th>Coach</th>
-                            <th>Huy hiệu</th>
-                            <th>Chi tiết</th>
+                            <th>Badge</th>
+                            <th>Detail</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -110,11 +109,11 @@ export default function UserManagement() {
                                 <td>{u.email}</td>
                                 <td className="text-green-800 font-medium">{u.addictionLevel}</td>
                                 <td>{u.plan}</td>
-                                <td>{u.coach || <span className="text-red-500 italic">Chưa gán</span>}</td>
+                                <td>{u.coach || <span className="text-red-500 italic">None</span>}</td>
                                 <td>{u.badges.map((b) => <span key={b} className="inline-block text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded mr-1">{b}</span>)}</td>
                                 <td>
                                     <button onClick={() => setSelectedUser(u)} className="text-green-600 hover:underline flex items-center gap-1">
-                                        <Eye size={14} /> Xem
+                                        <Eye size={14} /> View
                                     </button>
                                 </td>
                             </tr>
