@@ -46,14 +46,26 @@ const LoginPage: React.FC = () => {
   const { mutate: login, isPending } = useMutation({
     mutationFn: loginApi,
     onSuccess: (response) => {
-      localStorage.setItem("token", response.token);
-      localStorage.setItem("user", JSON.stringify(response.user));
-      toast.success("Đăng nhập thành công", {
-        position: "top-center",
-        description: "Chào mừng bạn trở lại!",
-      });
-      setTimeout(() => navigate("/"), 700);
-    },
+  const { token, user } = response;
+
+  if (user.role !== "admin") {
+    toast.error("Bạn không có quyền truy cập trang quản trị!", {
+      position: "top-center",
+    });
+    return;
+  }
+
+  localStorage.setItem("token", token);
+  localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem("role", user.role);
+
+  toast.success("Đăng nhập thành công!", {
+    position: "top-center",
+    description: `Chào mừng quản trị viên ${user.full_name}`,
+  });
+
+  setTimeout(() => navigate("/admin"), 700);
+},
     onError: () => {
       toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản hoặc mật khẩu.", {
         position: "bottom-right",

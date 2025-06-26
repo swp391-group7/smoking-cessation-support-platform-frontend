@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "@/components/admin/Sidebar";
 import Topbar from "@/components/admin/Topbar";
@@ -120,27 +120,26 @@ const menuItems = [
 const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Add this useEffect to prevent body scroll
-  React.useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = 'unset';
-      document.documentElement.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
+      document.documentElement.style.overflow = "unset";
     };
   }, []);
 
   return (
-    <div 
-      className="bg-gray-50" 
-      style={{ 
-        position: 'fixed',
+    <div
+      className="bg-gray-50"
+      style={{
+        position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        overflow: 'hidden'
+        overflow: "hidden",
       }}
     >
       <div className="flex h-full">
@@ -150,11 +149,11 @@ const AdminLayout: React.FC = () => {
             sidebarOpen={sidebarOpen}
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           />
-          <main 
+          <main
             className="flex-1 bg-gray-50 p-6"
-            style={{ 
-              overflow: 'auto',
-              height: 'calc(100vh - 64px)'
+            style={{
+              overflow: "auto",
+              height: "calc(100vh - 64px)",
             }}
           >
             <Outlet />
