@@ -26,6 +26,7 @@ import Reports from "./pages/admin/Reports.tsx";
 import UserProfiles from "./pages/admin/UserProfiles.tsx";
 import Settings from "./pages/admin/Settings.tsx";
 import Badges from "./pages/admin/Badges.tsx";
+import AdminProfile from "./pages/admin/Profile.tsx";
 
 export const App = () => (
   <>
@@ -55,6 +56,7 @@ export const App = () => (
         >
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
+          <Route path="profile" element={<AdminProfile />} />
           <Route path="plans" element={<Plans />} />
           <Route path="quit-profiles" element={<QuitProfiles />} />
           <Route path="quit-plans" element={<QuitPlans />} />
