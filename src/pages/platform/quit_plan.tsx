@@ -1,5 +1,5 @@
 // src/pages/QuitPlanPage.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import type { PlanType } from "@/api/plantype";
@@ -18,6 +18,7 @@ import {
   createImmediatePlan,
   createDraftPlan,
   createDefaultStep,
+  getUserPlans,
 } from "@/api/userPlanApi";
 import { AxiosError } from "axios";
 
@@ -25,7 +26,42 @@ export default function QuitPlanPage() {
   const [confirmType, setConfirmType] = useState<PlanType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasActivePlan, setHasActivePlan] = useState<boolean>(false);
+  const [isCheckingPlans, setIsCheckingPlans] = useState(true);
+  const [showActivePlanDialog, setShowActivePlanDialog] = useState(false);
   const navigate = useNavigate();
+
+  // Kiểm tra plan active khi component mount
+  useEffect(() => {
+    checkActivePlans();
+  }, []);
+
+  const checkActivePlans = async () => {
+    setIsCheckingPlans(true);
+    setError(null);
+    try {
+      const plans = await getUserPlans();
+      console.log('Active plans found:', plans);
+      console.log('Plans length:', plans.length);
+      
+      if (plans && plans.length > 0) {
+        console.log('Setting hasActivePlan to true');
+        setHasActivePlan(true);
+        setShowActivePlanDialog(true);
+      } else {
+        console.log('No active plans found');
+        setHasActivePlan(false);
+        setShowActivePlanDialog(false);
+      }
+    } catch (err) {
+      console.error('Error checking active plans:', err);
+      setHasActivePlan(false);
+      setShowActivePlanDialog(false);
+      setError('Không thể kiểm tra kế hoạch hiện tại');
+    } finally {
+      setIsCheckingPlans(false);
+    }
+  };
 
   const handleColdTurkeySelect = () => {
     setError(null);
@@ -81,6 +117,75 @@ export default function QuitPlanPage() {
     }
   };
 
+  const handleGoToProgress = () => {
+    navigate("/quit_progress");
+  };
+
+  const handleRestartPlan = () => {
+    // TODO: Xử lý logic làm lại plan
+    setShowActivePlanDialog(false);
+    setHasActivePlan(false);
+    console.log("Restart plan logic will be implemented later");
+  };
+
+  // Loading state khi đang check plans
+  if (isCheckingPlans) {
+    return (
+      <div className="container mx-auto px-4 py-8 min-h-screen flex flex-col items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang kiểm tra kế hoạch hiện tại...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Nếu có active plan, chỉ hiển thị thông báo đang loading hoặc dialog
+  if (hasActivePlan) {
+    return (
+      <div className="container mx-auto px-4 py-8 min-h-screen flex flex-col items-center justify-center">
+        {error && (
+          <div className="text-center mb-4">
+            <p className="text-red-600">{error}</p>
+          </div>
+        )}
+        {/* Active Plan Alert Dialog sẽ hiển thị */}
+        <AlertDialog
+          open={showActivePlanDialog}
+          onOpenChange={() => setShowActivePlanDialog(false)}
+        >
+          <AlertDialogContent className="bg-white rounded-xl shadow-2xl p-8 border border-yellow-100">
+            <AlertDialogHeader className="text-center mb-5">
+              <AlertDialogTitle className="text-3xl font-extrabold text-yellow-800">
+                Bạn đã có kế hoạch đang hoạt động
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-700 text-lg leading-relaxed">
+                Hệ thống phát hiện bạn đang có một kế hoạch cai thuốc đang hoạt động. 
+                Bạn có muốn tiếp tục với kế hoạch hiện tại hay tạo kế hoạch mới?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter className="flex justify-center space-x-4 mt-8">
+              <AlertDialogAction
+                onClick={handleGoToProgress}
+                className="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-green-300 focus:ring-opacity-75"
+              >
+                Tiếp tục kế hoạch hiện tại
+              </AlertDialogAction>
+              <AlertDialogAction
+                onClick={handleRestartPlan}
+                className="bg-yellow-600 text-white px-6 py-3 rounded-full hover:bg-yellow-700 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-300 focus:ring-opacity-75"
+              >
+                Tạo kế hoạch mới
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    );
+  }
+
+  
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen flex flex-col items-center justify-center">
       {/* Plan Selector */}
@@ -141,7 +246,7 @@ export default function QuitPlanPage() {
         </motion.div>
       </motion.div>
 
-      {/* Alert Dialog */}
+      {/* Confirmation Dialog */}
       <AlertDialog
         open={confirmType !== null}
         onOpenChange={() => setConfirmType(null)}

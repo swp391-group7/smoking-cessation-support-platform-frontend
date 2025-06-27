@@ -12,7 +12,8 @@ import {
   deleteDraftSteps,
   createDefaultStep,
   deleteStepByNumber,
-  updateStepByNumber
+  updateStepByNumber,
+  updateLatestDraftPlan
 } from "@/api/userPlanApi";
 import type { UpdateStepData } from "@/api/userPlanApi";
 import { ChevronLeft } from "lucide-react";
@@ -79,16 +80,22 @@ export const PlanForm: React.FC = () => {
     try {
       // Cập nhật tất cả các step thông qua API
       for (let i = 0; i < stages.length; i++) {
-  const stage = stages[i];
-  const stepData: UpdateStepData = {
-    stepStartDate: stage.start!.toISOString().split('T')[0],
-    stepEndDate:   stage.end!.toISOString().split('T')[0],
-    targetCigarettesPerDay: stage.targetCigarettes ?? 0,
-    stepDescription: stage.description,
-    status: "active"  // hoặc lấy từ state nếu bạn quản lý status động
-  };
-  await updateStepByNumber(planId, i + 1, stepData);
-}
+        const stage = stages[i];
+        const stepData: UpdateStepData = {
+          stepStartDate: stage.start!.toISOString().split('T')[0],
+          stepEndDate:   stage.end!.toISOString().split('T')[0],
+          targetCigarettesPerDay: stage.targetCigarettes ?? 0,
+          stepDescription: stage.description,
+          status: "active"  // hoặc lấy từ state nếu bạn quản lý status động
+        };
+        await updateStepByNumber(planId, i + 1, stepData);
+      }
+
+      // Cập nhật targetDate và backend sẽ tự động chuyển status từ draft thành active
+      const lastStageEndDate = lastStage.end!.toISOString().split('T')[0];
+      await updateLatestDraftPlan({
+        targetDate: lastStageEndDate
+      });
 
       showSuccess("Kế hoạch đã được lưu thành công!");
       

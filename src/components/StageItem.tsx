@@ -90,7 +90,7 @@ export const StageItem: React.FC<StageItemProps> = ({
             minDate={getMinStartDate() || undefined}
             maxDate={overallEndDate || undefined}
             className="w-full border border-gray-300 rounded-md p-2 bg-white"
-            placeholderText="Chọn ngày"
+            placeholder="Chọn ngày"
             disabled={isStartDateDisabled} // Disable based on logic
           />
         </div>
@@ -104,7 +104,7 @@ export const StageItem: React.FC<StageItemProps> = ({
             minDate={getMinEndDate() || undefined}
             maxDate={overallEndDate || undefined}
             className="w-full border border-gray-300 rounded-md p-2 bg-white"
-            placeholderText="Chọn ngày"
+            placeholder="Chọn ngày"
           />
         </div>
       </div>
