@@ -28,6 +28,7 @@ import UserProfiles from './pages/admin/UserProfiles.tsx';
 import Settings from './pages/admin/Settings.tsx';
 import Badges from './pages/admin/Badges.tsx';
 import AdminProfile from './pages/admin/Profile.tsx';
+import { PlanForm } from './components/PlanForm.tsx';
 
 export const App = () => (
   <>
@@ -42,8 +43,8 @@ export const App = () => (
           <Route path="quit_plan" element={<Quit_Plan />} />
           <Route path="blog" element={<BlogPost />} />
           <Route path="user_survey" element={<UserSurvey />} />
-          <Route path="user_info" element={<UserInfo />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/user_info" element={<UserInfo />} />
+          <Route path="quit_form" element={<PlanForm />} />
         </Route>
 
         {/* Admin Route + Bảo vệ bằng role admin */}

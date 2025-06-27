@@ -180,51 +180,78 @@ const UserSurveyForm: React.FC = () => {
     return Object.keys(newErr).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmissionError(null); // Xóa lỗi gửi trước đó
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setSubmissionError(null);
 
-    if (!validateForm()) {
-      return;
+  if (!validateForm()) {
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    // Ánh xạ formData sang payload CreateSurveyRequest
+    const payload: CreateSurveyRequest = {
+      smokeDuration: formData.smoke_duration,
+      cigarettesPerDay: formData.cigarettes_per_day,
+      priceEach: formData.price_each,
+      triedToQuit: formData.tried_to_quit,
+      healthStatus: formData.health_status,
+      dependencyLevel: formData.dependency_level,
+      note: formData.note,
+      a1: surveyQuestions.find(q => q.key === "a1")?.options.find(opt => opt.point === formData.a1)?.text || "",
+      a2: surveyQuestions.find(q => q.key === "a2")?.options.find(opt => opt.point === formData.a2)?.text || "",
+      a3: surveyQuestions.find(q => q.key === "a3")?.options.find(opt => opt.point === formData.a3)?.text || "",
+      a4: surveyQuestions.find(q => q.key === "a4")?.options.find(opt => opt.point === formData.a4)?.text || "",
+      a5: surveyQuestions.find(q => q.key === "a5")?.options.find(opt => opt.point === formData.a5)?.text || "",
+      a6: surveyQuestions.find(q => q.key === "a6")?.options.find(opt => opt.point === formData.a6)?.text || "",
+      a7: surveyQuestions.find(q => q.key === "a7")?.options.find(opt => opt.point === formData.a7)?.text || "",
+      a8: surveyQuestions.find(q => q.key === "a8")?.options.find(opt => opt.point === formData.a8)?.text || "",
+    };
+
+    await createSurvey(payload);
+    
+    // Thay vì chỉ set isSubmitted = true, bạn cần:
+    // 1. Hiển thị thông báo thành công tạm thời
+    setIsSubmitted(true);
+    
+    // 2. Sau 3 giây, tự động chuyển sang trạng thái "existing survey"
+    setTimeout(() => {
+      // Cập nhật state để hiển thị như đã có existing survey
+      setHasExistingSurvey(true);
+      setExistingSurveyData({
+        smokeDuration: payload.smokeDuration,
+        cigarettesPerDay: payload.cigarettesPerDay,
+        priceEach: payload.priceEach,
+        triedToQuit: payload.triedToQuit,
+        healthStatus: payload.healthStatus,
+        dependencyLevel: payload.dependencyLevel,
+        note: payload.note,
+        a1: payload.a1,
+        a2: payload.a2,
+        a3: payload.a3,
+        a4: payload.a4,
+        a5: payload.a5,
+        a6: payload.a6,
+        a7: payload.a7,
+        a8: payload.a8,
+      });
+      setIsSubmitted(false); // Tắt thông báo cảm ơn
+    }, 1500);
+    
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Lỗi khi gửi khảo sát:", error);
+      setSubmissionError(error.response?.data?.message || "Không thể gửi khảo sát. Vui lòng thử lại.");
+    } else {
+      console.error("Một lỗi không mong muốn đã xảy ra:", error);
+      setSubmissionError("Một lỗi không mong muốn đã xảy ra. Vui lòng thử lại.");
     }
-
-    setIsLoading(true); // Bắt đầu tải
-
-    try {
-      // Ánh xạ formData sang payload CreateSurveyRequest
-      const payload: CreateSurveyRequest = {
-        smokeDuration: formData.smoke_duration,
-        cigarettesPerDay: formData.cigarettes_per_day,
-        priceEach: formData.price_each,
-        triedToQuit: formData.tried_to_quit,
-        healthStatus: formData.health_status,
-        dependencyLevel: formData.dependency_level,
-        note: formData.note,
-        // Chuyển đổi điểm đã lưu trở lại văn bản câu trả lời cho API
-        a1: surveyQuestions.find(q => q.key === "a1")?.options.find(opt => opt.point === formData.a1)?.text || "",
-        a2: surveyQuestions.find(q => q.key === "a2")?.options.find(opt => opt.point === formData.a2)?.text || "",
-        a3: surveyQuestions.find(q => q.key === "a3")?.options.find(opt => opt.point === formData.a3)?.text || "",
-        a4: surveyQuestions.find(q => q.key === "a4")?.options.find(opt => opt.point === formData.a4)?.text || "",
-        a5: surveyQuestions.find(q => q.key === "a5")?.options.find(opt => opt.point === formData.a5)?.text || "",
-        a6: surveyQuestions.find(q => q.key === "a6")?.options.find(opt => opt.point === formData.a6)?.text || "",
-        a7: surveyQuestions.find(q => q.key === "a7")?.options.find(opt => opt.point === formData.a7)?.text || "",
-        a8: surveyQuestions.find(q => q.key === "a8")?.options.find(opt => opt.point === formData.a8)?.text || "",
-      };
-
-      await createSurvey(payload);
-      setIsSubmitted(true);
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error("Lỗi khi gửi khảo sát:", error);
-        setSubmissionError(error.response?.data?.message || "Không thể gửi khảo sát. Vui lòng thử lại.");
-      } else {
-        console.error("Một lỗi không mong muốn đã xảy ra:", error);
-        setSubmissionError("Một lỗi không mong muốn đã xảy ra. Vui lòng thử lại.");
-      }
-    } finally {
-      setIsLoading(false); // Kết thúc tải
-    }
-  };
+  } finally {
+    setIsLoading(false);
+  }
+};
   // Hàm để thử lại kiểm tra survey
   const handleRetryCheck = () => {
     setCheckSurveyError(null);
@@ -288,99 +315,100 @@ const UserSurveyForm: React.FC = () => {
   }
 
   // Hiển thị thông báo đã có survey (với tùy chọn khảo sát lại)
-  if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
+if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
     return (
-      <div className="max-w-4xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-yellow-100">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-semibold text-yellow-700 mb-4 flex items-center justify-center">
-            <svg className="w-8 h-8 mr-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+      <div className="max-w-4xl mx-auto my-12 bg-white shadow-2xl rounded-2xl p-10 border border-green-200 animate-fade-in-up">
+        {/* Header Section */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-extrabold text-green-700 mb-4 flex items-center justify-center">
+            <svg className="w-10 h-10 mr-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Bạn đã hoàn thành khảo sát
+            Survey Completed!
           </h1>
-          <p className="text-lg text-gray-700 mb-6">
-            Bạn đã thực hiện khảo sát này rồi. Dưới đây là thông tin khảo sát của bạn:
+          <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
+            You've already completed this survey. Here's a summary of your responses:
           </p>
         </div>
 
-        {/* Hiển thị thông tin survey đã có */}
-        <div className="bg-yellow-50 rounded-lg p-6 border border-yellow-200">
-          <h2 className="text-xl font-semibold text-yellow-800 mb-4">Thông tin khảo sát của bạn:</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+        {/* Existing Survey Data Display */}
+        <div className="bg-green-50 rounded-xl p-8 border border-green-300 shadow-inner">
+          <h2 className="text-2xl font-bold text-green-800 mb-6 border-b-2 border-green-400 pb-3">Your Survey Information</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-800">
             <div>
-              <p><strong>Thời gian hút thuốc:</strong> {existingSurveyData.smokeDuration}</p>
-              <p><strong>Số điếu/ngày:</strong> {existingSurveyData.cigarettesPerDay}</p>
-              <p><strong>Giá mỗi bao:</strong> {existingSurveyData.priceEach} VNĐ</p>
-              <p><strong>Đã từng cố bỏ:</strong> {existingSurveyData.triedToQuit ? 'Có' : 'Không'}</p>
+              <p className="mb-2"><strong className="text-green-700">Smoking Duration:</strong> {existingSurveyData.smokeDuration}</p>
+              <p className="mb-2"><strong className="text-green-700">Cigarettes per Day:</strong> {existingSurveyData.cigarettesPerDay}</p>
+              <p className="mb-2"><strong className="text-green-700">Price per Pack:</strong> {existingSurveyData.priceEach} VND</p>
+              <p className="mb-2"><strong className="text-green-700">Tried to Quit Before:</strong> {existingSurveyData.triedToQuit ? 'Yes' : 'No'}</p>
             </div>
             <div>
-              <p><strong>Tình trạng sức khỏe:</strong> {existingSurveyData.healthStatus}</p>
-              <p><strong>Mức độ phụ thuộc:</strong> {existingSurveyData.dependencyLevel}/5</p>
+              <p className="mb-2"><strong className="text-green-700">Health Status:</strong> {existingSurveyData.healthStatus}</p>
+              <p className="mb-2"><strong className="text-green-700">Dependency Level:</strong> {existingSurveyData.dependencyLevel}/5</p>
             </div>
           </div>
 
-          {/* Hiển thị các câu trả lời */}
-          <div className="mt-4">
-            <h3 className="font-semibold text-yellow-800 mb-2">Câu trả lời chi tiết:</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+          {/* Detailed Answers Display */}
+          <div className="mt-8">
+            <h3 className="text-xl font-semibold text-green-800 mb-4 border-b border-green-300 pb-2">Detailed Answers:</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6 text-gray-700 text-base">
               {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                <p key={i}><strong>Câu {i}:</strong> {existingSurveyData[`a${i}` as keyof GetSurveyRequest]}</p>
+                <p key={i} className="flex items-start">
+                  <strong className="text-green-600 mr-2">Q{i}:</strong> {existingSurveyData[`a${i}` as keyof GetSurveyRequest]}
+                </p>
               ))}
             </div>
           </div>
 
           {existingSurveyData.note && (
-            <div className="mt-4">
-              <p><strong>Ghi chú:</strong> {existingSurveyData.note}</p>
+            <div className="mt-8 p-4 bg-green-100 rounded-lg border border-green-200">
+              <p className="text-gray-800"><strong className="text-green-700">Note:</strong> {existingSurveyData.note}</p>
             </div>
           )}
         </div>
 
-        <div className="text-center mt-8">
-          <p className="text-gray-600 text-sm mb-4">
-            Cảm ơn bạn đã tham gia khảo sát. Nếu có thay đổi, vui lòng liên hệ với chúng tôi.
+        {/* Action Buttons */}
+        <div className="text-center mt-10">
+          <p className="text-gray-600 text-sm mb-6 max-w-xl mx-auto">
+            Thank you for participating in our survey. If you need to make any changes, please contact us or re-take the survey.
           </p>
-          <div className="flex justify-center gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button
               onClick={handleNextStep}
-              className="bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-800 transition"
+              className="bg-green-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-800 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg"
             >
-              Tiếp tục lên kế hoạch →
+              Continue to Planning &rarr;
             </button>
+
+            {/* Resurvey Button with AlertDialog */}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button className="bg-gray-200 text-gray-800 px-8 py-3 rounded-full font-semibold hover:bg-gray-300 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                  Want to Retake the Survey?
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-white text-green-700 border border-green-300 shadow-xl rounded-lg">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-green-800 text-2xl font-bold mb-2">
+                    Confirm Retake Survey
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-green-600 text-base leading-relaxed">
+                    Are you sure you want to retake the survey? This action will create a new survey submission and may overwrite your current results.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="pt-4">
+                  <AlertDialogCancel className="bg-gray-200 text-gray-700 hover:bg-gray-300 transition rounded-lg px-5 py-2 font-medium">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleConfirmResurvey}
+                    className="bg-green-700 text-white hover:bg-green-800 transition rounded-lg px-5 py-2 font-medium"
+                  >
+                    Confirm
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
-
-
-          {/* Nút khảo sát lại với AlertDialog */}
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <button className="bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-800 transition">
-                Bạn có muốn khảo sát lại không?
-              </button>
-            </AlertDialogTrigger>
-            <AlertDialogContent className="bg-white text-emerald-700 border border-emerald-300 shadow-xl">
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-emerald-800 text-lg font-semibold">
-                  Xác nhận khảo sát lại
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-emerald-600">
-                  Bạn có chắc chắn muốn thực hiện khảo sát lại không? Thao tác này sẽ tạo
-                  một bản khảo sát mới và có thể ghi đè lên kết quả hiện tại.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="bg-gray-200 text-gray-700 hover:bg-gray-300 transition rounded-md px-4 py-2">
-                  Hủy
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleConfirmResurvey}
-                  className="bg-emerald-700 text-white hover:bg-emerald-800 transition rounded-md px-4 py-2"
-                >
-                  Xác nhận
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
         </div>
       </div>
     );
@@ -390,15 +418,29 @@ const UserSurveyForm: React.FC = () => {
 
 
 
-  if (isSubmitted) {
-    return (
-      <div className="max-w-3xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-green-100 text-center">
-        <h1 className="text-3xl font-semibold text-green-700 mb-4">Cảm ơn bạn!</h1>
-        <p className="text-lg text-gray-800 mb-6">Khảo sát của bạn đã được gửi thành công.</p>
-        <p className="text-md text-gray-600">Phản hồi của bạn rất có giá trị!</p>
+ if (isSubmitted) {
+  return (
+    <div className="max-w-3xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-green-100 text-center animate-fade-in-up">
+      <div className="flex items-center justify-center mb-4">
+        <svg className="w-12 h-12 text-green-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
       </div>
-    );
-  }
+      <h1 className="text-3xl font-semibold text-green-700 mb-4">Cảm ơn bạn!</h1>
+      <p className="text-lg text-gray-800 mb-6">Khảo sát của bạn đã được gửi thành công.</p>
+      <p className="text-md text-gray-600 mb-4">Phản hồi của bạn rất có giá trị!</p>
+      
+      {/* Loading indicator */}
+      <div className="flex items-center justify-center">
+        <svg className="animate-spin h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span className="text-sm text-gray-600">Đang chuyển hướng...</span>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="max-w-5xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-8 border border-green-100">
