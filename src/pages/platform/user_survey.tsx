@@ -180,51 +180,78 @@ const UserSurveyForm: React.FC = () => {
     return Object.keys(newErr).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmissionError(null); // Xóa lỗi gửi trước đó
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setSubmissionError(null);
 
-    if (!validateForm()) {
-      return;
+  if (!validateForm()) {
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    // Ánh xạ formData sang payload CreateSurveyRequest
+    const payload: CreateSurveyRequest = {
+      smokeDuration: formData.smoke_duration,
+      cigarettesPerDay: formData.cigarettes_per_day,
+      priceEach: formData.price_each,
+      triedToQuit: formData.tried_to_quit,
+      healthStatus: formData.health_status,
+      dependencyLevel: formData.dependency_level,
+      note: formData.note,
+      a1: surveyQuestions.find(q => q.key === "a1")?.options.find(opt => opt.point === formData.a1)?.text || "",
+      a2: surveyQuestions.find(q => q.key === "a2")?.options.find(opt => opt.point === formData.a2)?.text || "",
+      a3: surveyQuestions.find(q => q.key === "a3")?.options.find(opt => opt.point === formData.a3)?.text || "",
+      a4: surveyQuestions.find(q => q.key === "a4")?.options.find(opt => opt.point === formData.a4)?.text || "",
+      a5: surveyQuestions.find(q => q.key === "a5")?.options.find(opt => opt.point === formData.a5)?.text || "",
+      a6: surveyQuestions.find(q => q.key === "a6")?.options.find(opt => opt.point === formData.a6)?.text || "",
+      a7: surveyQuestions.find(q => q.key === "a7")?.options.find(opt => opt.point === formData.a7)?.text || "",
+      a8: surveyQuestions.find(q => q.key === "a8")?.options.find(opt => opt.point === formData.a8)?.text || "",
+    };
+
+    await createSurvey(payload);
+    
+    // Thay vì chỉ set isSubmitted = true, bạn cần:
+    // 1. Hiển thị thông báo thành công tạm thời
+    setIsSubmitted(true);
+    
+    // 2. Sau 3 giây, tự động chuyển sang trạng thái "existing survey"
+    setTimeout(() => {
+      // Cập nhật state để hiển thị như đã có existing survey
+      setHasExistingSurvey(true);
+      setExistingSurveyData({
+        smokeDuration: payload.smokeDuration,
+        cigarettesPerDay: payload.cigarettesPerDay,
+        priceEach: payload.priceEach,
+        triedToQuit: payload.triedToQuit,
+        healthStatus: payload.healthStatus,
+        dependencyLevel: payload.dependencyLevel,
+        note: payload.note,
+        a1: payload.a1,
+        a2: payload.a2,
+        a3: payload.a3,
+        a4: payload.a4,
+        a5: payload.a5,
+        a6: payload.a6,
+        a7: payload.a7,
+        a8: payload.a8,
+      });
+      setIsSubmitted(false); // Tắt thông báo cảm ơn
+    }, 1500);
+    
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Lỗi khi gửi khảo sát:", error);
+      setSubmissionError(error.response?.data?.message || "Không thể gửi khảo sát. Vui lòng thử lại.");
+    } else {
+      console.error("Một lỗi không mong muốn đã xảy ra:", error);
+      setSubmissionError("Một lỗi không mong muốn đã xảy ra. Vui lòng thử lại.");
     }
-
-    setIsLoading(true); // Bắt đầu tải
-
-    try {
-      // Ánh xạ formData sang payload CreateSurveyRequest
-      const payload: CreateSurveyRequest = {
-        smokeDuration: formData.smoke_duration,
-        cigarettesPerDay: formData.cigarettes_per_day,
-        priceEach: formData.price_each,
-        triedToQuit: formData.tried_to_quit,
-        healthStatus: formData.health_status,
-        dependencyLevel: formData.dependency_level,
-        note: formData.note,
-        // Chuyển đổi điểm đã lưu trở lại văn bản câu trả lời cho API
-        a1: surveyQuestions.find(q => q.key === "a1")?.options.find(opt => opt.point === formData.a1)?.text || "",
-        a2: surveyQuestions.find(q => q.key === "a2")?.options.find(opt => opt.point === formData.a2)?.text || "",
-        a3: surveyQuestions.find(q => q.key === "a3")?.options.find(opt => opt.point === formData.a3)?.text || "",
-        a4: surveyQuestions.find(q => q.key === "a4")?.options.find(opt => opt.point === formData.a4)?.text || "",
-        a5: surveyQuestions.find(q => q.key === "a5")?.options.find(opt => opt.point === formData.a5)?.text || "",
-        a6: surveyQuestions.find(q => q.key === "a6")?.options.find(opt => opt.point === formData.a6)?.text || "",
-        a7: surveyQuestions.find(q => q.key === "a7")?.options.find(opt => opt.point === formData.a7)?.text || "",
-        a8: surveyQuestions.find(q => q.key === "a8")?.options.find(opt => opt.point === formData.a8)?.text || "",
-      };
-
-      await createSurvey(payload);
-      setIsSubmitted(true);
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error("Lỗi khi gửi khảo sát:", error);
-        setSubmissionError(error.response?.data?.message || "Không thể gửi khảo sát. Vui lòng thử lại.");
-      } else {
-        console.error("Một lỗi không mong muốn đã xảy ra:", error);
-        setSubmissionError("Một lỗi không mong muốn đã xảy ra. Vui lòng thử lại.");
-      }
-    } finally {
-      setIsLoading(false); // Kết thúc tải
-    }
-  };
+  } finally {
+    setIsLoading(false);
+  }
+};
   // Hàm để thử lại kiểm tra survey
   const handleRetryCheck = () => {
     setCheckSurveyError(null);
@@ -391,15 +418,29 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
 
 
 
-  if (isSubmitted) {
-    return (
-      <div className="max-w-3xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-green-100 text-center">
-        <h1 className="text-3xl font-semibold text-green-700 mb-4">Cảm ơn bạn!</h1>
-        <p className="text-lg text-gray-800 mb-6">Khảo sát của bạn đã được gửi thành công.</p>
-        <p className="text-md text-gray-600">Phản hồi của bạn rất có giá trị!</p>
+ if (isSubmitted) {
+  return (
+    <div className="max-w-3xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-green-100 text-center animate-fade-in-up">
+      <div className="flex items-center justify-center mb-4">
+        <svg className="w-12 h-12 text-green-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
       </div>
-    );
-  }
+      <h1 className="text-3xl font-semibold text-green-700 mb-4">Cảm ơn bạn!</h1>
+      <p className="text-lg text-gray-800 mb-6">Khảo sát của bạn đã được gửi thành công.</p>
+      <p className="text-md text-gray-600 mb-4">Phản hồi của bạn rất có giá trị!</p>
+      
+      {/* Loading indicator */}
+      <div className="flex items-center justify-center">
+        <svg className="animate-spin h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span className="text-sm text-gray-600">Đang chuyển hướng...</span>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="max-w-5xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-8 border border-green-100">

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { getUserPlans } from "@/api/userPlanApi";
+import { getSurveyByUserId } from "@/api/usersurveyApi";
 import type { UserPlan } from "@/api/userPlanApi";
 
 export const QuitDropdown: React.FC = () => {
@@ -26,6 +27,8 @@ export const QuitDropdown: React.FC = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [showActivePlanDialog, setShowActivePlanDialog] = useState(false);
   const [showConfirmRestart, setShowConfirmRestart] = useState(false);
+  const [showMissingRequirementsDialog, setShowMissingRequirementsDialog] = useState(false);
+  const [missingItems, setMissingItems] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -36,11 +39,70 @@ export const QuitDropdown: React.FC = () => {
     navigate("/login");
   };
 
-  const handleQuitProgress = () => {
+  // Function to check if user has survey and plan
+  const checkUserRequirements = async (): Promise<{ hasSurvey: boolean; hasPlan: boolean }> => {
+    try {
+      // Check survey
+      let hasSurvey = false;
+      try {
+        await getSurveyByUserId();
+        hasSurvey = true;
+      } catch (surveyError) {
+        console.log("No survey found:", surveyError);
+        hasSurvey = false;
+      }
+
+      // Check plan
+      let hasPlan = false;
+      try {
+        const resp = await getUserPlans();
+        const plansArray: UserPlan[] = Array.isArray(resp) ? resp : [resp];
+        hasPlan = plansArray.length > 0;
+      } catch (planError) {
+        console.log("No plan found:", planError);
+        hasPlan = false;
+      }
+
+      return { hasSurvey, hasPlan };
+    } catch (error) {
+      console.error("Error checking requirements:", error);
+      throw error;
+    }
+  };
+
+  const handleQuitProgress = async () => {
     if (!isLoggedIn) {
       setShowLoginDialog(true);
-    } else {
-      navigate("/quit_progress");
+      return;
+    }
+
+    setError(null);
+    try {
+      const { hasSurvey, hasPlan } = await checkUserRequirements();
+      const missing: string[] = [];
+      
+      if (!hasSurvey) missing.push("Survey");
+      if (!hasPlan) missing.push("Quit Plan");
+
+      if (missing.length > 0) {
+        setMissingItems(missing);
+        setShowMissingRequirementsDialog(true);
+      } else {
+        // Check if plan is active before navigating
+        const resp = await getUserPlans();
+        const plansArray: UserPlan[] = Array.isArray(resp) ? resp : [resp];
+        const hasActivePlan = plansArray.some((p) => p.status.toLowerCase() === "active");
+        
+        if (hasActivePlan) {
+          navigate("/quit_progress");
+        } else {
+          // Has plan but not active, show dialog to restart
+          setShowActivePlanDialog(true);
+        }
+      }
+    } catch (err) {
+      console.error("Error checking requirements:", err);
+      setError("Unable to check your progress status.");
     }
   };
 
@@ -61,7 +123,7 @@ export const QuitDropdown: React.FC = () => {
       }
     } catch (err) {
       console.error("Error checking plans", err);
-      setError("Unable to check current plan.");
+      navigate("/quit_plan"); // Navigate to quit_plan if no existing plan
     }
   };
 
@@ -73,6 +135,17 @@ export const QuitDropdown: React.FC = () => {
   const handleRestart = () => {
     setShowConfirmRestart(false);
     navigate("/quit_plan");
+  };
+
+  const handleMissingRequirementsAction = () => {
+    setShowMissingRequirementsDialog(false);
+    
+    // Priority: Survey first, then Plan
+    if (missingItems.includes("Survey")) {
+      navigate("/user_survey");
+    } else if (missingItems.includes("Quit Plan")) {
+      navigate("/quit_plan");
+    }
   };
 
   return (
@@ -161,6 +234,53 @@ export const QuitDropdown: React.FC = () => {
               className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-5 py-2 shadow-md"
             >
               Log In
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Missing requirements dialog */}
+      <AlertDialog open={showMissingRequirementsDialog} onOpenChange={setShowMissingRequirementsDialog}>
+        <AlertDialogContent className="bg-white rounded-lg p-6 shadow-xl max-w-md mx-auto">
+          <AlertDialogHeader className="relative flex flex-col items-center">
+            <button
+              onClick={() => setShowMissingRequirementsDialog(false)}
+              className="absolute top-0 right-0 p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <AlertDialogTitle className="text-xl font-bold text-emerald-700 mt-4">
+              Complete Your Setup
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-gray-600 mt-2 text-center">
+              To access your cessation progress, you need to complete:
+              <div className="mt-3 space-y-1">
+                {missingItems.map((item, index) => (
+                  <div key={index} className="flex items-center justify-center">
+                    <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full mr-2"></span>
+                    <span className="font-medium text-emerald-700">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+          
+          <AlertDialogFooter className="flex justify-center space-x-3 mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setShowMissingRequirementsDialog(false)}
+              className="rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 px-5 py-2"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleMissingRequirementsAction}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-5 py-2 shadow-md"
+            >
+              {missingItems.includes("Survey") ? "Complete Survey" : "Create Quit Plan"}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
