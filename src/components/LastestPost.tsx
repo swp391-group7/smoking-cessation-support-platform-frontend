@@ -1,11 +1,11 @@
 import React from 'react';
-import type { Post } from '../pages/platform/blog';
+import type { BlogPost } from '@/api/blog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 
 interface LatestPostProps {
-  post: Post | null;
+  post: BlogPost | null;
   isLoading: boolean;
 }
 
@@ -29,19 +29,21 @@ export default function LatestPost({ post, isLoading }: LatestPostProps) {
       <div className="mb-8 flex flex-col md:flex-row bg-white shadow-md rounded-lg overflow-hidden">
         <img
           className="md:w-1/2 h-64 object-cover"
-          src={post.image}
+          src={post.imageUrl}
           alt={post.title}
         />
         <div className="p-6 flex flex-col justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">{post.title}</h2>
-            <p className="mt-4 text-gray-700">{post.excerpt}</p>
+            <p className="mt-4 text-gray-700">{post.content.slice(0, 100)}...</p>
           </div>
           <div className="mt-6">
             <Button variant="outline" className="border-green-600 text-green-600">
               Read More
             </Button>
-            <p className="text-sm text-gray-500 mt-2">{post.date}</p>
+            <p className="text-sm text-gray-500 mt-2">
+              {new Date(post.createdAt).toLocaleDateString()}
+            </p>
           </div>
         </div>
       </div>

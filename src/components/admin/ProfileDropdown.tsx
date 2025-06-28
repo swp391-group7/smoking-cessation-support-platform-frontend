@@ -2,16 +2,36 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, LogOut, Settings, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { logoutAndRedirect } from "@/api/adminapi/logout";
+
+interface AdminUser {
+  id: string;
+  full_name: string;
+  role: string;
+}
 
 const ProfileDropdown: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const [admin, setAdmin] = useState<AdminUser | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const admin = {
-    full_name: "Admin User",
-    role: "Super Admin"
-  };
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setAdmin({
+          id: parsed.id,
+          full_name: parsed.full_name,
+          role: localStorage.getItem("role") || "Admin",
+        });
+      } catch {
+        setAdmin(null);
+        localStorage.removeItem("user");
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -24,8 +44,10 @@ const ProfileDropdown: React.FC = () => {
   }, []);
 
   const handleLogout = () => {
-    alert("Đăng xuất thành công!");
+    logoutAndRedirect(navigate);
   };
+
+  if (!admin) return null;
 
   return (
     <div className="relative" ref={ref}>
@@ -45,6 +67,7 @@ const ProfileDropdown: React.FC = () => {
           <div className="p-3 border-b">
             <p className="text-sm font-medium text-gray-700">{admin.full_name}</p>
             <p className="text-xs text-gray-500">{admin.role}</p>
+            <p className="text-xs text-gray-400 mt-1">ID: {admin.id}</p>
           </div>
           <div className="py-1">
             <button onClick={() => { setOpen(false); navigate("/admin/profile"); }} className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-50">

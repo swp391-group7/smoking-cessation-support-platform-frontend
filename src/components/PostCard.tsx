@@ -1,9 +1,9 @@
 import React from 'react';
-import type { Post } from '../pages/platform/blog';
+import type { BlogPost } from '@/api/blog';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface PostCardProps {
-  post?: Post;
+  post?: BlogPost;
   isLoading?: boolean;
 }
 
@@ -18,19 +18,24 @@ export default function PostCard({ post, isLoading = false }: PostCardProps) {
       </div>
     );
   }
+
   if (!post) return null;
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+    <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm bg-white">
       <img
         className="h-32 w-full object-cover"
-        src={post.image}
+        src={post.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'}
         alt={post.title}
       />
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-900">{post.title}</h3>
-        <p className="text-sm text-gray-700 mt-1">{post.excerpt}</p>
-        <p className="text-xs text-gray-500 mt-2">{post.date}</p>
+        <p className="text-sm text-gray-700 mt-1">
+          {post.content.slice(0, 80)}...
+        </p>
+        <p className="text-xs text-gray-500 mt-2">
+          {new Date(post.createdAt).toLocaleDateString()}
+        </p>
       </div>
     </div>
   );
