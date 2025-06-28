@@ -29,6 +29,7 @@ import Settings from './pages/admin/Settings.tsx';
 import Badges from './pages/admin/Badges.tsx';
 import AdminProfile from './pages/admin/Profile.tsx';
 import { PlanForm } from './components/PlanForm.tsx';
+import AdminSurveyManagement from './pages/admin/AdminSurveyManagement.tsx';
 
 export const App = () => (
   <>
@@ -72,6 +73,7 @@ export const App = () => (
           <Route path="user-profiles" element={<UserProfiles />} />
           <Route path="badges" element={<Badges />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="survey-management" element={<AdminSurveyManagement />} />
           <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
         </Route>
       </Routes>

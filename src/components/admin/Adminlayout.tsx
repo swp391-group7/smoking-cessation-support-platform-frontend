@@ -68,6 +68,12 @@ const menuItems = [
         icon: FileText,
         description: "Blog content",
       },
+            {
+        name: "Survey Management", 
+        path: "/admin/survey-management",
+        icon: FileText,
+        description: "Manage surveys",
+      },
     ],
   },
   {
