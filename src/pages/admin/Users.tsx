@@ -3,40 +3,34 @@ import { Search, Filter, Eye } from "lucide-react";
 
 const mockUsers = [
     {
-        name: "Nguyen Van A",
+        id: "1",
+        fullname: "Nguyen Van A",
+        username: "nguyenvana",
         email: "a@example.com",
-        addictionLevel: "Severe",
-        plan: "Cold Turkey",
-        badges: ["7 ngày", "14 ngày"],
-        coach: "Coach Huy",
-        status: "Đang hoạt động",
     },
     {
-        name: "Tran Thi B",
+        id: "2",
+        fullname: "Tran Thi B",
+        username: "tranthib",
         email: "b@example.com",
-        addictionLevel: "Moderate",
-        plan: "Gradual Reduction",
-        badges: ["7 ngày"],
-        coach: null,
-        status: "None",
     },
 ];
 
-const levels = ["Mild", "Moderate", "Severe"];
-const plans = ["Cold Turkey", "Gradual Reduction"];
+// const levels = ["Mild", "Moderate", "Severe"];
+// const plans = ["Cold Turkey", "Gradual Reduction"];
 
 export default function UserManagement() {
     const [selectedUser, setSelectedUser] = useState<any | null>(null);
-    const [filter, setFilter] = useState({ level: "", plan: "", coach: "" });
+    {/* [filter, setFilter] = useState({ level: "", plan: "", coach: "" });*/}
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
-    const filteredUsers = mockUsers.filter((u) => {
+    {/*const filteredUsers = mockUsers.filter((u) => {
         return (
             (!filter.level || u.addictionLevel === filter.level) &&
             (!filter.plan || u.plan === filter.plan) &&
             (!filter.coach || (filter.coach === "Membership" ? u.coach : !u.coach))
         );
-    });
+    });*/}
 
     const toggleUser = (email: string) => {
         setSelectedUsers((prev) =>
@@ -48,7 +42,7 @@ export default function UserManagement() {
         <div className="p-6 space-y-6 min-h-screen">
             <h2 className="text-2xl font-bold">User Management</h2>
 
-            {/* Filter Bar */}
+            {/* Filter Bar 
             <div className="bg-white p-4 rounded-xl shadow flex flex-wrap gap-4 items-center">
                 <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-700">Dependency:</label>
@@ -72,7 +66,7 @@ export default function UserManagement() {
                         <option value="Chưa gán">None</option>
                     </select>
                 </div>
-            </div>
+            </div>*/}
 
             {/* Bulk Actions */}
             {selectedUsers.length > 0 && (
@@ -80,6 +74,7 @@ export default function UserManagement() {
                     <span>{selectedUsers.length} member is selected</span>
                     <div className="flex gap-3">
                         <button className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">Send noti</button>
+                        <button className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">Delete</button>
                     </div>
                 </div>
             )}
@@ -90,22 +85,22 @@ export default function UserManagement() {
                     <thead className="text-green-700">
                         <tr>
                             <th></th>
+                            <th>ID User</th>
                             <th>Full Name</th>
+                            <th>User Name</th>
                             <th>Email</th>
-                            <th>Dependency</th>
-                            <th>Progress</th>
-                            <th>Coach</th>
-                            <th>Badge</th>
                             <th>Detail</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    {/* <tbody>
                         {filteredUsers.map((u) => (
                             <tr key={u.email} className="border-t">
                                 <td>
                                     <input type="checkbox" checked={selectedUsers.includes(u.email)} onChange={() => toggleUser(u.email)} />
                                 </td>
-                                <td>{u.name}</td>
+                                <td>{u.id}</td>
+                                <td>{u.fullname}</td>
+                                <td>{u.username}</td>
                                 <td>{u.email}</td>
                                 <td className="text-green-800 font-medium">{u.addictionLevel}</td>
                                 <td>{u.plan}</td>
@@ -118,7 +113,7 @@ export default function UserManagement() {
                                 </td>
                             </tr>
                         ))}
-                    </tbody>
+                    </tbody> */}
                 </table>
             </div>
 
