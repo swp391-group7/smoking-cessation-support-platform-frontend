@@ -3,6 +3,7 @@ import type { BlogPost } from '@/api/blog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
+import BlogDetailModal from './BlogDetail';
 
 interface LatestPostProps {
   post: BlogPost | null;
@@ -10,6 +11,19 @@ interface LatestPostProps {
 }
 
 export default function LatestPost({ post, isLoading }: LatestPostProps) {
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'HEALTH':
+        return 'Health';
+      case 'SMOKEQUIT':
+        return 'Smoke Quit';
+      case 'SMOKEHARM':
+        return 'Smoke Harm';
+      default:
+        return type;
+    }
+  };
+
   if (isLoading || !post) {
     return (
       <div className="mb-8">
@@ -34,13 +48,20 @@ export default function LatestPost({ post, isLoading }: LatestPostProps) {
         />
         <div className="p-6 flex flex-col justify-between">
           <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                {getTypeLabel(post.blog_type)}
+              </span>
+            </div>
             <h2 className="text-2xl font-bold text-gray-900">{post.title}</h2>
             <p className="mt-4 text-gray-700">{post.content.slice(0, 100)}...</p>
           </div>
           <div className="mt-6">
-            <Button variant="outline" className="border-green-600 text-green-600">
-              Read More
-            </Button>
+            <BlogDetailModal post={post}>
+              <Button variant="outline" className="border-green-600 text-green-600">
+                Read More
+              </Button>
+            </BlogDetailModal>
             <p className="text-sm text-gray-500 mt-2">
               {new Date(post.createdAt).toLocaleDateString()}
             </p>
