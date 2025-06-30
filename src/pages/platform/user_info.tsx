@@ -33,7 +33,7 @@ export default function UserProfile() {
 
 
   useEffect(() => {
-    axios.get<UserInfo>("/users/display-current-user").then((res) => {
+    axios.get<UserInfo>("/users/get-current").then((res) => {
       setFormData({ ...res.data, password: "" });
       setAvatarPreview(res.data.avatarPath);
     }).catch(error => {
@@ -49,7 +49,7 @@ export default function UserProfile() {
 
   const handleSave = async () => {
     try {
-      await axios.put("/users/update-peronal-info", formData);
+      await axios.put("/users/update", formData);
       toast.success("🎉 Cập nhật thành công!");
       setEditing(null);
     } catch (err) {
