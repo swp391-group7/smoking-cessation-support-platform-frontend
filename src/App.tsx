@@ -29,13 +29,18 @@ import Settings from './pages/admin/Settings.tsx';
 import Badges from './pages/admin/Badges.tsx';
 import AdminProfile from './pages/admin/Profile.tsx';
 import { PlanForm } from './components/PlanForm.tsx';
+import MembershipPage from './pages/platform/membership.tsx';
+import ScrollToTop from './components/ScrollToTop.tsx';
 
 export const App = () => (
   <>
     <Toaster />
     <Router>
+       <ScrollToTop/>
       <Routes>
+       
         <Route path="/" element={<MainLayout />}>
+          
           <Route index element={<Home />} />
           <Route path="login" element={<LoginForm />} />
           <Route path="register" element={<SignUpForm />} />
@@ -45,6 +50,7 @@ export const App = () => (
           <Route path="user_survey" element={<UserSurvey />} />
           <Route path="/user_info" element={<UserInfo />} />
           <Route path="quit_form" element={<PlanForm />} />
+           <Route path="/membership" element={<MembershipPage />} />
         </Route>
 
         {/* Admin Route + Bảo vệ bằng role admin */}
