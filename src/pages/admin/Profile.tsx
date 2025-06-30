@@ -86,7 +86,7 @@ export default function UserProfile() {
             className="mt-1"
           />
         ) : (
-          <span className="text-lg font-semibold">{formData[field as keyof UserInfo] || "Chưa cập nhật"}</span>
+          <span className="text-lg font-semibold">{formData[field as keyof UserInfo] || "None"}</span>
         )}
       </div>
       {editing !== field ? (
