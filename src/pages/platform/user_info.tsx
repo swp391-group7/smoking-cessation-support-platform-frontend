@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { getCurrentUser, updateUser } from "@/api/userApi";
+import type { UserInfo } from "@/api/userApi";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,19 +8,11 @@ import { Card } from "@/components/ui/card";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 
-interface UserInfo {
-  email: string;
-  fullName: string;
-  phoneNumber: string;
-  dob: string;
-  avatarPath: string;
-  password: string;
-}
-
 type EditingField = "fullName" | "phoneNumber" | "dob" | "email" | null;
 
 export default function UserProfile() {
   const [formData, setFormData] = useState<UserInfo>({
+    id: 0,
     email: "",
     fullName: "",
     phoneNumber: "",
@@ -31,15 +24,16 @@ export default function UserProfile() {
   const [editing, setEditing] = useState<EditingField>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-
   useEffect(() => {
-    axios.get<UserInfo>("/users/get-current").then((res) => {
-      setFormData({ ...res.data, password: "" });
-      setAvatarPreview(res.data.avatarPath);
-    }).catch(error => {
-      console.error("Error fetching user data:", error);
-      alert("Failed to load user data.");
-    });
+    getCurrentUser()
+      .then((user) => {
+        setFormData({ ...user, password: "" });
+        setAvatarPreview(user.avatarPath);
+      })
+      .catch((err) => {
+        console.error("Error fetching user:", err);
+        toast.error("Không thể tải thông tin người dùng.");
+      });
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,11 +43,12 @@ export default function UserProfile() {
 
   const handleSave = async () => {
     try {
-      await axios.put("/users/update", formData);
-      toast.success("🎉 Cập nhật thành công!");
+      const updated = await updateUser(formData);
+      setFormData(updated);
       setEditing(null);
+      toast.success("🎉 Cập nhật thành công!");
     } catch (err) {
-      toast.error("❌ Lỗi khi cập nhật thông tin.");
+      toast.error("❌ Lỗi khi cập nhật.");
     }
   };
 
@@ -69,7 +64,7 @@ export default function UserProfile() {
     }
   };
 
-  const renderField = (field: EditingField, label: string, type: string = "text") => (
+  const renderField = (field: EditingField, label: string, type = "text") => (
     <div className="flex items-center justify-between py-2">
       <div className="flex flex-col">
         <span className="text-sm font-medium text-gray-500">{label}</span>
