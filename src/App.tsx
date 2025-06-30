@@ -1,3 +1,4 @@
+// src/App.tsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import MainLayout from './layout';
@@ -30,6 +31,11 @@ import Badges from './pages/admin/Badges.tsx';
 import AdminProfile from './pages/admin/Profile.tsx';
 import { PlanForm } from './components/PlanForm.tsx';
 import AdminSurveyManagement from './pages/admin/AdminSurveyManagement.tsx';
+
+// Coach pages
+import CoachLayout from './components/coach/CoachLayout.tsx';
+import CoachProtectedRoute from './components/coach/CoachProtectedRoute.tsx';
+import CoachDashboard from './pages/coach/CoachDashboard.tsx';
 
 export const App = () => (
   <>
@@ -75,6 +81,19 @@ export const App = () => (
           <Route path="settings" element={<Settings />} />
           <Route path="survey-management" element={<AdminSurveyManagement />} />
           <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+        </Route>
+
+        {/* Coach Route + Bảo vệ bằng role coach */}
+        <Route
+          path="/coach"
+          element={
+            <CoachProtectedRoute>
+              <CoachLayout />
+            </CoachProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<CoachDashboard />} />
+          <Route path="*" element={<Navigate to="/coach/dashboard" replace />} />
         </Route>
       </Routes>
     </Router>
