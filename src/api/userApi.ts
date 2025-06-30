@@ -16,7 +16,7 @@ userApi.interceptors.request.use(config => {
 });
 
 export interface UserInfo  {
-    id: number;
+    id: string;
     fullName: string;
     email: string;
     phoneNumber: string;
@@ -27,8 +27,14 @@ export interface UserInfo  {
 }
 
 export interface RegisterUserRequest extends Omit<UserInfo, 'id'> {}
-export interface UpdateUserRequest extends Partial<UserInfo> {
-  id: number;
+export interface FrontendUpdateRequestBody {
+    fullName?: string;
+    email?: string;
+    phoneNumber?: string;
+    dob?: string;
+    avatarPath?: string;
+    password?: string; 
+    roleName?: string;
 }
 
 /** Lấy thông tin người dùng hiện tại */
@@ -64,9 +70,9 @@ export async function registerUser(payload: RegisterUserRequest): Promise<UserIn
 }
 
 /** Cập nhật thông tin người dùng */
-export async function updateUser(payload: UserInfo): Promise<UserInfo> {
-  const { data } = await userApi.put<UserInfo>('/users/update', payload);
-  return data;
+export async function updateUser(userId: string, payload: FrontendUpdateRequestBody): Promise<UserInfo> {
+    const { data: updated } = await userApi.put<UserInfo>(`/users/update/${userId}`, payload);
+    return updated;
 }
 
 /** Xoá người dùng theo ID */

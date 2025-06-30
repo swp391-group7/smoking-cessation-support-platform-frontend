@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getCurrentUser, updateUser } from "@/api/userApi";
-import type { UserInfo } from "@/api/userApi";
+import type { UserInfo, FrontendUpdateRequestBody } from "@/api/userApi";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,7 @@ type EditingField = "fullName" | "phoneNumber" | "dob" | "email" | null;
 
 export default function UserProfile() {
   const [formData, setFormData] = useState<UserInfo>({
-    id: 0,
+    id: "",
     email: "",
     fullName: "",
     phoneNumber: "",
@@ -32,7 +32,7 @@ export default function UserProfile() {
       })
       .catch((err) => {
         console.error("Error fetching user:", err);
-        toast.error("Không thể tải thông tin người dùng.");
+        toast.error("Unable to load user information.");
       });
   }, []);
 
@@ -43,12 +43,20 @@ export default function UserProfile() {
 
   const handleSave = async () => {
     try {
-      const updated = await updateUser(formData);
-      setFormData(updated);
+      // Chuẩn bị payload cho backend (loại trừ ID và có thể là mật khẩu)
+      const { id, password, ...dataToUpdate } = formData; // Trích xuất id và password
+      const payload: FrontendUpdateRequestBody = dataToUpdate;
+      if (!id) {
+        toast.error("No user ID found to update.");
+        return;
+      }
+      // Gọi updateUser với ID là đối số đầu tiên và payload là đối số thứ hai
+      await updateUser(id, payload);
+      toast.success("🎉 Update successful!");
       setEditing(null);
-      toast.success("🎉 Cập nhật thành công!");
-    } catch (err) {
-      toast.error("❌ Lỗi khi cập nhật.");
+    } catch (err: any) {
+      console.error(err.response?.data || err);
+      toast.error(err.response?.data?.message || "❌ Update failed. Please try again.");
     }
   };
 
