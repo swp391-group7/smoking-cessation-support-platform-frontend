@@ -106,7 +106,7 @@ export default function UserProfile() {
       className="container mx-auto p-4 md:p-8 max-w-2xl"
     >
       <Card className="p-6 md:p-8 shadow-lg border-green-100">
-        <h1 className="text-3xl font-bold mb-6 text-center text-green-800">Thông tin cá nhân</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-green-800">Personal Information</h1>
         <div className="flex flex-col items-center mb-6">
 
           <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
@@ -131,25 +131,24 @@ export default function UserProfile() {
             </div>
           </motion.div>
 
-          <span className="text-xl font-semibold text-gray-700">{formData.fullName || "Tên người dùng"}</span>
+          <span className="text-xl font-semibold text-gray-700">{formData.fullName || "User name"}</span>
 
-          <span className="text-md text-gray-500">{formData.email}</span>
         </div>
 
         <div className="space-y-4">
-          {renderField("fullName", "Họ và tên")}
+          {renderField("fullName", "Full name")}
           <hr className="border-gray-200" />
           {renderField("email", "Email", "email")}
           <hr className="border-gray-200" />
-          {renderField("phoneNumber", "Số điện thoại", "tel")}
+          {renderField("phoneNumber", "Phone", "tel")}
           <hr className="border-gray-200" />
-          {renderField("dob", "Ngày sinh", "date")}
+          {renderField("dob", "D.O.B", "date")}
           {/* Password is not directly editable here for security; usually done via a separate "Change Password" flow */}
         </div>
 
         <div className="flex justify-center mt-8">
           <Button onClick={() => alert("Chức năng thay đổi mật khẩu chưa được tích hợp.")} className="w-full md:w-auto">
-            Thay đổi mật khẩu
+            Change password
           </Button>
         </div>
       </Card>
