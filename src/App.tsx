@@ -34,8 +34,9 @@ import AdminSurveyManagement from './pages/admin/AdminSurveyManagement.tsx';
 
 // Coach pages
 import CoachLayout from './components/coach/CoachLayout.tsx';
-import CoachProtectedRoute from './components/coach/CoachProtectedRoute.tsx';
+import CoachProtectedRoute from './components/coach/CoachProtectedRoute';
 import CoachDashboard from './pages/coach/CoachDashboard.tsx';
+import CoachProfile from './pages/coach/Profile.tsx';
 
 export const App = () => (
   <>
@@ -84,15 +85,14 @@ export const App = () => (
         </Route>
 
         {/* Coach Route + Bảo vệ bằng role coach */}
-        <Route
-          path="/coach"
-          element={
+            <Route path="/coach" element={
             <CoachProtectedRoute>
-              <CoachLayout />
+            <CoachLayout />
             </CoachProtectedRoute>
           }
         >
           <Route path="dashboard" element={<CoachDashboard />} />
+          <Route path="profile" element={<CoachProfile />} />  
           <Route path="*" element={<Navigate to="/coach/dashboard" replace />} />
         </Route>
       </Routes>
