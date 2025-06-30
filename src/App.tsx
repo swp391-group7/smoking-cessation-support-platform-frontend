@@ -56,6 +56,7 @@ export const App = () => (
             </AdminProtectedRoute>
           }
         >
+          <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="profile" element={<AdminProfile />} />
