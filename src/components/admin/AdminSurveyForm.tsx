@@ -1,4 +1,3 @@
-// src/components/admin/survey/AdminSurveyForm.tsx
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Trash2, Save, X } from 'lucide-react';
 import { 
@@ -198,20 +197,20 @@ const AdminSurveyForm: React.FC<AdminSurveyFormProps> = ({
           typeSurvey,
           questions: questions.map(q => {
             if (q.id && !q.isNew) {
-              // Existing question
+              // Existing question - update
               return {
                 id: q.id,
                 content: q.content,
                 answers: q.answers.map(a => {
                   if (a.id && !a.isNew) {
-                    // Existing answer
+                    // Existing answer - update
                     return {
                       id: a.id,
                       answerText: a.answerText,
                       point: a.point
                     } as UpdateAnswerRequest;
                   } else {
-                    // New answer
+                    // New answer - create
                     return {
                       answerText: a.answerText,
                       point: a.point
@@ -220,7 +219,7 @@ const AdminSurveyForm: React.FC<AdminSurveyFormProps> = ({
                 })
               } as UpdateQuestionRequest;
             } else {
-              // New question
+              // New question - create
               return {
                 content: q.content,
                 answers: q.answers.map(a => ({
