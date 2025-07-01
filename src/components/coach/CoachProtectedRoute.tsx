@@ -1,14 +1,19 @@
+import React from "react";
 import { Navigate } from "react-router-dom";
 
-const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+interface Props {
+  children: React.ReactNode;
+}
+
+const CoachProtectedRoute: React.FC<Props> = ({ children }) => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
-  if (!token || role !== "admin") {
+  if (!token || role !== "coach") {
     return <Navigate to="/#hero" replace />;
   }
 
   return <>{children}</>;
 };
 
-export default AdminProtectedRoute;
+export default CoachProtectedRoute;

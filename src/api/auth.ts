@@ -30,7 +30,7 @@ interface LoginResponse {
     id: string;
     full_name: string;
     avatarUrl?: string; // Có thể có hoặc không
-    role: string;       // ✅ Bổ sung để kiểm tra quyền truy cập (admin, user...)
+    role: string;       // Bổ sung để kiểm tra quyền truy cập (admin, user...)
   };
 }
 
