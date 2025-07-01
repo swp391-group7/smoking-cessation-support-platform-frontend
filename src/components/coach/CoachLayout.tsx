@@ -9,14 +9,14 @@ import {
   BarChart3,
   Bell,
   Calendar,
-  CreditCard,
-  FileText,
   Heart,
   LayoutDashboard,
   MessageCircle,
-  Star,
   Target,
   Users,
+  TrendingUp,
+  BookOpen,
+  Zap,
 } from "lucide-react";
 
 const menuItems = [
@@ -27,75 +27,105 @@ const menuItems = [
         name: "Dashboard",
         path: "/coach/dashboard",
         icon: LayoutDashboard,
-        description: "Coach overview",
+        description: "Tổng quan hoạt động",
+        badge: null,
+      },
+      {
+        name: "Analytics",
+        path: "/coach/analytics",
+        icon: TrendingUp,
+        description: "Phân tích hiệu suất",
+        badge: "New",
       },
     ],
   },
   {
-    title: "Clients",
+    title: "Client Management",
     items: [
       {
         name: "My Clients",
         path: "/coach/clients",
         icon: Users,
-        description: "Manage assigned clients",
+        description: "Quản lý khách hàng",
+        badge: "12",
       },
       {
         name: "Progress Tracking",
         path: "/coach/client-progress",
         icon: Heart,
-        description: "Track client progress",
+        description: "Theo dõi tiến độ",
+        badge: null,
+      },
+      {
+        name: "Achievements",
+        path: "/coach/achievements",
+        icon: Award,
+        description: "Thành tích khách hàng",
+        badge: null,
       },
     ],
   },
   {
-    title: "Resources",
+    title: "Content & Resources",
     items: [
       {
-        name: "Plans",
+        name: "Training Plans",
         path: "/coach/plans",
         icon: Target,
-        description: "Assigned plans",
+        description: "Kế hoạch tập luyện",
+        badge: null,
       },
       {
-        name: "Articles",
+        name: "Knowledge Base",
         path: "/coach/blog",
-        icon: FileText,
-        description: "Health blog articles",
+        icon: BookOpen,
+        description: "Kiến thức chuyên môn",
+        badge: null,
+      },
+      {
+        name: "Quick Actions",
+        path: "/coach/quick-actions",
+        icon: Zap,
+        description: "Thao tác nhanh",
+        badge: null,
       },
     ],
   },
   {
-    title: "Engagement",
+    title: "Communication",
     items: [
+      {
+        name: "Messages",
+        path: "/coach/messages",
+        icon: MessageCircle,
+        description: "Tin nhắn với khách hàng",
+        badge: "3",
+      },
       {
         name: "Notifications",
         path: "/coach/notifications",
         icon: Bell,
-        description: "Motivational messages",
-      },
-      {
-        name: "Community",
-        path: "/coach/community",
-        icon: MessageCircle,
-        description: "Forum & interactions",
+        description: "Thông báo hệ thống",
+        badge: null,
       },
     ],
   },
   {
-    title: "Reports",
+    title: "Business",
     items: [
-      {
-        name: "Reports",
-        path: "/coach/reports",
-        icon: BarChart3,
-        description: "Client analytics",
-      },
       {
         name: "Sessions",
         path: "/coach/consultations",
         icon: Calendar,
-        description: "Consultation schedules",
+        description: "Lịch tư vấn",
+        badge: null,
+      },
+      {
+        name: "Reports",
+        path: "/coach/reports",
+        icon: BarChart3,
+        description: "Báo cáo chi tiết",
+        badge: null,
       },
     ],
   },
@@ -116,7 +146,7 @@ const CoachLayout: React.FC = () => {
 
   return (
     <div
-      className="bg-gray-50"
+      className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50"
       style={{
         position: "fixed",
         top: 0,
@@ -134,13 +164,15 @@ const CoachLayout: React.FC = () => {
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           />
           <main
-            className="flex-1 bg-gray-50 p-6"
+            className="flex-1 p-6"
             style={{
               overflow: "auto",
               height: "calc(100vh - 64px)",
             }}
           >
-            <Outlet />
+            <div className="max-w-7xl mx-auto">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>
