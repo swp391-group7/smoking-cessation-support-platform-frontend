@@ -1,7 +1,8 @@
 // src/components/coach/Sidebar.tsx
 import React from "react";
-import { Settings } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { logoutAndRedirect } from "@/api/logout";
 
 interface MenuItem {
   name: string;
@@ -27,6 +28,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open, menuItems }) => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handleLogout = () => {
+    logoutAndRedirect(navigate);
+  };
+
   return (
     <div
       className={`${
@@ -36,12 +41,12 @@ const Sidebar: React.FC<SidebarProps> = ({ open, menuItems }) => {
       {/* Logo */}
       <div className="p-6 border-b border-gray-100">
         <div className="flex items-center">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+          <div className="w-12 h-12 bg-gradient-to-br from-green-600 via-emerald-600 to-lime-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
             A
           </div>
           {open && (
             <div className="ml-4">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">
                 AirBloom
               </h1>
               <p className="text-sm text-gray-600 font-medium">Coach Dashboard</p>
@@ -70,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, menuItems }) => {
                     onClick={() => navigate(item.path)}
                     className={`group relative flex items-center w-full px-4 py-3 text-sm font-medium rounded-2xl transition-all duration-200 ${
                       active
-                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-[1.02]"
+                        ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg transform scale-[1.02]"
                         : "text-gray-700 hover:bg-white/60 hover:shadow-md hover:transform hover:scale-[1.01]"
                     }`}
                   >
@@ -84,24 +89,28 @@ const Sidebar: React.FC<SidebarProps> = ({ open, menuItems }) => {
                     {open && (
                       <div className="ml-4 flex-1 text-left">
                         <div className="font-semibold">{item.name}</div>
-                        <div className={`text-xs mt-0.5 ${
-                          active ? "text-white/80" : "text-gray-500"
-                        }`}>
+                        <div
+                          className={`text-xs mt-0.5 ${
+                            active ? "text-white/80" : "text-gray-500"
+                          }`}
+                        >
                           {item.description}
                         </div>
                       </div>
                     )}
                     {item.badge && open && (
-                      <span className={`ml-2 px-2 py-1 text-xs font-bold rounded-full ${
-                        item.badge === "New" 
-                          ? "bg-green-100 text-green-700" 
-                          : "bg-blue-100 text-blue-700"
-                      } ${active ? "bg-white/20 text-white" : ""}`}>
+                      <span
+                        className={`ml-2 px-2 py-1 text-xs font-bold rounded-full ${
+                          item.badge === "New"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-emerald-100 text-emerald-700"
+                        } ${active ? "bg-white/20 text-white" : ""}`}
+                      >
                         {item.badge}
                       </span>
                     )}
                     {item.badge && !open && (
-                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></div>
                     )}
                   </button>
                 );
@@ -111,14 +120,18 @@ const Sidebar: React.FC<SidebarProps> = ({ open, menuItems }) => {
         ))}
       </div>
 
-      {/* Settings */}
+      {/* Logout Button */}
       <div className="border-t border-gray-100 p-3">
         <button
-          onClick={() => navigate("/coach/settings")}
-          className="group flex items-center w-full px-4 py-3 text-sm font-medium rounded-2xl text-gray-700 hover:bg-white/60 hover:shadow-md transition-all duration-200"
+          onClick={handleLogout}
+          className="group flex items-center w-full px-4 py-3 text-sm font-medium rounded-2xl text-red-600 hover:bg-red-50 hover:shadow-md transition-all duration-200"
         >
-          <Settings className="w-5 h-5 text-gray-500 group-hover:text-gray-700" />
-          {open && <span className="ml-4 font-semibold">Cài đặt hệ thống</span>}
+          <LogOut className="w-5 h-5 text-red-500 group-hover:text-red-700" />
+          {open && (
+            <span className="ml-4 font-semibold group-hover:text-red-700">
+              Log out
+            </span>
+          )}
         </button>
       </div>
     </div>

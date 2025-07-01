@@ -1,6 +1,6 @@
 // src/components/coach/ProfileDropdown.tsx
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, LogOut, Settings, User, HelpCircle } from "lucide-react";
+import { ChevronDown, LogOut, User, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { logoutAndRedirect } from "@/api/logout";
 
@@ -89,15 +89,7 @@ const CoachProfileDropdown: React.FC = () => {
               className="flex items-center w-full px-4 py-3 text-sm hover:bg-blue-50 transition-colors group"
             >
               <User className="w-4 h-4 mr-3 text-gray-500 group-hover:text-blue-600" /> 
-              <span className="group-hover:text-blue-600">Thông tin cá nhân</span>
-            </button>
-            
-            <button 
-              onClick={() => { setOpen(false); navigate("/coach/settings"); }} 
-              className="flex items-center w-full px-4 py-3 text-sm hover:bg-blue-50 transition-colors group"
-            >
-              <Settings className="w-4 h-4 mr-3 text-gray-500 group-hover:text-blue-600" /> 
-              <span className="group-hover:text-blue-600">Cài đặt</span>
+              <span className="group-hover:text-blue-600">Profile</span>
             </button>
             
             <button 
@@ -105,7 +97,7 @@ const CoachProfileDropdown: React.FC = () => {
               className="flex items-center w-full px-4 py-3 text-sm hover:bg-blue-50 transition-colors group"
             >
               <HelpCircle className="w-4 h-4 mr-3 text-gray-500 group-hover:text-blue-600" /> 
-              <span className="group-hover:text-blue-600">Trợ giúp</span>
+              <span className="group-hover:text-blue-600">Help</span>
             </button>
             
             <div className="h-px bg-gray-200 my-2 mx-4"></div>
@@ -115,7 +107,7 @@ const CoachProfileDropdown: React.FC = () => {
               className="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors group"
             >
               <LogOut className="w-4 h-4 mr-3 group-hover:text-red-700" /> 
-              <span className="group-hover:text-red-700">Đăng xuất</span>
+              <span className="group-hover:text-red-700">Log out</span>
             </button>
           </div>
         </div>

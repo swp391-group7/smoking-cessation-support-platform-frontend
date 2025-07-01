@@ -1,5 +1,4 @@
 // src/pages/coach/CoachLayout.tsx
-
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "@/components/coach/Sidebar";
@@ -27,14 +26,14 @@ const menuItems = [
         name: "Dashboard",
         path: "/coach/dashboard",
         icon: LayoutDashboard,
-        description: "Tổng quan hoạt động",
+        description: "Activity overview",
         badge: null,
       },
       {
         name: "Analytics",
         path: "/coach/analytics",
         icon: TrendingUp,
-        description: "Phân tích hiệu suất",
+        description: "Performance insights",
         badge: "New",
       },
     ],
@@ -46,21 +45,21 @@ const menuItems = [
         name: "My Clients",
         path: "/coach/clients",
         icon: Users,
-        description: "Quản lý khách hàng",
+        description: "Manage your clients",
         badge: "12",
       },
       {
         name: "Progress Tracking",
         path: "/coach/client-progress",
         icon: Heart,
-        description: "Theo dõi tiến độ",
+        description: "Track client progress",
         badge: null,
       },
       {
         name: "Achievements",
         path: "/coach/achievements",
         icon: Award,
-        description: "Thành tích khách hàng",
+        description: "Client achievements",
         badge: null,
       },
     ],
@@ -72,21 +71,21 @@ const menuItems = [
         name: "Training Plans",
         path: "/coach/plans",
         icon: Target,
-        description: "Kế hoạch tập luyện",
+        description: "Workout programs",
         badge: null,
       },
       {
         name: "Knowledge Base",
         path: "/coach/blog",
         icon: BookOpen,
-        description: "Kiến thức chuyên môn",
+        description: "Professional knowledge",
         badge: null,
       },
       {
         name: "Quick Actions",
         path: "/coach/quick-actions",
         icon: Zap,
-        description: "Thao tác nhanh",
+        description: "Fast operations",
         badge: null,
       },
     ],
@@ -98,14 +97,14 @@ const menuItems = [
         name: "Messages",
         path: "/coach/messages",
         icon: MessageCircle,
-        description: "Tin nhắn với khách hàng",
+        description: "Chat with clients",
         badge: "3",
       },
       {
         name: "Notifications",
         path: "/coach/notifications",
         icon: Bell,
-        description: "Thông báo hệ thống",
+        description: "System notifications",
         badge: null,
       },
     ],
@@ -117,14 +116,14 @@ const menuItems = [
         name: "Sessions",
         path: "/coach/consultations",
         icon: Calendar,
-        description: "Lịch tư vấn",
+        description: "Consultation schedule",
         badge: null,
       },
       {
         name: "Reports",
         path: "/coach/reports",
         icon: BarChart3,
-        description: "Báo cáo chi tiết",
+        description: "Detailed reports",
         badge: null,
       },
     ],
@@ -146,7 +145,7 @@ const CoachLayout: React.FC = () => {
 
   return (
     <div
-      className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50"
+      className="bg-gradient-to-br from-green-50 via-emerald-50 to-lime-50"
       style={{
         position: "fixed",
         top: 0,
