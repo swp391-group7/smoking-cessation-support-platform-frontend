@@ -135,7 +135,14 @@ export default function UserManagement() {
 
     return (
         <div className="p-6 space-y-6 min-h-screen bg-gray-50 font-sans">
-            <h2 className="text-3xl font-extrabold text-gray-800 border-b-2 pb-2 mb-6">Quản lý người dùng</h2>
+            {/* Header */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-2xl font-bold">User Management</h2>
+                    <p className="text-sm text-gray-500">User account and activity management</p>
+                </div>
+                <p className="text-sm text-gray-400">/ Users</p>
+            </div>
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-4 mb-6">
@@ -144,16 +151,16 @@ export default function UserManagement() {
                     disabled={selectedUserIds.length === 0 || loading}
                     className={`px-6 py-2 rounded-lg font-semibold transition-all duration-200
                                 ${selectedUserIds.length === 0 || loading
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg'}`}
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg'}`}
                 >
-                    Xóa người dùng đã chọn ({selectedUserIds.length})
+                    Delete selected user ({selectedUserIds.length})
                 </button>
             </div>
 
             {/* Loading and Error States */}
             {loading && (
-                <div className="text-center py-8 text-gray-600">Đang tải dữ liệu người dùng...</div>
+                <div className="text-center py-8 text-gray-600">Loading user data...</div>
             )}
             {error && (
                 <div className="bg-red-100 text-red-700 p-4 rounded-lg text-center shadow-sm">
@@ -182,11 +189,11 @@ export default function UserManagement() {
                                         disabled={users.length === 0}
                                     />
                                 </th>
-                                <th scope="col" className="px-6 py-3">ID Người dùng</th>
-                                <th scope="col" className="px-6 py-3">Họ và tên</th>
-                                <th scope="col" className="px-6 py-3">Tên người dùng</th>
+                                <th scope="col" className="px-6 py-3">UID</th>
+                                <th scope="col" className="px-6 py-3">Full name</th>
+                                <th scope="col" className="px-6 py-3">Username</th>
                                 <th scope="col" className="px-6 py-3">Email</th>
-                                <th scope="col" className="px-6 py-3 rounded-tr-lg">Chi tiết</th>
+                                <th scope="col" className="px-6 py-3 rounded-tr-lg">Detail</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -217,7 +224,7 @@ export default function UserManagement() {
                                             onClick={() => handleViewDetail(user)}
                                             className="font-medium text-green-600 hover:text-green-800 transition-colors duration-200"
                                         >
-                                            Xem
+                                            View
                                         </button>
                                     </td>
                                 </tr>
@@ -228,7 +235,7 @@ export default function UserManagement() {
             )}
 
             {!loading && !error && users.length === 0 && (
-                <div className="text-center py-8 text-gray-600">Không có người dùng nào để hiển thị.</div>
+                <div className="text-center py-8 text-gray-600">There are no users to display.</div>
             )}
 
             {/* User Detail Modal */}
@@ -242,17 +249,17 @@ export default function UserManagement() {
                         >
                             &times;
                         </button>
-                        <h3 className="text-2xl font-bold text-green-700 mb-6 border-b pb-2">Chi tiết thành viên</h3>
+                        <h3 className="text-2xl font-bold text-green-700 mb-6 border-b pb-2">User details</h3>
                         <div className="space-y-3 text-gray-800">
-                            <p><strong>Họ và tên:</strong> {selectedUser.fullName}</p>
+                            <p><strong>Full name:</strong> {selectedUser.fullName}</p>
                             <p><strong>Email:</strong> {selectedUser.email}</p>
-                            <p><strong>Số điện thoại:</strong> {selectedUser.phoneNumber}</p>
-                            <p><strong>Ngày sinh:</strong> {selectedUser.dob}</p>
-                            <p><strong>Mức độ phụ thuộc:</strong> {selectedUser.addictionLevel || "N/A"}</p>
-                            <p><strong>Kế hoạch:</strong> {selectedUser.plan || "N/A"}</p>
-                            <p><strong>Huấn luyện viên:</strong> {selectedUser.coach || "Không có"}</p>
+                            <p><strong>Phone:</strong> {selectedUser.phoneNumber}</p>
+                            <p><strong>D.O.B:</strong> {selectedUser.dob}</p>
+                            <p><strong>Dependence:</strong> {selectedUser.addictionLevel || "N/A"}</p>
+                            <p><strong>Plan:</strong> {selectedUser.plan || "N/A"}</p>
+                            <p><strong>Coach:</strong> {selectedUser.coach || "N/A"}</p>
                             <div className="mt-4">
-                                <strong>Huy hiệu:</strong>
+                                <strong>Badge:</strong>
                                 <div className="mt-2 flex flex-wrap gap-2">
                                     {selectedUser.badges && selectedUser.badges.length > 0 ? (
                                         selectedUser.badges.map((b: string) => (
@@ -261,7 +268,7 @@ export default function UserManagement() {
                                             </span>
                                         ))
                                     ) : (
-                                        <span className="text-gray-500 text-sm">Không có huy hiệu nào.</span>
+                                        <span className="text-gray-500 text-sm">No badges yet.</span>
                                     )}
                                 </div>
                             </div>
@@ -274,22 +281,22 @@ export default function UserManagement() {
             {showDeleteConfirm && (
                 <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
                     <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm relative transform transition-all duration-300 scale-100 opacity-100">
-                        <h3 className="text-xl font-bold text-red-700 mb-4">Xác nhận xóa</h3>
+                        <h3 className="text-xl font-bold text-red-700 mb-4">Confirm deletion</h3>
                         <p className="text-gray-700 mb-6">
-                            Bạn có chắc chắn muốn xóa {selectedUserIds.length} người dùng đã chọn không? Hành động này không thể hoàn tác.
+                            Are you sure you want to delete? <br /> This action can't be undone.
                         </p>
                         <div className="flex justify-end space-x-3">
                             <button
                                 onClick={() => setShowDeleteConfirm(false)}
                                 className="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                             >
-                                Hủy
+                                Cancel
                             </button>
                             <button
                                 onClick={handleDeleteSelected}
                                 className="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 shadow-md transition-colors duration-200"
                             >
-                                Xóa
+                                Delete
                             </button>
                         </div>
                     </div>
