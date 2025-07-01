@@ -45,26 +45,25 @@ const LoginPage: React.FC = () => {
   // Mutation gọi API login (giữ nguyên)
 const { mutate: login, isPending } = useMutation({
   mutationFn: loginApi,
-  onSuccess: (response) => {
-    const { token, user } = response;
-
-    // Lưu thông tin vào localStorage
+  onSuccess: ({ token, user }) => {
+    // Lưu token và thông tin người dùng
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("role", user.role);
 
-    // Thông báo thành công
     toast.success("Đăng nhập thành công!", {
       position: "top-center",
       description: `Chào mừng ${user.full_name}`,
     });
 
     // Điều hướng theo vai trò
-    if (user.role === "admin") {
-      setTimeout(() => navigate("/admin"), 700);
-    } else {
-      setTimeout(() => navigate("/"), 700); // hoặc /quit_progress nếu bạn muốn
-    }
+    const redirectPath = {
+      admin: "/admin/dashboard",
+      coach: "/coach/dashboard",
+      user: "/quit_progress", // Hoặc "/" tùy bạn muốn
+    }[user.role] || "/";
+
+    setTimeout(() => navigate(redirectPath), 700);
   },
   onError: () => {
     toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản hoặc mật khẩu.", {

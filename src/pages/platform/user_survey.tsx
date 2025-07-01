@@ -1,3 +1,4 @@
+// src/pages/platform/user_survey.tsx
 import React, { useState, useEffect } from "react";
 import type { SurveyDetailDTO, CreateSurveyRequest, GetSurveyRequest } from "@/api/usersurveyApi";
 import { getSurveyDetailById, createSurvey, getSurveyByUserId } from "@/api/usersurveyApi";

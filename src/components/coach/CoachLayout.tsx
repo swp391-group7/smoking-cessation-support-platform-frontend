@@ -1,8 +1,9 @@
-// AdminLayout.tsx
+// src/pages/coach/CoachLayout.tsx
+
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "@/components/admin/Sidebar";
-import Topbar from "@/components/admin/Topbar";
+import Sidebar from "@/components/coach/Sidebar";
+import Topbar from "@/components/coach/Topbar";
 import {
   Award,
   BarChart3,
@@ -24,99 +25,75 @@ const menuItems = [
     items: [
       {
         name: "Dashboard",
-        path: "/admin/dashboard",
+        path: "/coach/dashboard",
         icon: LayoutDashboard,
-        description: "System overview",
+        description: "Coach overview",
       },
     ],
   },
   {
-    title: "User Management",
+    title: "Clients",
     items: [
       {
-        name: "Users",
-        path: "/admin/users",
+        name: "My Clients",
+        path: "/coach/clients",
         icon: Users,
-        description: "Manage members",
+        description: "Manage assigned clients",
       },
       {
-        name: "Quit Profiles",
-        path: "/admin/quit-profiles",
+        name: "Progress Tracking",
+        path: "/coach/client-progress",
         icon: Heart,
-        description: "Track quitting progress",
+        description: "Track client progress",
       },
     ],
   },
   {
-    title: "Content & Plans",
+    title: "Resources",
     items: [
       {
-        name: "Membership Plans",
-        path: "/admin/plans",
-        icon: CreditCard,
-        description: "Subscription plans",
-      },
-      {
-        name: "Quit Plan Templates",
-        path: "/admin/quit-plans",
+        name: "Plans",
+        path: "/coach/plans",
         icon: Target,
-        description: "Quit plan templates",
+        description: "Assigned plans",
       },
       {
-        name: "Blog & Articles",
-        path: "/admin/blog",
+        name: "Articles",
+        path: "/coach/blog",
         icon: FileText,
-        description: "Blog content",
-      },
-            {
-        name: "Survey Management", 
-        path: "/admin/survey-management",
-        icon: FileText,
-        description: "Manage surveys",
+        description: "Health blog articles",
       },
     ],
   },
   {
-    title: "Engagement & Motivation",
+    title: "Engagement",
     items: [
-      {
-        name: "Badges",
-        path: "/admin/badges",
-        icon: Award,
-        description: "Achievements",
-      },
       {
         name: "Notifications",
-        path: "/admin/notifications",
+        path: "/coach/notifications",
         icon: Bell,
         description: "Motivational messages",
       },
       {
         name: "Community",
-        path: "/admin/community",
+        path: "/coach/community",
         icon: MessageCircle,
         description: "Forum & interactions",
       },
     ],
   },
   {
-    title: "Feedback & Reports",
+    title: "Reports",
     items: [
       {
-        name: "Feedback",
-        path: "/admin/feedback",
-        icon: Star,
-        description: "User reviews & ratings",
-      },
-      {
         name: "Reports",
-        path: "/admin/reports",
+        path: "/coach/reports",
         icon: BarChart3,
-        description: "Detailed analytics",
+        description: "Client analytics",
       },
       {
-        name: "Consultations",
-        path: "/admin/consultations",
+        name: "Sessions",
+        path: "/coach/consultations",
         icon: Calendar,
         description: "Consultation schedules",
       },
@@ -124,7 +101,7 @@ const menuItems = [
   },
 ];
 
-const AdminLayout: React.FC = () => {
+const CoachLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
@@ -171,4 +148,4 @@ const AdminLayout: React.FC = () => {
   );
 };
 
-export default AdminLayout;
+export default CoachLayout;
