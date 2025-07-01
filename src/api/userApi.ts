@@ -71,8 +71,8 @@ export async function registerUser(payload: RegisterUserRequest): Promise<UserIn
 }
 
 /** Cập nhật thông tin người dùng */
-export async function updateUser(userId: string, payload: FrontendUpdateRequestBody): Promise<UserInfo> {
-    const { data: updated } = await userApi.put<UserInfo>(`/users/update/${userId}`, payload);
+export async function updateUser(payload: FrontendUpdateRequestBody): Promise<UserInfo> {
+    const { data: updated } = await userApi.put<UserInfo>(`/users/update`, payload);
     return updated;
 }
 

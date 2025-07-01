@@ -44,15 +44,18 @@ export default function UserProfile() {
 
   const handleSave = async () => {
     try {
-      // Chuẩn bị payload cho backend (loại trừ ID và có thể là mật khẩu)
-      const { id, password, ...dataToUpdate } = formData; // Trích xuất id và password
-      const payload: FrontendUpdateRequestBody = dataToUpdate;
-      if (!id) {
-        toast.error("No user ID found to update.");
-        return;
-      }
-      // Gọi updateUser với ID là đối số đầu tiên và payload là đối số thứ hai
-      await updateUser(id, payload);
+      // Chuẩn bị payload cho backend (loại trừ ID và có thể là username)
+      const { id, username, ...rest  } = formData; // Trích xuất id và username
+      
+      const payload: FrontendUpdateRequestBody = {
+      fullName: rest.fullName,
+      email: rest.email,
+      phoneNumber: rest.phoneNumber,
+      dob: rest.dob,
+      avatarPath: rest.avatarPath,
+      };
+      
+      await updateUser(payload);
       toast.success("🎉 Update successful!");
       setEditing(null);
     } catch (err: any) {
