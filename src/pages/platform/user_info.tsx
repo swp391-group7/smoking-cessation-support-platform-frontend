@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { getCurrentUser, updateUser } from "@/api/userApi";
+import type { UserInfo, FrontendUpdateRequestBody } from "@/api/userApi";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,19 +8,11 @@ import { Card } from "@/components/ui/card";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 
-interface UserInfo {
-  email: string;
-  fullName: string;
-  phoneNumber: string;
-  dob: string;
-  avatarPath: string;
-  password: string;
-}
-
 type EditingField = "fullName" | "phoneNumber" | "dob" | "email" | null;
 
 export default function UserProfile() {
   const [formData, setFormData] = useState<UserInfo>({
+    id: "",
     email: "",
     fullName: "",
     phoneNumber: "",
@@ -31,15 +24,16 @@ export default function UserProfile() {
   const [editing, setEditing] = useState<EditingField>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-
   useEffect(() => {
-    axios.get<UserInfo>("/users/display-current-user").then((res) => {
-      setFormData({ ...res.data, password: "" });
-      setAvatarPreview(res.data.avatarPath);
-    }).catch(error => {
-      console.error("Error fetching user data:", error);
-      alert("Failed to load user data.");
-    });
+    getCurrentUser()
+      .then((user) => {
+        setFormData({ ...user, password: "" });
+        setAvatarPreview(user.avatarPath);
+      })
+      .catch((err) => {
+        console.error("Error fetching user:", err);
+        toast.error("Unable to load user information.");
+      });
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,11 +43,20 @@ export default function UserProfile() {
 
   const handleSave = async () => {
     try {
-      await axios.put("/users/update-peronal-info", formData);
-      toast.success("🎉 Cập nhật thành công!");
+      // Chuẩn bị payload cho backend (loại trừ ID và có thể là mật khẩu)
+      const { id, password, ...dataToUpdate } = formData; // Trích xuất id và password
+      const payload: FrontendUpdateRequestBody = dataToUpdate;
+      if (!id) {
+        toast.error("No user ID found to update.");
+        return;
+      }
+      // Gọi updateUser với ID là đối số đầu tiên và payload là đối số thứ hai
+      await updateUser(id, payload);
+      toast.success("🎉 Update successful!");
       setEditing(null);
-    } catch (err) {
-      toast.error("❌ Lỗi khi cập nhật thông tin.");
+    } catch (err: any) {
+      console.error(err.response?.data || err);
+      toast.error(err.response?.data?.message || "❌ Update failed. Please try again.");
     }
   };
 
@@ -69,7 +72,7 @@ export default function UserProfile() {
     }
   };
 
-  const renderField = (field: EditingField, label: string, type: string = "text") => (
+  const renderField = (field: EditingField, label: string, type = "text") => (
     <div className="flex items-center justify-between py-2">
       <div className="flex flex-col">
         <span className="text-sm font-medium text-gray-500">{label}</span>
@@ -82,7 +85,7 @@ export default function UserProfile() {
             className="mt-1"
           />
         ) : (
-          <span className="text-lg font-semibold">{formData[field as keyof UserInfo] || "Chưa cập nhật"}</span>
+          <span className="text-lg font-semibold">{formData[field as keyof UserInfo] || "None"}</span>
         )}
       </div>
       {editing !== field ? (
@@ -103,7 +106,7 @@ export default function UserProfile() {
       className="container mx-auto p-4 md:p-8 max-w-2xl"
     >
       <Card className="p-6 md:p-8 shadow-lg border-green-100">
-        <h1 className="text-3xl font-bold mb-6 text-center text-green-800">Thông tin cá nhân</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-green-800">Personal Information</h1>
         <div className="flex flex-col items-center mb-6">
 
           <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
@@ -128,25 +131,24 @@ export default function UserProfile() {
             </div>
           </motion.div>
 
-          <span className="text-xl font-semibold text-gray-700">{formData.fullName || "Tên người dùng"}</span>
+          <span className="text-xl font-semibold text-gray-700">{formData.fullName || "User name"}</span>
 
-          <span className="text-md text-gray-500">{formData.email}</span>
         </div>
 
         <div className="space-y-4">
-          {renderField("fullName", "Họ và tên")}
+          {renderField("fullName", "Full name")}
           <hr className="border-gray-200" />
           {renderField("email", "Email", "email")}
           <hr className="border-gray-200" />
-          {renderField("phoneNumber", "Số điện thoại", "tel")}
+          {renderField("phoneNumber", "Phone", "tel")}
           <hr className="border-gray-200" />
-          {renderField("dob", "Ngày sinh", "date")}
+          {renderField("dob", "D.O.B", "date")}
           {/* Password is not directly editable here for security; usually done via a separate "Change Password" flow */}
         </div>
 
         <div className="flex justify-center mt-8">
           <Button onClick={() => alert("Chức năng thay đổi mật khẩu chưa được tích hợp.")} className="w-full md:w-auto">
-            Thay đổi mật khẩu
+            Change password
           </Button>
         </div>
       </Card>

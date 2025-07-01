@@ -5,6 +5,9 @@ import { getSurveyDetailById, createSurvey, getSurveyByUserId } from "@/api/user
 import { AxiosError } from "axios"; // Import AxiosError
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { useNavigate } from 'react-router-dom';
+import { X } from "lucide-react";
+import { getUserPlans } from "@/api/userPlanApi";
+import type { UserPlan } from "@/api/userPlanApi";
 
 // ID khảo sát cố định
 const FIXED_SURVEY_ID = "bff1b96e-74e9-46a3-b46e-1b625531c1ad";
@@ -66,6 +69,9 @@ const UserSurveyForm: React.FC = () => {
   const [allowResurvey, setAllowResurvey] = useState<boolean>(false);
 
   // Kiểm tra survey đã tồn tại khi component mount
+ // Thêm state để check xem có plan nào đang hoạt động không
+  const [showActivePlanDialog, setShowActivePlanDialog] = useState(false);
+  const [showConfirmRestart, setShowConfirmRestart] = useState(false);
   useEffect(() => {
     const checkExistingSurvey = async () => {
       try {
@@ -279,11 +285,109 @@ const handleSubmit = async (e: React.FormEvent) => {
     setIsSubmitted(false);
   };
   const navigate = useNavigate();
-  const handleNextStep = () => {
+ const handleNextStep = async () => {
+  try {
+    const resp = await getUserPlans();
+    const plansArray: UserPlan[] = Array.isArray(resp) ? resp : [resp];
+    const hasActivePlan = plansArray.some((p) => p.status.toLowerCase() === "active");
+    
+    if (hasActivePlan) {
+      setShowActivePlanDialog(true);
+    } else {
+      navigate('/quit_plan');
+    }
+  } catch (err) {
+    console.error("Error checking plans", err);
+    navigate('/quit_plan'); // Navigate to quit_plan if no existing plan
+  }
+};
 
-    navigate('/quit_plan'); // React Router
-  };
+const confirmRestart = () => {
+  setShowActivePlanDialog(false);
+  setShowConfirmRestart(true);
+};
 
+const handleRestart = () => {
+  setShowConfirmRestart(false);
+  navigate("/quit_plan");
+};
+const dialogs = (
+  <>
+    {/* Active plan dialog */}
+    <AlertDialog
+      open={showActivePlanDialog}
+      onOpenChange={() => setShowActivePlanDialog(false)}
+    >
+      <AlertDialogContent className="bg-white text-emerald-700 border border-emerald-300 shadow-xl rounded-lg">
+        <AlertDialogHeader className="relative">
+          {/* Keep the close button for the first dialog */}
+          <button
+            onClick={() => setShowActivePlanDialog(false)}
+            className="absolute top-2 right-2 p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <AlertDialogTitle className="text-emerald-800 text-2xl font-bold mb-2 pt-6 text-center">
+            You already have an active plan!
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-emerald-600 text-base leading-relaxed text-center">
+            Our system detected that you already have an active quit smoking
+            plan. Do you want to continue with the current plan or create a new
+            one?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter className="pt-4 flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+          <AlertDialogAction
+            onClick={() => navigate("/quit_progress")}
+            className="bg-emerald-700 text-white hover:bg-emerald-800 transition rounded-lg px-5 py-2 font-medium"
+          >
+            Continue Current Plan
+          </AlertDialogAction>
+          <AlertDialogAction
+            onClick={confirmRestart}
+            className="bg-white text-emerald-700 border border-emerald-600 hover:bg-emerald-50 transition rounded-lg px-5 py-2 font-medium"
+          >
+            Create New Plan
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    {/* Confirm restart dialog */}
+    <AlertDialog
+      open={showConfirmRestart}
+      onOpenChange={() => setShowConfirmRestart(false)}
+    >
+      <AlertDialogContent className="bg-white text-emerald-700 border border-emerald-300 shadow-xl rounded-lg">
+        <AlertDialogHeader className="relative">
+          <AlertDialogTitle className="text-emerald-800 text-2xl font-bold mb-2 text-center">
+            Confirm New Plan?
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-emerald-600 text-base leading-relaxed text-center">
+            Creating a new plan will end the current one. Are you sure you want
+            to proceed?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="pt-4 flex justify-center space-x-3">
+          <AlertDialogCancel
+            onClick={() => setShowConfirmRestart(false)}
+            className="bg-gray-200 text-gray-700 hover:bg-gray-300 transition rounded-lg px-5 py-2 font-medium"
+          >
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleRestart}
+            className="bg-red-600 text-white hover:bg-red-700 transition rounded-lg px-5 py-2 font-medium"
+          >
+            Confirm
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  </>
+);
   // Hiển thị loading khi đang kiểm tra survey
   if (isCheckingExistingSurvey) {
     return (
@@ -318,6 +422,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   // Hiển thị thông báo đã có survey (với tùy chọn khảo sát lại)
 if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
     return (
+      <> {dialogs}
       <div className="max-w-4xl mx-auto my-12 bg-white shadow-2xl rounded-2xl p-10 border border-green-200 animate-fade-in-up">
         {/* Header Section */}
         <div className="text-center mb-10">
@@ -412,6 +517,7 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
@@ -444,6 +550,7 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
 }
 
   return (
+    <>  {dialogs}
     <div className="max-w-5xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-8 border border-green-100">
       <form onSubmit={handleSubmit} className="max-w-6xl mx-auto px-6 py-12 text-black">
         {/* --- Về Thói Quen của Bạn --- */}
@@ -664,8 +771,14 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
           </button>
         </div>
       </form>
+
+      
     </div>
+     
+     </>
+
   );
+
 };
 
 export default UserSurveyForm;

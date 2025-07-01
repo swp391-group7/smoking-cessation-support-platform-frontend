@@ -3,13 +3,22 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   User as UserIcon,
-  Settings as SettingsIcon,
   CreditCard as CreditCardIcon,
   LogOut as LogOutIcon,
+  X as CloseIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { QuitDropdown } from "./quit_drop_down";
 import { ResourcDropdown } from "./resource_drop_down";
+
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 interface User {
   id: string;
@@ -18,10 +27,8 @@ interface User {
 }
 
 const midSections = [
-
   { id: "hero", label: "Home" },
   { id: "harms", label: "AirBloom" },
-  
   { id: "benefits", label: "Benefits" },
   { id: "why", label: "About us" },
   { id: "guide", label: "Journey" },
@@ -32,8 +39,7 @@ export const HeaderNavbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [activeSection, setActiveSection] = useState(midSections[0].id);
   const [showTopBar, setShowTopBar] = useState(true);
@@ -45,7 +51,6 @@ export const HeaderNavbar: React.FC = () => {
       const y = window.scrollY;
       setShowTopBar(y < lastScroll.current || y < 10);
       lastScroll.current = y;
-      // Scroll-spy logic
       midSections.forEach((sec) => {
         const el = document.getElementById(sec.id);
         if (el) {
@@ -75,25 +80,11 @@ export const HeaderNavbar: React.FC = () => {
     }
   }, [location]);
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        e.target instanceof Node &&
-        !dropdownRef.current.contains(e.target)
-      ) {
-        setDropdownVisible(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setCurrentUser(null);
-    setDropdownVisible(false);
+    setSidebarOpen(false);
     navigate("/login");
   };
 
@@ -104,7 +95,6 @@ export const HeaderNavbar: React.FC = () => {
 
   return (
     <>
-      {/* Top bar with motion */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: showTopBar ? 0 : -100, opacity: showTopBar ? 1 : 0 }}
@@ -117,84 +107,85 @@ export const HeaderNavbar: React.FC = () => {
           </NavLink>
           <div className="flex items-center">
             {currentUser ? (
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() => setDropdownVisible((v) => !v)}
-                  className="focus:outline-none"
+              <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+                <SheetTrigger asChild>
+                  <button className="focus:outline-none">
+                    <Avatar className="h-10 w-10 bg-emerald-600">
+                      {currentUser.avatarUrl ? (
+                        <AvatarImage src={currentUser.avatarUrl} alt="avatar" />
+                      ) : (
+                        <AvatarFallback className="text-white text-lg uppercase">
+                          {currentUser.full_name.charAt(0)}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                  </button>
+                </SheetTrigger>
+                <SheetContent
+                  side="right"
+                  className="w-50 sm:w-75 p-0 flex flex-col bg-white rounded-l-lg" // Narrower width, explicit white background
                 >
-                  <Avatar className="h-10 w-10 bg-emerald-600">
-                    {currentUser.avatarUrl ? (
-                      <AvatarImage src={currentUser.avatarUrl} alt="avatar" />
-                    ) : (
-                      <AvatarFallback className="text-white text-lg uppercase">
-                        {currentUser.full_name.charAt(0)}
-                      </AvatarFallback>
-                    )}
-                  </Avatar>
-                </button>
-                {dropdownVisible && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                    <div className="p-3 border-b border-gray-100">
-                      <p className="text-gray-700 text-sm">
-                        <span className="font-medium">Tên:</span> {currentUser.full_name}
-                      </p>
-                      <p className="text-gray-700 text-sm mt-1">
-                        <span className="font-medium">ID:</span> {currentUser.id}
-                      </p>
-                    </div>
-                    <ul className="py-1">
+                  <SheetHeader className="p-4 border-b border-emerald-100 flex flex-row items-center justify-between bg-emerald-50 rounded-2xl"> {/* Light green header background, emerald border */}
+                    <SheetTitle className="text-xl font-semibold text-emerald-800"> {/* Darker green title */}
+                      Profile
+                    </SheetTitle>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setSidebarOpen(false)}
+                      className="text-emerald-600 hover:bg-emerald-100" // Green close icon, light green hover
+                    >
+                      <CloseIcon className="h-5 w-5" />
+                      <span className="sr-only">Close</span>
+                    </Button>
+                  </SheetHeader>
+                  <div className="p-4">
+                    <p className="text-lg font-semibold text-gray-800 mb-2">
+                      Hello, {currentUser.full_name}!
+                    </p>
+                  </div>
+                  <nav className="flex-1 overflow-y-auto">
+                    <ul className="py-2">
                       <li>
-                        <button
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start px-4 py-2 text-base text-gray-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center h-auto" // Green hover
                           onClick={() => {
-                            setDropdownVisible(false);
+                            setSidebarOpen(false);
                             navigate("/user_info");
                           }}
-                          className="w-full flex items-center px-3 py-2 hover:bg-gray-50 text-gray-700 text-sm"
                         >
-                          <UserIcon className="w-4 h-4 mr-2 text-gray-600" />
-                          Thông tin cá nhân
-                        </button>
+                          <UserIcon className="w-5 h-5 mr-3 text-emerald-600" /> {/* Green icon */}
+                          Personal Information
+                        </Button>
                       </li>
                       <li>
-                        <button
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start px-4 py-2 text-base text-gray-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center h-auto" // Green hover
                           onClick={() => {
-                            setDropdownVisible(false);
+                            setSidebarOpen(false);
                             navigate("/membership");
                           }}
-                          className="w-full flex items-center px-3 py-2 hover:bg-gray-50 text-gray-700 text-sm"
                         >
-                          <CreditCardIcon className="w-4 h-4 mr-2 text-gray-600" />
-                          Gói thành viên
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          onClick={() => {
-                            setDropdownVisible(false);
-                            navigate("/settings");
-                          }}
-                          className="w-full flex items-center px-3 py-2 hover:bg-gray-50 text-gray-700 text-sm"
-                        >
-                          <SettingsIcon className="w-4 h-4 mr-2 text-gray-600" />
-                          Cài đặt
-                        </button>
-                      </li>
-                      <li>
-                        <hr className="my-1 border-gray-200" />
-                      </li>
-                      <li>
-                        <button
-                          onClick={handleLogout}
-                          className="w-full flex items-center px-3 py-2 hover:bg-gray-50 text-red-600 text-sm"
-                        >
-                          <LogOutIcon className="w-4 h-4 mr-2 text-red-500" />
-                          Logout
-                        </button>
+                          <CreditCardIcon className="w-5 h-5 mr-3 text-emerald-600" /> {/* Green icon */}
+                          Membership Plan
+                        </Button>
                       </li>
                     </ul>
+                  </nav>
+                  <div className="border-t border-emerald-100 p-4"> {/* Light green border */}
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-base text-red-600 hover:bg-red-50 hover:text-red-700 flex items-center h-auto"
+                      onClick={handleLogout}
+                    >
+                      <LogOutIcon className="w-5 h-5 mr-3 text-red-500" />
+                      Logout
+                    </Button>
                   </div>
-                )}
-              </div>
+                </SheetContent>
+              </Sheet>
             ) : (
               <NavLink to="/login">
                 <button className="ml-4 px-4 py-2 border border-green-600 text-green-600 rounded hover:bg-green-100 transition">
@@ -206,7 +197,6 @@ export const HeaderNavbar: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Mid navbar: pointer-events managed */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -218,7 +208,7 @@ export const HeaderNavbar: React.FC = () => {
             className={`inline-flex px-6 py-2 transition-all duration-300 ${scrolled
               ? "bg-white/50 backdrop-blur-md shadow-md rounded-full"
               : ""
-              }`}
+            }`}
           >
             <ul className="flex items-center space-x-6 overflow-x-auto whitespace-nowrap">
               {midSections.map((s) => (
@@ -232,8 +222,8 @@ export const HeaderNavbar: React.FC = () => {
                       }
                     }}
                     className={`px-3 py-1 rounded-lg transition-colors duration-200 ${location.pathname === "/" && activeSection === s.id
-                      ? "text-emerald-600 font-medium"
-                      : "text-gray-800 hover:bg-emerald-100"
+                        ? "text-emerald-600 font-medium"
+                        : "text-gray-800 hover:bg-emerald-100"
                       }`}
                   >
                     {s.label}
@@ -241,16 +231,11 @@ export const HeaderNavbar: React.FC = () => {
                 </li>
               ))}
 
-
-              <li className="flex-shrink-0">             
-                  
-                  <ResourcDropdown/>
-
+              <li className="flex-shrink-0">
+                <ResourcDropdown />
               </li>
               <li className="flex-shrink-0">
-              
-                  <QuitDropdown />
-                  
+                <QuitDropdown />
               </li>
             </ul>
           </div>

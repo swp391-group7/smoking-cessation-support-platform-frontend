@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import { useNavigate } from "react-router-dom";
 
 // Membership tiers (Giữ nguyên)
 const memberships = [
@@ -10,8 +11,11 @@ const memberships = [
     features: [
       'Basic quit tracking',
       'Daily motivational tips',
-      'Community forum access'
-    ]
+      'Community forum access',
+      'Standard email support',
+      'Access to basic articles'
+    ],
+    // Không cần path riêng nữa, sẽ dùng chung '/membership'
   },
   {
     name: 'Pro Plan',
@@ -20,8 +24,10 @@ const memberships = [
       'All Free features',
       'Personalized coaching',
       'Progress analytics dashboard',
-      'Premium support'
-    ]
+      'Premium support',
+      'Exclusive content & webinars'
+    ],
+    // Không cần path riêng nữa, sẽ dùng chung '/membership'
   }
 ];
 
@@ -46,20 +52,26 @@ const steps = [
 ];
 
 const QuitGuideSection: React.FC = () => {
-  // Animation variants for each step - Tăng duration, sử dụng easeOut
+  const navigate = useNavigate();
+
   const stepVariants = {
     hidden: (idx: number) => ({
       opacity: 0,
-      x: idx % 2 === 0 ? -120 : 120, // Tăng khoảng cách di chuyển một chút
+      x: idx % 2 === 0 ? -120 : 120,
     }),
     visible: {
       opacity: 1,
       x: 0,
       transition: {
-        duration: 0.9, // Tăng thời lượng animation lên 0.9 giây (mượt hơn)
-        ease: "easeOut", // Kiểu easeOut cho chuyển động tự nhiên
+        duration: 0.9,
+        ease: "easeOut" as const,
       },
     },
+  };
+
+  // Hàm xử lý khi nhấn nút, luôn chuyển đến '/membership'
+  const handleViewDetails = () => {
+    navigate('/membership');
   };
 
   return (
@@ -82,29 +94,23 @@ const QuitGuideSection: React.FC = () => {
 
         {/* Steps: Timeline Layout with central line and alternating cards */}
         <div className="relative mb-12">
-          {/* Vertical Line in the middle (hidden on small screens) */}
           <div className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-green-300 rounded-full h-full hidden md:block z-0"></div>
-
-          {/* Container for all steps, stacking them vertically */}
           <div className="flex flex-col items-center space-y-8 md:space-y-12">
             {steps.map((step, idx) => (
               <motion.div
                 key={idx}
-                // Apply custom variants and set custom prop 'idx'
                 variants={stepVariants}
                 initial="hidden"
                 whileInView="visible"
-                viewport={{ once: false, amount: 0.4 }} // Giảm amount xuống 0.4 để animation bắt đầu sớm hơn một chút
-                custom={idx} // Pass index as custom prop to variants
-                // Điều chỉnh transition delay cho hiệu ứng tuần tự
-                transition={{ delay: idx * 0.2 }} // Tăng độ trễ giữa các bước lên 0.2 giây
+                viewport={{ once: false, amount: 0.4 }}
+                custom={idx}
+                transition={{ delay: idx * 0.2 }}
                 className={`relative w-full max-w-lg md:max-w-none md:w-1/2 flex items-center z-10 ${
-                  idx % 2 === 0 // Even index: for the left side
+                  idx % 2 === 0
                     ? 'md:self-start md:pr-8'
                     : 'md:self-end md:pl-8'
                 }`}
               >
-                {/* Step Card */}
                 <div
                   className={`bg-white rounded-2xl shadow-lg border border-green-100 p-6 w-full hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300 ${
                     idx % 2 === 0 ? 'md:text-right' : 'md:text-left'
@@ -116,8 +122,6 @@ const QuitGuideSection: React.FC = () => {
                   </div>
                   <p className="text-gray-700 text-sm md:text-base">{step.content}</p>
                 </div>
-
-                {/* Connector Dot (hidden on small screens, appears on md+) */}
                 <div className="absolute top-1/2 transform -translate-y-1/2 w-6 h-6 bg-green-500 rounded-full border-4 border-white hidden md:block z-20"
                      style={idx % 2 === 0 ? { right: '-12px' } : { left: '-12px' }}>
                 </div>
@@ -126,31 +130,49 @@ const QuitGuideSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Membership plans (Giữ nguyên) */}
-        <div className="mb-8">
-          <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">Membership Plans</h3>
-          <div className="flex flex-col sm:flex-row justify-center items-stretch gap-6">
+        {/* --- Membership Plans --- */}
+        <div className="mb-12">
+          <h3 className="text-3xl font-bold text-green-700 text-center mb-8">
+            Choose Your Path to Freedom
+          </h3>
+          <div className="flex flex-col lg:flex-row justify-center items-stretch gap-8">
             {memberships.map((plan, idx) => (
               <motion.div
                 key={idx}
-                className="flex-1 bg-white rounded-2xl shadow-lg p-6 border border-green-200 hover:shadow-2xl hover:scale-105 transition-transform duration-300"
+                className="flex-1 flex flex-col bg-white rounded-2xl shadow-xl p-8 border-2 border-green-200 hover:shadow-2xl hover:scale-105 transition-transform duration-300 transform-gpu"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.15 }}
+                transition={{ duration: 0.6, delay: idx * 0.2 }}
               >
-                <p className="text-3xl font-semibold text-gray-800 mb-2">{plan.name}</p>
-                <p className="text-2xl text-green-600 font-bold mb-4">{plan.price}</p>
-                <ul className="text-gray-600 mb-6 space-y-2">
+                {/* Plan Header */}
+                <div className="text-center mb-6">
+                  <p className="text-3xl font-extrabold text-gray-900 mb-2">{plan.name}</p>
+                  <p className="text-4xl text-green-600 font-bold">{plan.price}</p>
+                </div>
+
+                {/* Features List */}
+                <ul className="text-gray-700 mb-8 space-y-3 flex-grow">
                   {plan.features.map((f, i) => (
                     <li key={i} className="flex items-start">
-                      <CheckCircleIcon className="w-5 h-5 text-green-600 mr-2 mt-1" />
-                      <span>{f}</span>
+                      <CheckCircleIcon className="w-6 h-6 text-green-500 mr-3 flex-shrink-0" />
+                      <span className="text-base">{f}</span>
                     </li>
                   ))}
                 </ul>
-                <button className="w-full bg-green-600 text-white py-2 rounded-full font-semibold hover:bg-green-700 transition">
-                  {plan.name === 'Free Plan' ? 'Get Started' : 'Upgrade Now'}
+
+                {/* Call to Action Button */}
+                <button
+                  // Chỉ kích hoạt nút nếu là 'Pro Plan'
+                  onClick={plan.name === 'Pro Plan' ? handleViewDetails : undefined}
+                  disabled={plan.name === 'Free Plan'} // Vô hiệu hóa nút nếu là 'Free Plan'
+                  className={`w-full py-3 rounded-full font-semibold text-lg transition-colors duration-300 shadow-md hover:shadow-lg
+                    ${plan.name === 'Pro Plan'
+                      ? 'bg-green-600 text-white hover:bg-green-700' // Màu sắc cho nút Pro Plan
+                      : 'bg-gray-300 text-gray-600 cursor-not-allowed opacity-70' // Màu sắc cho nút bị vô hiệu hóa
+                    }`}
+                >
+                  {plan.name === 'Pro Plan' ? 'View Details & Sign Up' : 'Currently Free - No Sign Up Needed'}
                 </button>
               </motion.div>
             ))}
