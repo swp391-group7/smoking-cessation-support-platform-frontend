@@ -17,6 +17,7 @@ userApi.interceptors.request.use(config => {
 
 export interface UserInfo  {
     id: string;
+    username: string;
     fullName: string;
     email: string;
     phoneNumber: string;

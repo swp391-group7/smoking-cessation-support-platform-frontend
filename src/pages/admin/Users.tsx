@@ -206,9 +206,9 @@ export default function UserManagement() {
                                     <td className="px-6 py-4">
                                         {user.fullName}
                                     </td>
-                                    {/* <td className="px-6 py-4">
+                                    <td className="px-6 py-4">
                                         {user.username}
-                                    </td> */}
+                                    </td>
                                     <td className="px-6 py-4">
                                         {user.email}
                                     </td>

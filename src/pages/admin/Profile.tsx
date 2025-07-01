@@ -15,6 +15,7 @@ export default function UserProfile() {
   const [formData, setFormData] = useState<UserInfo>({
     id: "",
     email: "",
+    username: "",
     fullName: "",
     phoneNumber: "",
     dob: "",
