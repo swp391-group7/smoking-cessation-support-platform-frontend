@@ -70,10 +70,9 @@ export default function UserManagement() {
         setError(null);
         try {
             const data = await getAllUsers();
-            // Augment fetched users with mock username for display if not present in UserInfo
             const augmentedUsers = data.map(user => ({
                 ...user,
-                username: user.email.split('@')[0] // Simple mock for username
+                username: user.email.split('@')[0] 
             }));
             setUsers(augmentedUsers);
         } catch (err) {
