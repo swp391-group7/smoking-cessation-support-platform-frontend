@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { getAllProgressLogs, getProgressLogsByUser, getProgressLogByUserAndDate, deleteProgressLog } from "@/api/progressApi";
-import type { QuitProgressLog } from '@/api/progressApi'; 
-import { getAllUsers } from "@/api/userApi"; 
-import type { UserInfo } from '@/api/userApi'; 
+import type { QuitProgressLog } from '@/api/progressApi';
+import { getAllUsers } from "@/api/userApi";
+import type { UserInfo } from '@/api/userApi';
 
 
 interface DetailedLogView extends QuitProgressLog {
@@ -14,13 +14,13 @@ interface DetailedLogView extends QuitProgressLog {
 
 export default function QuitProfiles() {
     const [logs, setLogs] = useState<QuitProgressLog[]>([]);
-    const [allUsers, setAllUsers] = useState<UserInfo[]>([]); 
-    const [selectedUserId, setSelectedUserId] = useState<string>(""); 
-    const [selectedDate, setSelectedDate] = useState<string>(""); 
+    const [allUsers, setAllUsers] = useState<UserInfo[]>([]);
+    const [selectedUserId, setSelectedUserId] = useState<string>("");
+    const [selectedDate, setSelectedDate] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedLog, setSelectedLog] = useState<DetailedLogView | null>(null); 
-    const [selectedLogIds, setSelectedLogIds] = useState<string[]>([]); 
+    const [selectedLog, setSelectedLog] = useState<DetailedLogView | null>(null);
+    const [selectedLogIds, setSelectedLogIds] = useState<string[]>([]);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
 
     // Function to fetch all users (for the filter dropdown)
@@ -64,9 +64,9 @@ export default function QuitProfiles() {
 
     // Fetch data on component mount and when filters change
     useEffect(() => {
-        fetchAllUsers(); 
+        fetchAllUsers();
         fetchProgressLogs();
-    }, [selectedUserId, selectedDate]); 
+    }, [selectedUserId, selectedDate]);
 
     // Handle opening the detail modal for a log
     const handleViewDetail = (log: QuitProgressLog) => {
@@ -97,8 +97,8 @@ export default function QuitProfiles() {
             for (const logId of selectedLogIds) {
                 await deleteProgressLog(logId);
             }
-            setSelectedLogIds([]); 
-            await fetchProgressLogs(); 
+            setSelectedLogIds([]);
+            await fetchProgressLogs();
         } catch (err) {
             console.error("Failed to delete logs:", err);
             setError("Không thể xóa các log đã chọn. Vui lòng thử lại.");
@@ -109,7 +109,15 @@ export default function QuitProfiles() {
 
     return (
         <div className="p-6 space-y-6 min-h-screen bg-gray-50 font-sans">
-            <h2 className="text-3xl font-extrabold text-gray-800 border-b-2 pb-2 mb-6">Quản lý Tiến trình Cai thuốc</h2>
+            
+            {/* Header */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-2xl font-bold">Smoking Cessation Process Management</h2>
+                    <p className="text-sm text-gray-500">Tracking user's quitting progess</p>
+                </div>
+                <p className="text-sm text-gray-400">/ Quit</p>
+            </div>
 
             {/* Filter and Action Buttons */}
             <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
@@ -141,8 +149,8 @@ export default function QuitProfiles() {
                     disabled={selectedLogIds.length === 0 || loading}
                     className={`px-6 py-2 rounded-lg font-semibold transition-all duration-200
                                 ${selectedLogIds.length === 0 || loading
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg'}`}
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg'}`}
                 >
                     Xóa log đã chọn ({selectedLogIds.length})
                 </button>
@@ -213,8 +221,8 @@ export default function QuitProfiles() {
                                     <td className="px-6 py-4">
                                         <span className={`px-2 py-0.5 rounded-full text-xs font-semibold
                                             ${log.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                                              log.status === 'Draft' ? 'bg-yellow-100 text-yellow-800' :
-                                              'bg-gray-100 text-gray-800'}`}>
+                                                log.status === 'Draft' ? 'bg-yellow-100 text-yellow-800' :
+                                                    'bg-gray-100 text-gray-800'}`}>
                                             {log.status}
                                         </span>
                                     </td>
