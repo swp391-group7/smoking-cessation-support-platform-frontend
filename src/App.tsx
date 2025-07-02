@@ -25,7 +25,7 @@ import Notifications from './pages/admin/Notifications.tsx';
 import Community from './pages/admin/Community.tsx';
 import Consultations from './pages/admin/Consultations.tsx';
 import Reports from './pages/admin/Reports.tsx';
-import UserProfiles from './pages/admin/UserProfiles.tsx';
+// import UserProfiles from './pages/admin/UserProfiles.tsx';
 import Settings from './pages/admin/Settings.tsx';
 import Badges from './pages/admin/Badges.tsx';
 import AdminProfile from './pages/admin/Profile.tsx';
@@ -87,7 +87,7 @@ export const App = () => (
           <Route path="community" element={<Community />} />
           <Route path="consultations" element={<Consultations />} />
           <Route path="reports" element={<Reports />} />
-          <Route path="user-profiles" element={<UserProfiles />} />
+          {/* <Route path="user-profiles" element={<UserProfiles />} /> */}
           <Route path="badges" element={<Badges />} />
           <Route path="settings" element={<Settings />} />
           <Route path="survey-management" element={<AdminSurveyManagement />} />

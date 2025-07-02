@@ -1,4 +1,5 @@
-// src/components/UserProfile.tsx
+// src/pages/admin/UserProfiles.tsx
+
 import { useState, useEffect } from "react";
 import { getUserById } from "@/api/userApi";
 import type { UserInfo } from "@/api/userApi";
@@ -45,7 +46,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                 const planData = await getActivePlanOfAnUser(userId); 
                 setQuitPlan(planData);
 
-                // Fetch Badges (using mock for now)
+                // Fetch Badges 
                 const badgesData = await getAllBadgesOfUser(userId);
                 setBadges(badgesData);
 
