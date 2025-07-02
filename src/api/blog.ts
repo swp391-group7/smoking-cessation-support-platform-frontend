@@ -15,9 +15,17 @@ blogApi.interceptors.request.use(config => {
   return config;
 });
 
+export const BlogType = {
+  HEALTH: 'HEALTH',
+  SMOKEQUIT: 'SMOKEQUIT',
+  SMOKEHARM: 'SMOKEHARM'
+} as const;
+
+export type BlogType = typeof BlogType[keyof typeof BlogType];
+
 export interface BlogPost {
   id: string;
-  blog_type: string;
+  blog_type: BlogType;
   title: string;
   content: string;
   imageUrl: string;
@@ -38,6 +46,11 @@ export async function fetchAllBlogs(): Promise<BlogPost[]> {
   return data;
 }
 
+export async function fetchBlogsByType(type: BlogType): Promise<BlogPost[]> {
+  const { data } = await blogApi.get<BlogPost[]>(`/blogs/type/${type}`);
+  return data;
+}
+
 export async function fetchBlogById(id: string): Promise<BlogPost> {
   const { data } = await blogApi.get<BlogPost>(`/blogs/${id}/search-blog-by-id`);
   return data;
@@ -47,7 +60,7 @@ export async function createBlog(blog: {
   title: string;
   content: string;
   images: string;
-  blogType: string;
+  blogType: BlogType;
 }): Promise<BlogPost> {
   const { data } = await blogApi.post<BlogPost>('/blogs/create-blog', blog);
   return data;
@@ -58,7 +71,7 @@ export async function updateBlog(id: string, blog: {
   title: string;
   content: string;
   images: string;
-  blogType: string;
+  blogType: BlogType;
 }): Promise<BlogPost> {
   const { data } = await blogApi.put<BlogPost>(`/blogs/${id}/edit-blog`, blog);
   return data;

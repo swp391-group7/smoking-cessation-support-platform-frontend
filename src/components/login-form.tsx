@@ -12,8 +12,8 @@ import { FaFacebookF, FaGoogle } from "react-icons/fa";
 
 // Định nghĩa Zod schema (giữ nguyên)
 const loginSchema = z.object({
-  username: z.string().min(1, "Username không được để trống"),
-  password: z.string().min(6, "Password phải ít nhất 6 ký tự"),
+  username: z.string().min(1, "Username cannot be empty"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 type LoginData = z.infer<typeof loginSchema>;
 
@@ -42,21 +42,31 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // Mutation gọi API login 
+  // Mutation gọi API login (giữ nguyên)
   const { mutate: login, isPending } = useMutation({
     mutationFn: loginApi,
-    onSuccess: (response) => {
-      localStorage.setItem("token", response.token);
-      localStorage.setItem("user", JSON.stringify(response.user));
-      localStorage.setItem("userId", response.user.id);
-      toast.success("Đăng nhập thành công", {
+    onSuccess: ({ token, user }) => {
+      // Lưu token và thông tin người dùng
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("role", user.role);
+
+      toast.success("Login successful!", {
         position: "top-center",
-        description: "Chào mừng bạn trở lại!",
+        description: `Welcome ${user.full_name}`,
       });
-      setTimeout(() => navigate("/"), 700);
+
+      // Điều hướng theo vai trò
+      const redirectPath = {
+        admin: "/admin/dashboard",
+        coach: "/coach/dashboard",
+        user: "/quit_progress", // Or "/" depending on your design
+      }[user.role] || "/";
+
+      setTimeout(() => navigate(redirectPath), 700);
     },
     onError: () => {
-      toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản hoặc mật khẩu.", {
+      toast.error("Login failed. Please check your username or password.", {
         position: "bottom-right",
       });
     },
@@ -68,7 +78,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen  flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       {/* Đặt Toaster ở cấp độ toàn trang để show toast */}
       <Toaster />
 
@@ -140,7 +150,7 @@ const LoginPage: React.FC = () => {
                   : "bg-emerald-600 hover:bg-emerald-700"
               }`}
             >
-              {isPending ? "Đang đăng nhập..." : "Login"}
+              {isPending ? "Logging in..." : "Login"}
             </button>
           </div>
         </form>

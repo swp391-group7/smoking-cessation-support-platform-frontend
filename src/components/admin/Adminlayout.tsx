@@ -68,6 +68,12 @@ const menuItems = [
         icon: FileText,
         description: "Blog content",
       },
+      {
+        name: "Survey Management", 
+        path: "/admin/survey-management",
+        icon: FileText,
+        description: "Manage surveys",
+      },
     ],
   },
   {
@@ -133,7 +139,7 @@ const AdminLayout: React.FC = () => {
 
   return (
     <div
-      className="bg-gray-50"
+      className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50"
       style={{
         position: "fixed",
         top: 0,
@@ -151,13 +157,15 @@ const AdminLayout: React.FC = () => {
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           />
           <main
-            className="flex-1 bg-gray-50 p-6"
+            className="flex-1 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6"
             style={{
               overflow: "auto",
-              height: "calc(100vh - 64px)",
+              height: "calc(100vh - 80px)",
             }}
           >
-            <Outlet />
+            <div className="max-w-7xl mx-auto">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>
