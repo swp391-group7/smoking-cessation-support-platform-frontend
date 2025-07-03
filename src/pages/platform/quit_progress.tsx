@@ -216,18 +216,19 @@ export default function Quit_Progress() {
             </motion.div>
           )}
 
-          {currentPage === 'chat' && (
-            <motion.div
-              key="chat"
-              variants={pageVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="w-full h-full max-w-3xl mx-auto flex"
-            >
-              <CoachChat onSendMessage={handleSendMessage} />
-            </motion.div>
-          )}
+         {currentPage === 'chat' && (
+  <motion.div
+    key="chat"
+    variants={pageVariants}
+    initial="hidden"
+    animate="visible"
+    exit="exit"
+    className="flex-1 flex"        // <-- flex-1 để căng đầy
+  >
+    <CoachChat onSendMessage={handleSendMessage} />
+  </motion.div>
+)}
+
         </AnimatePresence>
       </main>
     </div>

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 // Mock data for chat messages
 interface ChatMessage {
@@ -32,8 +32,7 @@ const CoachChat: React.FC<CoachChatProps> = ({ onSendMessage }) => {
   ]);
 
   const coachName = "Coach Minh";
-  const coachAvatar = "https://randomuser.me/api/portraits/men/32.jpg"; // Replace with actual coach avatar URL
-  const userAvatar = "https://randomuser.me/api/portraits/men/50.jpg"; // Replace with actual user avatar URL or dynamic generation
+  const userName = "Bạn"; // Assuming a generic user name for the fallback
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,15 +62,17 @@ const CoachChat: React.FC<CoachChatProps> = ({ onSendMessage }) => {
   };
 
   return (
-    <Card className="p-6 shadow-md border border-gray-200 h-full flex flex-col">
-      <CardHeader className="p-0 mb-4 flex flex-row items-center justify-between border-b pb-4 border-gray-100">
+    // Removed the outer div, the Card now directly takes full screen dimensions
+   // Thay đổi
+<Card className="flex flex-col flex-1 rounded-none shadow-none border-none bg-white">
+ {/* Full screen, no rounded corners, no shadow, no border */}
+      <CardHeader className="p-4 flex flex-row items-center justify-between border-b border-green-100 bg-white">
         <div className="flex items-center space-x-3">
-          <Avatar className="w-11 h-11 border-2 border-green-primary">
-            <AvatarImage src={coachAvatar} alt={coachName} />
-            <AvatarFallback className="bg-green-light text-green-dark">CM</AvatarFallback>
+          <Avatar className="w-12 h-12 border-2 border-green-500 bg-green-100">
+            <AvatarFallback className="text-green-800 font-semibold text-lg">CM</AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle className="font-bold text-xl text-green-dark">{coachName}</CardTitle>
+            <CardTitle className="font-bold text-xl text-green-700">{coachName}</CardTitle>
             <p className="text-sm text-gray-500 flex items-center">
               <span className="w-2.5 h-2.5 bg-green-500 rounded-full mr-1 animate-pulse"></span>
               Online
@@ -80,38 +81,39 @@ const CoachChat: React.FC<CoachChatProps> = ({ onSendMessage }) => {
         </div>
       </CardHeader>
       
-      <CardContent className="p-0 flex-1 flex flex-col overflow-y-auto pr-2 mb-4 scrollbar-thumb-gray-400 scrollbar-track-gray-100 scrollbar-thin" ref={chatContainerRef}>
+      <CardContent 
+        className="flex-1 flex flex-col overflow-y-auto p-4 space-y-4 bg-green-50 scrollbar-thin scrollbar-thumb-green-400 scrollbar-track-green-100" 
+        ref={chatContainerRef}
+      >
         <AnimatePresence>
           {chatHistory.map((msg) => (
             <motion.div
               key={msg.id}
-              className={`flex items-start mb-4 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex items-start ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               variants={messageVariants}
               initial="hidden"
               animate="visible"
             >
               {msg.sender === 'coach' && (
-                <Avatar className="w-8 h-8 mr-2 flex-shrink-0">
-                  <AvatarImage src={coachAvatar} alt={coachName} />
-                  <AvatarFallback className="bg-green-light text-green-dark">CM</AvatarFallback>
+                <Avatar className="w-9 h-9 mr-2 flex-shrink-0 bg-green-100">
+                  <AvatarFallback className="text-green-800 text-sm">CM</AvatarFallback>
                 </Avatar>
               )}
-              <div className={`max-w-[70%] p-3 rounded-xl relative break-words ${
+              <div className={`max-w-[75%] p-3 rounded-xl relative break-words ${
                 msg.sender === 'user'
-                  ? 'bg-green-primary text-white ml-auto rounded-br-none shadow-sm'
-                  : 'bg-gray-100 text-gray-800 rounded-bl-none shadow-sm'
+                  ? 'bg-green-600 text-white ml-auto rounded-br-none shadow-md'
+                  : 'bg-white text-gray-800 rounded-bl-none shadow-md border border-green-100'
               }`}>
                 <p className="text-sm">{msg.text}</p>
-                <span className={`absolute text-[10px] bottom-1 whitespace-nowrap ${
-                  msg.sender === 'user' ? '-left-[4.5rem] text-gray-400' : '-right-[4.5rem] text-gray-500'
+                <span className={`absolute text-[10px] bottom-1 ${
+                  msg.sender === 'user' ? '-left-[4.5rem] text-gray-200' : '-right-[4.5rem] text-gray-500'
                 }`}>
                   {msg.timestamp}
                 </span>
               </div>
               {msg.sender === 'user' && (
-                <Avatar className="w-8 h-8 ml-2 flex-shrink-0">
-                  <AvatarImage src={userAvatar} alt="Bạn" />
-                  <AvatarFallback className="bg-blue-100 text-blue-800">Bạn</AvatarFallback>
+                <Avatar className="w-9 h-9 ml-2 flex-shrink-0 bg-green-200">
+                  <AvatarFallback className="text-green-900 text-sm">Bạn</AvatarFallback>
                 </Avatar>
               )}
             </motion.div>
@@ -119,17 +121,17 @@ const CoachChat: React.FC<CoachChatProps> = ({ onSendMessage }) => {
         </AnimatePresence>
       </CardContent>
 
-      <form onSubmit={handleSubmit} className="flex gap-3 mt-auto">
+      <form onSubmit={handleSubmit} className="flex gap-3 p-4 border-t border-green-100 bg-white">
         <Input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Nhập tin nhắn của bạn..."
-          className="flex-1 p-3 border-gray-300 rounded-lg focus-visible:ring-green-primary"
+          className="flex-1 p-3 border-gray-300 rounded-lg focus-visible:ring-green-500 focus-visible:ring-2 focus-visible:ring-offset-0"
         />
         <Button
           type="submit"
-          className="bg-green-primary text-white px-5 py-3 rounded-lg font-semibold hover:bg-green-dark transition-colors duration-200"
+          className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200 shadow-md"
         >
           Gửi
         </Button>
