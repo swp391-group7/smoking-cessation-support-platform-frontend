@@ -15,14 +15,14 @@ const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     if (!token || role !== "admin") {
       if (role === "coach") {
-        toast.error("Failed", {
-          description: "Bạn không có quyền truy cập trang admin.",
+        toast.error("Access Denied", {
+          description: "You are not authorized to access the admin page.",
           position: "top-center",
         });
         setRedirectPath("/coach/dashboard");
       } else {
-        toast.error("Failed", {
-          description: "Nội dung không tồn tại hoặc không hợp lệ.",
+        toast.error("Access Denied", {
+          description: "Content not found or unauthorized access.",
           position: "top-center",
         });
         setRedirectPath("/#hero");
@@ -41,7 +41,6 @@ const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default AdminProtectedRoute;
-
 //logic gốc
 // import { Navigate } from "react-router-dom";
 

@@ -9,7 +9,7 @@ interface Props {
 const CoachProtectedRoute: React.FC<Props> = ({ children }) => {
   const [shouldRedirect, setShouldRedirect] = useState(false);
   const [redirectPath, setRedirectPath] = useState("");
-  const hasShownToast = useRef(false); 
+  const hasShownToast = useRef(false);
 
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
@@ -18,16 +18,16 @@ const CoachProtectedRoute: React.FC<Props> = ({ children }) => {
     if (hasShownToast.current) return;
 
     if (!token || (role !== "coach" && role !== "admin")) {
-      toast.error("Failed", {
-        description: "Nội dung không tồn tại",
+      toast.error("Access Denied", {
+        description: "Content not found or unauthorized access.",
         position: "top-center",
       });
       setRedirectPath("/#hero");
       setShouldRedirect(true);
       hasShownToast.current = true;
     } else if (role === "admin") {
-      toast.error("Failed", {
-        description: "Bạn không có quyền truy cập trang này",
+      toast.error("Access Denied", {
+        description: "Admins are not allowed to access this page.",
         position: "top-center",
       });
       setRedirectPath("/admin/dashboard");
