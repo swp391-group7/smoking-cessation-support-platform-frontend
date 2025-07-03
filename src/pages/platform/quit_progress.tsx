@@ -53,8 +53,7 @@ export default function Quit_Progress() {
 
   const reminders = [
     { time: "10:00 AM", text: "Stay strong! The first week is the hardest.", icon: "📘" },
-    { time: "2:30 PM", text: "Drink water when you crave a cigarette.", icon: "💧" },
-    { time: "5:45 PM", text: "You've saved enough for a nice dinner!", icon: "🍽️" },
+    
   ];
 
   const badges = [

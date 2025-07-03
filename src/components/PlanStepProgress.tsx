@@ -1,4 +1,5 @@
 import React from 'react';
+import { CheckCircle, Target } from 'lucide-react';
 
 type PlanStep = {
   name: string;
@@ -10,34 +11,72 @@ type PlanStepProgressProps = {
   currentStepIndex: number;
 };
 
-const PlanStepProgress: React.FC<PlanStepProgressProps> = ({ steps, currentStepIndex }) => {
+const PlanStepProgress: React.FC<PlanStepProgressProps> = ({ 
+  steps = [
+    { name: 'Xác định lý do bỏ thuốc', completed: true },
+    { name: 'Chuẩn bị tinh thần và thể chất', completed: true },
+    { name: 'Chọn ngày bỏ thuốc', completed: true },
+    { name: 'Tìm hiểu các phương pháp hỗ trợ', completed: false },
+    { name: 'Thực hiện kế hoạch bỏ thuốc', completed: false },
+    { name: 'Duy trì thói quen tích cực', completed: false }
+  ], 
+  currentStepIndex = 3
+}) => {
+  const completedSteps = steps.filter(step => step.completed).length;
+  const progressPercentage = (completedSteps / steps.length) * 100;
+
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Tiến trình Kế hoạch của bạn</h2>
-      <div className="flex flex-col space-y-4">
-        {steps.map((step, index) => (
-          <div key={index} className="flex items-center">
-            {step.completed ? (
-              <svg className="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            ) : index === currentStepIndex ? (
-              <svg className="w-6 h-6 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            ) : (
-              <div className="w-6 h-6 border-2 border-gray-300 rounded-full mr-3 flex items-center justify-center text-gray-500 font-semibold text-sm">
-                {index + 1}
-              </div>
-            )}
-            <p className={`text-lg ${step.completed ? 'text-gray-500 line-through' : index === currentStepIndex ? 'text-blue-600 font-semibold' : 'text-gray-700'}`}>
-              {step.name}
-            </p>
-          </div>
-        ))}
+    <div className="bg-gradient-to-br from-white to-green-50 rounded-lg p-6 shadow-lg border border-green-100">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-6">
+        <div className="p-2 bg-green-500 rounded">
+          <Target className="w-5 h-5 text-white" />
+        </div>
+        <h2 className="text-xl font-bold text-green-800">Tiến trình Kế hoạch</h2>
       </div>
-      <div className="mt-4 text-sm text-gray-600">
-        Bạn đang ở **Bước {currentStepIndex + 1}: {steps[currentStepIndex].name}**.
+
+      {/* Progress Bar */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm font-medium text-green-700">Tiến độ</span>
+          <span className="text-sm font-semibold text-green-600">{Math.round(progressPercentage)}%</span>
+        </div>
+        <div className="w-full bg-green-100 rounded-full h-3 overflow-hidden">
+          <div 
+            className="bg-green-500 h-full transition-all duration-300"
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Steps */}
+      <div className="relative flex items-center mb-4">
+        {/* Connector Base Line */}
+        <div className="absolute top-1/2 left-5 right-5 h-0.5 bg-gray-300 transform -translate-y-1/2 z-0" />
+
+        {steps.map((step, index) => {
+          const isCurrent = index === currentStepIndex;
+          const stepColor = step.completed || isCurrent ? 'bg-green-500' : 'bg-gray-300';
+          return (
+            <div key={index} className="relative flex-1 flex flex-col items-center z-10">
+              <div 
+                className={`w-8 h-8 rounded-full flex items-center justify-center ${stepColor} text-white`}
+              >
+                {step.completed ? <CheckCircle className="w-5 h-5" /> : index + 1}
+              </div>
+              <span className={`mt-2 text-xs text-center w-20 truncate ${step.completed || isCurrent ? 'text-green-800 font-medium' : 'text-gray-600'}`}>
+                {step.name}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Current Step Label */}
+      <div className="text-center mt-4">
+        <p className="text-sm text-green-700">
+          <span className="font-semibold">Bước {currentStepIndex + 1}:</span> {steps[currentStepIndex]?.name}
+        </p>
       </div>
     </div>
   );
