@@ -36,7 +36,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
             setError(null);
             try {
                 // Fetch User Info
-                const userData = await getUserById(parseInt(userId));
+                const userData = await getUserById(userId);
                 setUserInfo({
                     ...userData,
                     username: userData.email.split('@')[0] // Derive username from email for display
