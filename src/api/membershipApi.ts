@@ -60,12 +60,15 @@ export interface PackageType {
 export interface MembershipPackageDto {
   id: string;
   userId: string;
+  // add the misspelled key as well as the correct one
+  packagetTypeId: string;
   packageTypeId: string;
-  startDate: string;    // or Date, depending on your JSON
+  startDate: string;
   endDate: string;
-  isActive: boolean;
-  // …any other fields your DTO has
+  active: boolean;
+  // …
 }
+
 /**
  * Fetch all package types for membership plans
  */

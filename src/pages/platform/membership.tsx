@@ -28,16 +28,20 @@ const MembershipPage: React.FC = () => {
       return null;
     }
   }, []);
-  
-  useEffect(() => {
+
+ useEffect(() => {
   getActiveMembershipPackage()
-    .then(pkg => setActivePackage(pkg))
-    .catch(err => {
-      if (err.response?.status !== 404) console.error(err)
-      // 404 means “no active package” → leave activePackage null
+    .then(pkg => {
+      console.log('Active package response:', pkg);
+      setActivePackage(pkg);
     })
-    .finally(() => setCheckingActive(false))
+    .catch(err => {
+      if (err.response?.status !== 404) console.error(err);
+    })
+    .finally(() => setCheckingActive(false));
 }, []);
+
+
   // Handle PayPal redirect and execute payment
   useEffect(() => {
     const params = new URLSearchParams(search);
@@ -228,7 +232,8 @@ const MembershipPage: React.FC = () => {
 
         <div className="flex flex-col lg:flex-row justify-center items-stretch gap-8 mb-12">
   {plans.map(plan => {
-    const isActive = activePackage?.packageTypeId === plan.id;
+     const activeId = activePackage?.packagetTypeId ?? activePackage?.packageTypeId;
+     const isActive = activePackage?.active === true && plan.id === activeId;
 
     return (
       <div
