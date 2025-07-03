@@ -56,7 +56,7 @@ const DailyCheckIn: React.FC<DailyCheckInProps> = ({ onSubmit }) => {
   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
     smokedToday === false 
       ? 'bg-red-500 text-white shadow-md' 
-      : 'bg-gray-100 text-gray-700 hover:bg-green-100'
+      : 'bg-gray-100 text-gray-700 hover:bg-red-100'
   }`}
 >
   <CheckCircle className="w-4 h-4" />
@@ -68,7 +68,7 @@ const DailyCheckIn: React.FC<DailyCheckInProps> = ({ onSubmit }) => {
   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
     smokedToday === true 
       ? 'bg-green-500 text-white shadow-md' 
-      : 'bg-gray-100 text-gray-700 hover:bg-red-100'
+      : 'bg-gray-100 text-gray-700 hover:bg-green-100'
   }`}
 >
   <XCircle className="w-4 h-4" />
