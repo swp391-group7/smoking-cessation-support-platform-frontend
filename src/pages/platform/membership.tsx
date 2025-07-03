@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { getAllPackageTypes, createPayment, executePayment } from '@/api/membershipApi';
 import type { PackageType } from '@/api/membershipApi';
+import { getActiveMembershipPackage } from '@/api/membershipApi';
+import type { MembershipPackageDto } from '@/api/membershipApi';
 
 const MembershipPage: React.FC = () => {
   const navigate = useNavigate();
@@ -12,7 +14,8 @@ const MembershipPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PackageType | null>(null);
   const [paymentLoading, setPaymentLoading] = useState<boolean>(false);
-  
+  const [activePackage, setActivePackage] = useState<MembershipPackageDto | null>(null)
+  const [checkingActive, setCheckingActive] = useState(true)
   // Ref để tránh double execution trong StrictMode
   const paymentProcessedRef = useRef<boolean>(false);
 
@@ -25,6 +28,19 @@ const MembershipPage: React.FC = () => {
       return null;
     }
   }, []);
+
+ useEffect(() => {
+  getActiveMembershipPackage()
+    .then(pkg => {
+      console.log('Active package response:', pkg);
+      setActivePackage(pkg);
+    })
+    .catch(err => {
+      if (err.response?.status !== 404) console.error(err);
+    })
+    .finally(() => setCheckingActive(false));
+}, []);
+
 
   // Handle PayPal redirect and execute payment
   useEffect(() => {
@@ -215,50 +231,64 @@ const MembershipPage: React.FC = () => {
         </p>
 
         <div className="flex flex-col lg:flex-row justify-center items-stretch gap-8 mb-12">
-          {plans.map(plan => (
-            <div 
-              key={plan.id} 
-              className="flex-1 flex flex-col bg-white rounded-2xl shadow-lg p-6 border-2 border-green-100 hover:border-green-300 transition-all duration-300"
-            >
-              <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
-                {plan.name}
-              </h2>
-              <p className="text-4xl text-green-600 font-bold mb-4">
-                ${plan.price}
-                {plan.price > 0 && (
-                  <span className="text-lg text-gray-500">/month</span>
-                )}
-              </p>
-              <p className="text-gray-600 mb-6 flex-grow">{plan.description}</p>
+  {plans.map(plan => {
+     const activeId = activePackage?.packagetTypeId ?? activePackage?.packageTypeId;
+     const isActive = activePackage?.active === true && plan.id === activeId;
 
-              <ul className="text-gray-700 mb-8 space-y-3">
-                {mapFeatures(plan).map((feature, idx) => (
-                  <li key={idx} className="flex items-start">
-                    <CheckCircleIcon className="w-6 h-6 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-base">{feature}</span>
-                  </li>
-                ))}
-              </ul>
+    return (
+      <div
+        key={plan.id}
+        className="flex-1 flex flex-col bg-white rounded-2xl shadow-lg p-6 border-2 border-green-100 hover:border-green-300 transition-all duration-300"
+      >
+        <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
+          {plan.name}
+        </h2>
+        <p className="text-4xl text-green-600 font-bold mb-4">
+          ${plan.price}
+          {plan.price > 0 && (
+            <span className="text-lg text-gray-500">/month</span>
+          )}
+        </p>
+        <p className="text-gray-600 mb-6 flex-grow">{plan.description}</p>
 
-              <button
-                onClick={() => handleSignUpClick(plan)}
-                disabled={paymentLoading}
-                className={`w-full py-3 rounded-full font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed
-                  ${plan.price === 0
-                    ? 'bg-gray-300 text-gray-600 hover:bg-gray-400'
-                    : 'bg-green-600 text-white hover:bg-green-700 hover:scale-105'
-                  }
-                `}
-              >
-                {plan.price === 0 ? 'Start Free' : 'Subscribe'}
-              </button>
-            </div>
+        <ul className="text-gray-700 mb-8 space-y-3">
+          {mapFeatures(plan).map((feature, idx) => (
+            <li key={idx} className="flex items-start">
+              <CheckCircleIcon className="w-6 h-6 text-green-500 mr-3 flex-shrink-0" />
+              <span className="text-base">{feature}</span>
+            </li>
           ))}
-        </div>
+        </ul>
+
+        <button
+          onClick={() => handleSignUpClick(plan)}
+          disabled={paymentLoading || checkingActive || isActive}
+          className={`w-full py-3 rounded-full font-semibold text-lg transition-all duration-300 shadow-md
+            ${
+              isActive
+                ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                : plan.price === 0
+                  ? 'bg-gray-300 text-gray-600 hover:bg-gray-400'
+                  : 'bg-green-600 text-white hover:bg-green-700 hover:scale-105'
+            }
+            disabled:opacity-50 disabled:cursor-not-allowed
+          `}
+        >
+          {isActive
+            ? 'Active'
+            : plan.price === 0
+              ? 'Start Free'
+              : 'Subscribe'
+          }
+        </button>
+      </div>
+    );
+  })}
+</div>
 
         {selectedPlan && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
+            className="fixed inset-0 bg-opacity-30 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
             onClick={handleCloseModal}
           >
             <div 
