@@ -7,12 +7,15 @@ interface Props {
 
 const CoachProtectedRoute: React.FC<Props> = ({ children }) => {
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
+  const role: string | null = localStorage.getItem("role");
 
-  if (!token || role !== "coach") {
-    return <Navigate to="/#hero" replace />;
+if (!token || (role !== "coach" && role !== "admin")) {
+  return <Navigate to="/#hero" replace />;
+}
+
+  if (role === "admin") {
+    return <Navigate to="/admin/dashboard" replace />;
   }
-
   return <>{children}</>;
 };
 
