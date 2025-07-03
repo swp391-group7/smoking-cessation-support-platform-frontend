@@ -1,18 +1,31 @@
-import React from 'react';
+// src/pages/Quit_Progress.tsx
+import React, { useState } from 'react';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
+
+// Import your components
 import ProgressOverview from '../../components/ProgressOverview';
 import DailyCheckIn from '../../components/DailyCheckIn';
-import ProgressChart from '../../components/ProgressChart';
-import HistorySidebar from '../../components/HistorySidebar';
-import RemindersSidebar from '../../components/RemindersSidebar';
+import HistorySidebar from '../../components/HistorySidebar'; // Now displayed on a dedicated history page
+import RemindersSidebar from '../../components/RemindersSidebar'; // Still used, but in a different position
 import BadgesSidebar from '../../components/BadgesSidebar';
+import PlanStepProgress from '../../components/PlanStepProgress';
+import CoachChat from '../../components/CoachChat';
 
+// Import components from shadcn/ui
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 type DailyFormValues = {
   numCigarettes: number;
   smokedToday: boolean;
 };
 
+// Define new page types
+type Page = 'dashboard' | 'history' | 'badges' | 'chat';
+
 export default function Quit_Progress() {
+  const [currentPage, setCurrentPage] = useState<Page>('dashboard');
+
   // Mock data - replace these with API calls later
   const progressData = {
     daysSmokesFree: 17,
@@ -20,77 +33,204 @@ export default function Quit_Progress() {
     cigarettesAvoided: 340
   };
 
-  const chartData = [
-    { date: "Jun 5", smoked: 1, saved: 5 },
-    { date: "Jun 6", smoked: 0, saved: 10 },
-    { date: "Jun 7", smoked: 2, saved: 20 },
-    { date: "Jun 8", smoked: 0, saved: 30 },
-    { date: "Jun 9", smoked: 0, saved: 40 },
-    { date: "Jun 10", smoked: 0, saved: 50 },
-    { date: "Jun 16", smoked: 1, saved: 60 },
-  ];
-
   const history = [
-    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "Jun 16, 2025", text: "Smoked 3 cigarettes", success: false },
-    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "Jun 16, 2025", text: "Smoke-free day", success: true },
-    { date: "Jun 16, 2025", text: "Smoke-free day", success: true },
-    { date: "Jun 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "Jun 10, 2025", text: "Smoke-free day", success: true },
-    { date: "Jun 9, 2025", text: "Smoke-free day", success: true },
-    { date: "Jun 8, 2025", text: "Smoked 2 cigarettes", success: false },
-    { date: "Jun 7, 2025", text: "Smoke-free day", success: true },
-    { date: "Jun 6, 2025", text: "Smoke-free day", success: true },
-    { date: "Jun 5, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "June 16, 2025", text: "Smoked 3 cigarettes", success: false },
+    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "June 16, 2025", text: "Smoke-free day", success: true },
+    { date: "June 16, 2025", text: "Smoke-free day", success: true },
+    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
+    { date: "June 10, 2025", text: "Smoke-free day", success: true },
+    { date: "June 9, 2025", text: "Smoke-free day", success: true },
+    { date: "June 8, 2025", text: "Smoked 2 cigarettes", success: false },
+    { date: "June 7, 2025", text: "Smoke-free day", success: true },
+    { date: "June 6, 2025", text: "Smoke-free day", success: true },
+    { date: "June 5, 2025", text: "Smoked 1 cigarette", success: false },
   ];
 
   const reminders = [
-    { time: "10:00 AM", text: "Stay strong! First week is the hardest", icon: "📘" },
-    { time: "2:30 PM", text: "Remember to drink water when you have cravings", icon: "💧" },
+    { time: "10:00 AM", text: "Stay strong! The first week is the hardest.", icon: "📘" },
+    { time: "2:30 PM", text: "Drink water when you crave a cigarette.", icon: "💧" },
     { time: "5:45 PM", text: "You've saved enough for a nice dinner!", icon: "🍽️" },
   ];
 
   const badges = [
     { name: "First Day", description: "Completed your first smoke-free day", earned: true, icon: "🥇" },
-    { name: "One Week", description: "One week without smoking", earned: true, icon: "🎉" },
-    { name: "Money Saver", description: "Saved your first $50", earned: true, icon: "💰" },
-    { name: "Health Boost", description: "Your lungs are healing", earned: false, icon: "🫁" },
+    { name: "One Week", description: "One week smoke-free", earned: true, icon: "🎉" },
+    { name: "Money Saved", description: "Saved $50", earned: true, icon: "💰" },
+    { name: "Health Improvement", description: "Your lungs are healing", earned: false, icon: "🫁" },
     { name: "Two Weeks", description: "Two weeks smoke-free", earned: false, icon: "⚠️" },
-    { name: "Long Distance", description: "One month without smoking", earned: false, icon: "🏃" },
+    { name: "Long Haul", description: "One month smoke-free", earned: false, icon: "🏃" },
   ];
+
+  const planSteps = [
+    { name: "Step 1: Prepare and Commit", completed: true },
+    { name: "Step 2: Cope with Cravings", completed: true },
+    { name: "Step 3: Develop New Habits", completed: false },
+    { name: "Step 4: Maintain and Live Healthy", completed: false },
+    { name: "Step 5: Celebrate Success", completed: false },
+  ];
+  const currentStepIndex = 2;
 
   const handleDailyCheckIn = (data: DailyFormValues) => {
     console.log("Daily check-in submitted:", data);
     // TODO: Replace with API call
-    // Example: await submitDailyCheckIn(data);
+  };
+
+  const handleSendMessage = (message: string) => {
+    console.log("Message sent to coach:", message);
+    // TODO: Send message to coach API
+  };
+
+  const pageVariants: Variants = {
+    hidden: { opacity: 0, x: 20 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    exit: { opacity: 0, x: -20, transition: { duration: 0.3, ease: "easeIn" } },
   };
 
   return (
-    <div className="flex p-6 gap-6 bg-gray-50 min-h-screen">
-      
-      {/* Left Main Content */}
-      <div className="flex-1 space-y-6">
-        <ProgressOverview 
-          daysSmokesFree={progressData.daysSmokesFree}
-          moneySaved={progressData.moneySaved}
-          cigarettesAvoided={progressData.cigarettesAvoided}
-        />
-        
-        <DailyCheckIn onSubmit={handleDailyCheckIn} />
-        
-        <ProgressChart chartData={chartData} />
-      </div>
+    <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
+      {/* Sidebar Navigation */}
+      <Card className="w-60 border-r border-gray-100 bg-white shadow-lg rounded-none sticky top-0 h-screen flex flex-col pt-5 pb-5"> {/* Changed p-5 to pt-5 pb-5 */}
+        <nav className="flex-1 space-y-2"> {/* Removed mt-8 here */}
+          {/* Dashboard */}
+          <Button
+            variant={currentPage === 'dashboard' ? 'default' : 'ghost'}
+            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${
+              currentPage === 'dashboard'
+                ? 'bg-green-600 text-white shadow-sm hover:bg-green-700'
+                : 'text-green-700 hover:bg-gray-50 hover:text-green-700'
+            }`}
+            onClick={() => setCurrentPage('dashboard')}
+          >
+            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l7 7m-2 2v10a1 1 0 001 1h3"></path>
+            </svg>
+            Overview
+          </Button>
 
-      {/* Sidebar */}
-      <div className="w-80 space-y-6">
-        <HistorySidebar history={history} />
-        <RemindersSidebar reminders={reminders} />
-        <BadgesSidebar badges={badges} />
-      </div>
+          {/* History (moved to a separate page) */}
+          <Button
+            variant={currentPage === 'history' ? 'default' : 'ghost'}
+            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${
+              currentPage === 'history'
+                ? 'bg-green-600 text-white shadow-sm hover:bg-green-700'
+                : 'text-green-700 hover:bg-gray-50 hover:text-green-700'
+            }`}
+            onClick={() => setCurrentPage('history')}
+          >
+            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            History
+          </Button>
+
+          {/* Badges */}
+          <Button
+            variant={currentPage === 'badges' ? 'default' : 'ghost'}
+            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${
+              currentPage === 'badges'
+                ? 'bg-green-600 text-white shadow-sm hover:bg-green-700'
+                : 'text-green-700 hover:bg-gray-50 hover:text-green-700'
+            }`}
+            onClick={() => setCurrentPage('badges')}
+          >
+            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M10 21h4a2 2 0 002-2V7a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            Badges
+          </Button>
+
+          {/* Coach Chat */}
+          <Button
+            variant={currentPage === 'chat' ? 'default' : 'ghost'}
+            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${
+              currentPage === 'chat'
+                ? 'bg-green-600 text-white shadow-sm hover:bg-green-700'
+                : 'text-green-700 hover:bg-gray-50 hover:text-green-700'
+            }`}
+            onClick={() => setCurrentPage('chat')}
+          >
+            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+            Chat with Coach
+          </Button>
+        </nav>
+      </Card>
+
+      {/* Main Content Area */}
+      <main className="flex-1 p-10 overflow-auto bg-gray-50">
+        <AnimatePresence mode="wait">
+          {currentPage === 'dashboard' && (
+            <motion.div
+              key="dashboard"
+              variants={pageVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="space-y-8"
+            >
+              <ProgressOverview
+                daysSmokesFree={progressData.daysSmokesFree}
+                moneySaved={progressData.moneySaved}
+                cigarettesAvoided={progressData.cigarettesAvoided}
+              />
+
+              {/* Reminders in a more prominent position */}
+              <RemindersSidebar reminders={reminders} />
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <DailyCheckIn onSubmit={handleDailyCheckIn} />
+                <PlanStepProgress steps={planSteps} currentStepIndex={currentStepIndex} />
+              </div>
+            </motion.div>
+          )}
+
+          {/* Dedicated History page */}
+          {currentPage === 'history' && (
+            <motion.div
+              key="history"
+              variants={pageVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="space-y-8"
+            >
+              <HistorySidebar history={history} /> {/* Display the history component here */}
+            </motion.div>
+          )}
+
+          {currentPage === 'badges' && (
+            <motion.div
+              key="badges"
+              variants={pageVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="space-y-8"
+            >
+              <BadgesSidebar badges={badges} />
+            </motion.div>
+          )}
+
+          {currentPage === 'chat' && (
+            <motion.div
+              key="chat"
+              variants={pageVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="w-full h-full max-w-3xl mx-auto flex"
+            >
+              <CoachChat onSendMessage={handleSendMessage} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
     </div>
   );
 }
