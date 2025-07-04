@@ -16,13 +16,13 @@ const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     if (!token || role !== "admin") {
       if (role === "coach") {
         toast.error("Access Denied", {
-          description: "You are not authorized to access the admin page.",
+          description: "Content not found !",
           position: "top-center",
         });
         setRedirectPath("/coach/dashboard");
       } else {
         toast.error("Access Denied", {
-          description: "Content not found or unauthorized access.",
+          description: "Content not found !",
           position: "top-center",
         });
         setRedirectPath("/#hero");
