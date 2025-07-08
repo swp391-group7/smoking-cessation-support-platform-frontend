@@ -24,6 +24,19 @@ export default function LatestPost({ post, isLoading }: LatestPostProps) {
     }
   };
 
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'HEALTH':
+        return 'bg-blue-100 text-blue-800';
+      case 'SMOKEQUIT':
+        return 'bg-green-100 text-green-800';
+      case 'SMOKEHARM':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   if (isLoading || !post) {
     return (
       <div className="mb-8">
@@ -49,7 +62,7 @@ export default function LatestPost({ post, isLoading }: LatestPostProps) {
         <div className="p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+              <span className={`${getTypeColor(post.blog_type)} px-2 py-1 rounded-full text-xs font-medium`}>
                 {getTypeLabel(post.blog_type)}
               </span>
             </div>
