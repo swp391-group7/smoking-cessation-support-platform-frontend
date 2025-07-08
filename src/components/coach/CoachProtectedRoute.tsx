@@ -19,7 +19,7 @@ const CoachProtectedRoute: React.FC<Props> = ({ children }) => {
 
     if (!token || (role !== "coach" && role !== "admin")) {
       toast.error("Access Denied", {
-        description: "Content not found or unauthorized access.",
+        description: "Content not found !",
         position: "top-center",
       });
       setRedirectPath("/#hero");

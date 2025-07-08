@@ -56,6 +56,18 @@ export interface PackageType {
   des5: string;
   price: number;
 }
+// --- Membership Packages ---
+export interface MembershipPackageDto {
+  id: string;
+  userId: string;
+  // add the misspelled key as well as the correct one
+  packagetTypeId: string;
+  packageTypeId: string;
+  startDate: string;
+  endDate: string;
+  active: boolean;
+  // …
+}
 
 /**
  * Fetch all package types for membership plans
@@ -258,4 +270,20 @@ export function waitForPayPalSDK(timeout = 10000): Promise<void> {
       }
     }, 100);
   });
+}
+
+/**
+ * Fetch the active membership package for the current (authenticated) user.
+ */
+export async function getActiveMembershipPackage(): Promise<MembershipPackageDto> {
+  try {
+    const { data } = await membershipApi.get<MembershipPackageDto>(
+      '/membership-packages/user/active'
+    );
+    return data;
+  } catch (error) {
+    console.error('Error fetching active membership package:', error);
+    // You can inspect error.response?.status to map 404 → “no active package”
+    throw error;
+  }
 }

@@ -22,7 +22,7 @@ const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         setRedirectPath("/coach/dashboard");
       } else {
         toast.error("Access Denied", {
-          description: "Content not found or unauthorized access.",
+          description: "Content not found !",
           position: "top-center",
         });
         setRedirectPath("/#hero");
