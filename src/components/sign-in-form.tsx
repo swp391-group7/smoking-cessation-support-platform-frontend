@@ -16,17 +16,17 @@ const signUpSchema = z
   .object({
     username: z
       .string()
-      .min(3, "Username phải có ít nhất 3 ký tự")
-      .max(30, "Username tối đa 30 ký tự"),
+      .min(3, "Username must be at least 3 characters")
+      .max(30, "Username must be at most 30 characters"),
     fullName: z
       .string()
-      .min(2, "Full Name phải có ít nhất 2 ký tự")
-      .max(50, "Full Name tối đa 50 ký tự"),
-    email: z.string().email("Email không hợp lệ"),
+      .min(2, "Full Name must be at least 2 characters")
+      .max(50, "Full Name must be at most 50 characters"),
+    email: z.string().email("Invalid email address"),
     password: z
       .string()
-      .min(6, "Password phải có ít nhất 6 ký tự")
-      .max(100, "Password tối đa 100 ký tự"),
+      .min(6, "Password must be at least 6 characters")
+      .max(100, "Password must be at most 100 characters"),
     confirmPassword: z.string(),
     agreeTerms: z.literal(true, {
       errorMap: () => ({ message: "You must agree to Terms & Privacy" }),
@@ -34,7 +34,7 @@ const signUpSchema = z
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],
-    message: "Mật khẩu và xác nhận mật khẩu không khớp",
+    message: "Passwords do not match",
   });
 
 type SignUpFormData = z.infer<typeof signUpSchema>;
@@ -71,13 +71,13 @@ export const SignUpForm: React.FC = () => {
       });
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
-      toast.success("Đăng ký thành công");
+      toast.success("Sign up successful");
       setTimeout(() => {
         navigate("/login");
       }, 500);
     } catch (err: unknown) {
       console.error("Register failed:", err);
-      let msg = "Đăng ký thất bại. Vui lòng thử lại.";
+      let msg = "Sign up failed. Please try again.";
       if (err instanceof Error && err.message) {
         msg = err.message;
       }
@@ -104,8 +104,9 @@ export const SignUpForm: React.FC = () => {
               id="username"
               type="text"
               placeholder="Username"
-              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.username ? "ring-red-500 ring-1" : ""
-                }`}
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                errors.username ? "ring-red-500 ring-1" : ""
+              }`}
               {...register("username")}
             />
           </div>
@@ -116,8 +117,9 @@ export const SignUpForm: React.FC = () => {
               id="fullName"
               type="text"
               placeholder="Full Name"
-              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.fullName ? "ring-red-500 ring-1" : ""
-                }`}
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                errors.fullName ? "ring-red-500 ring-1" : ""
+              }`}
               {...register("fullName")}
             />
           </div>
@@ -128,8 +130,9 @@ export const SignUpForm: React.FC = () => {
               id="email"
               type="email"
               placeholder="Email"
-              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.email ? "ring-red-500 ring-1" : ""
-                }`}
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                errors.email ? "ring-red-500 ring-1" : ""
+              }`}
               {...register("email")}
             />
           </div>
@@ -140,8 +143,9 @@ export const SignUpForm: React.FC = () => {
               id="password"
               type="password"
               placeholder="Password"
-              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.password ? "ring-red-500 ring-1" : ""
-                }`}
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                errors.password ? "ring-red-500 ring-1" : ""
+              }`}
               {...register("password")}
             />
           </div>
@@ -152,8 +156,9 @@ export const SignUpForm: React.FC = () => {
               id="confirmPassword"
               type="password"
               placeholder="Confirm Password"
-              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.confirmPassword ? "ring-red-500 ring-1" : ""
-                }`}
+              className={`w-11/12 border border-gray-300 rounded-2xl px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                errors.confirmPassword ? "ring-red-500 ring-1" : ""
+              }`}
               {...register("confirmPassword")}
             />
           </div>
@@ -183,10 +188,11 @@ export const SignUpForm: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-48 text-white py-1.5 rounded-full text-sm font-medium transition ${loading
+              className={`w-48 text-white py-1.5 rounded-full text-sm font-medium transition ${
+                loading
                   ? "bg-emerald-400 cursor-not-allowed"
                   : "bg-emerald-600 hover:bg-emerald-700"
-                }`}
+              }`}
             >
               {loading ? "Processing..." : "Create account"}
             </button>

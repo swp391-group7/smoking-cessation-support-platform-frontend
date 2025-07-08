@@ -12,8 +12,8 @@ import { FaFacebookF, FaGoogle } from "react-icons/fa";
 
 // Định nghĩa Zod schema (giữ nguyên)
 const loginSchema = z.object({
-  username: z.string().min(1, "Username không được để trống"),
-  password: z.string().min(6, "Password phải ít nhất 6 ký tự"),
+  username: z.string().min(1, "Username cannot be empty"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 type LoginData = z.infer<typeof loginSchema>;
 
@@ -43,34 +43,35 @@ const LoginPage: React.FC = () => {
   };
 
   // Mutation gọi API login (giữ nguyên)
-const { mutate: login, isPending } = useMutation({
-  mutationFn: loginApi,
-  onSuccess: ({ token, user }) => {
-    // Lưu token và thông tin người dùng
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("role", user.role);
+  const { mutate: login, isPending } = useMutation({
+    mutationFn: loginApi,
+    onSuccess: ({ token, user }) => {
+      // Lưu token và thông tin người dùng
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("role", user.role);
+      localStorage.setItem("userId", user.id);
 
-    toast.success("Đăng nhập thành công!", {
-      position: "top-center",
-      description: `Chào mừng ${user.full_name}`,
-    });
+      toast.success("Login successful!", {
+        position: "top-center",
+        description: `Welcome ${user.full_name}`,
+      });
 
-    // Điều hướng theo vai trò
-    const redirectPath = {
-      admin: "/admin/dashboard",
-      coach: "/coach/dashboard",
-      user: "/quit_progress", // Hoặc "/" tùy bạn muốn
-    }[user.role] || "/";
+      // Điều hướng theo vai trò
+      const redirectPath = {
+        admin: "/admin/dashboard",
+        coach: "/coach/dashboard",
+        user: "/quit_progress", // Or "/" depending on your design
+      }[user.role] || "/";
 
-    setTimeout(() => navigate(redirectPath), 700);
-  },
-  onError: () => {
-    toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản hoặc mật khẩu.", {
-      position: "bottom-right",
-    });
-  },
-});
+      setTimeout(() => navigate(redirectPath), 700);
+    },
+    onError: () => {
+      toast.error("Login failed. Please check your username or password.", {
+        position: "bottom-right",
+      });
+    },
+  });
 
   // Hàm submit chính
   const onSubmit = (data: LoginData) => {
@@ -78,7 +79,7 @@ const { mutate: login, isPending } = useMutation({
   };
 
   return (
-    <div className="min-h-screen  flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       {/* Đặt Toaster ở cấp độ toàn trang để show toast */}
       <Toaster />
 
@@ -150,7 +151,7 @@ const { mutate: login, isPending } = useMutation({
                   : "bg-emerald-600 hover:bg-emerald-700"
               }`}
             >
-              {isPending ? "Đang đăng nhập..." : "Login"}
+              {isPending ? "Logging in..." : "Login"}
             </button>
           </div>
         </form>
