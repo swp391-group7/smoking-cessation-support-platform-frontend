@@ -23,8 +23,7 @@ import BlogAdminPage from './pages/admin/Blog.tsx';
 import BlogFormPage from './pages/admin/BlogFormPage.tsx';
 import Notifications from './pages/admin/Notifications.tsx';
 import Community from './pages/admin/Community.tsx';
-import Consultations from './pages/admin/Consultations.tsx';
-import Reports from './pages/admin/Reports.tsx';
+import Feedback from './pages/admin/Feedback.tsx';
 // import UserProfiles from './pages/admin/UserProfiles.tsx';
 import Settings from './pages/admin/Settings.tsx';
 import Badges from './pages/admin/Badges.tsx';
@@ -85,8 +84,7 @@ export const App = () => (
           <Route path="blog/edit/:id" element={<BlogFormPage />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="community" element={<Community />} />
-          <Route path="consultations" element={<Consultations />} />
-          <Route path="reports" element={<Reports />} />
+          <Route path="feedback" element={<Feedback />} />
           {/* <Route path="user-profiles" element={<UserProfiles />} /> */}
           <Route path="badges" element={<Badges />} />
           <Route path="settings" element={<Settings />} />

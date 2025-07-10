@@ -5,9 +5,7 @@ import Sidebar from "@/components/admin/Sidebar";
 import Topbar from "@/components/admin/Topbar";
 import {
   Award,
-  BarChart3,
   Bell,
-  Calendar,
   CreditCard,
   FileText,
   Heart,
@@ -100,25 +98,13 @@ const menuItems = [
     ],
   },
   {
-    title: "Feedback & Reports",
+    title: "Feedback",
     items: [
       {
         name: "Feedback",
         path: "/admin/feedback",
         icon: Star,
         description: "User reviews & ratings",
-      },
-      {
-        name: "Reports",
-        path: "/admin/reports",
-        icon: BarChart3,
-        description: "Detailed analytics",
-      },
-      {
-        name: "Consultations",
-        path: "/admin/consultations",
-        icon: Calendar,
-        description: "Consultation schedules",
       },
     ],
   },
