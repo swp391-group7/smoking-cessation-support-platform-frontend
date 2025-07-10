@@ -9,6 +9,8 @@ import { getActivePlanOfAnUser } from "@/api/userPlanApi";
 import type { UserPlan } from "@/api/userPlanApi";
 import { getAllBadgesOfUser } from "@/api/userBadgeApi";
 import type { UserEarnedBadgeDetails } from "@/api/userBadgeApi";
+import { getActiveMembershipPackage } from "@/api/membershipApi";
+import type { MembershipPackageDto } from "@/api/membershipApi";
 
 
 // Define an extended UserInfo type for internal use in UserProfile
@@ -21,7 +23,7 @@ interface UserProfileProps {
     onClose: () => void;
 }
 
-type ProfileTab = "userInfo" | "quitPlan" | "badges" | "survey" ;
+type ProfileTab = "userInfo" | "quitPlan" | "badges" | "survey" | "membership";
 
 const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
     // Main user info (always fetched first)
@@ -33,6 +35,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
     const [quitPlan, setQuitPlan] = useState<UserPlan | null>(null);
     const [badges, setBadges] = useState<UserEarnedBadgeDetails[]>([]);
     const [surveys, setSurveys] = useState<SurveyDetailDTO[]>([]);
+    const [activeMembership, setActiveMembership] = useState<MembershipPackageDto | null>(null);
 
     // Loading and error states for each section
     const [loadingQuitPlan, setLoadingQuitPlan] = useState<boolean>(false);
@@ -43,6 +46,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
 
     const [loadingSurveys, setLoadingSurveys] = useState<boolean>(false);
     const [errorSurveys, setErrorSurveys] = useState<string | null>(null);
+
+    const [loadingMembership, setLoadingMembership] = useState<boolean>(false); 
+    const [errorMembership, setErrorMembership] = useState<string | null>(null); 
 
     // Active tab state
     const [activeTab, setActiveTab] = useState<ProfileTab>("userInfo");
@@ -120,6 +126,26 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                         }
                     }
                     break;
+                case "membership": // Logic mới cho tab membership
+                    if (activeMembership === null) { // Chỉ fetch nếu chưa có dữ liệu
+                        setLoadingMembership(true);
+                        setErrorMembership(null);
+                        try {
+                            const { data: membershipData } = await (window as any).membershipApi.get<MembershipPackageDto>(`/membership-packages/user/${userId}/active`);
+                            setActiveMembership(membershipData);
+                        } catch (err: any) {
+                            console.error("Failed to fetch active membership:", err);
+                            // Kiểm tra lỗi 404 để hiển thị thông báo "Không có membership" rõ ràng hơn
+                            if (err.response && err.response.status === 404) {
+                                setErrorMembership("Người dùng này hiện không có gói membership nào đang hoạt động.");
+                            } else {
+                                setErrorMembership("Không thể tải thông tin gói membership. Vui lòng thử lại.");
+                            }
+                        } finally {
+                            setLoadingMembership(false);
+                        }
+                    }
+                    break;
                     
                 default:
                     // User info is already loaded initially
@@ -128,7 +154,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
         };
 
         fetchDataForTab();
-    }, [activeTab, userId, quitPlan, badges, surveys]); // Add data states to dependencies to re-run if they become null for some reason
+    }, [activeTab, userId, quitPlan, badges, surveys, activeMembership]); // Add data states to dependencies to re-run if they become null for some reason
 
 
     // Overall loading/error state for the modal itself
@@ -236,6 +262,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                     >
                         Khảo sát
                     </button>
+                    <button
+                        className={`px-4 py-2 text-sm font-medium ${activeTab === "membership" ? "border-b-2 border-green-600 text-green-600" : "text-gray-600 hover:text-gray-800"}`}
+                        onClick={() => setActiveTab("membership")}
+                    >
+                        Membership
+                    </button>
                 </div>
 
                 {/* Tab Content */}
@@ -333,6 +365,31 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                                     </div>
                                 ),
                                 "Người dùng này chưa hoàn thành khảo sát nào."
+                            )}
+                        </section>
+                    )}
+
+                    {activeTab === "membership" && (
+                        <section className="bg-gray-50 p-6 rounded-lg shadow-sm">
+                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Gói Membership đang hoạt động</h4>
+                            {renderSectionContent(
+                                loadingMembership,
+                                errorMembership,
+                                activeMembership,
+                                () => (
+                                    <div className="space-y-2 text-gray-700">
+                                        <p><strong>ID gói Membership:</strong> {activeMembership?.id}</p>
+                                        <p><strong>ID loại gói:</strong> {activeMembership?.packageTypeId || activeMembership?.packagetTypeId}</p>
+                                        <p><strong>Ngày bắt đầu:</strong> {activeMembership?.startDate}</p>
+                                        <p><strong>Ngày kết thúc:</strong> {activeMembership?.endDate}</p>
+                                        <p><strong>Trạng thái hoạt động:</strong> {activeMembership?.active ? "Có" : "Không"}</p>
+                                        {/* Bạn có thể thêm thông tin chi tiết về PackageType nếu fetch được */}
+                                        {/* <p><strong>Tên gói:</strong> {activeMembership?.packageName}</p> */}
+                                        {/* <p><strong>Mô tả:</strong> {activeMembership?.packageDescription}</p> */}
+                                        {/* <p><strong>Giá:</strong> {activeMembership?.packagePrice}</p> */}
+                                    </div>
+                                ),
+                                "Người dùng này hiện không có gói membership nào đang hoạt động."
                             )}
                         </section>
                     )}
