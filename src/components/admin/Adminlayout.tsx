@@ -29,7 +29,7 @@ const menuItems = [
     ],
   },
   {
-    title: "User Management",
+    title: "Management",
     items: [
       {
         name: "Users",
@@ -38,28 +38,22 @@ const menuItems = [
         description: "Manage members",
       },
       {
-        name: "Quit Profiles",
-        path: "/admin/quit-profiles",
-        icon: Heart,
-        description: "Track quitting progress",
+        name: "Survey Management", 
+        path: "/admin/survey-management",
+        icon: FileText,
+        description: "Manage surveys",
       },
-    ],
-  },
-  {
-    title: "Content & Plans",
-    items: [
       {
         name: "Membership Plans",
         path: "/admin/plans",
         icon: CreditCard,
         description: "Subscription plans",
       },
-      {
-        name: "Quit Plan Templates",
-        path: "/admin/quit-plans",
-        icon: Target,
-        description: "Quit plan templates",
-      },
+    ],
+  },
+  {
+    title: "Content",
+    items: [
       {
         name: "Blog & Articles",
         path: "/admin/blog",
@@ -67,22 +61,22 @@ const menuItems = [
         description: "Blog content",
       },
       {
-        name: "Survey Management", 
-        path: "/admin/survey-management",
-        icon: FileText,
-        description: "Manage surveys",
-      },
-    ],
-  },
-  {
-    title: "Engagement & Motivation",
-    items: [
-      {
         name: "Badges",
         path: "/admin/badges",
         icon: Award,
         description: "Achievements",
       },
+      {
+        name: "Feedback",
+        path: "/admin/feedback",
+        icon: Star,
+        description: "User reviews & ratings",
+      },
+    ],
+  },
+  {
+    title: "Motivation",
+    items: [
       {
         name: "Notifications",
         path: "/admin/notifications",
@@ -94,17 +88,6 @@ const menuItems = [
         path: "/admin/community",
         icon: MessageCircle,
         description: "Forum & interactions",
-      },
-    ],
-  },
-  {
-    title: "Feedback",
-    items: [
-      {
-        name: "Feedback",
-        path: "/admin/feedback",
-        icon: Star,
-        description: "User reviews & ratings",
       },
     ],
   },

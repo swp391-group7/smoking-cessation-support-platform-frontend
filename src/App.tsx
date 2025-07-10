@@ -17,8 +17,6 @@ import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 import Dashboard from './pages/admin/Dashboard.tsx';
 import Users from './pages/admin/Users.tsx';
 import Plans from './pages/admin/Plans.tsx';
-import QuitProfiles from './pages/admin/QuitProfiles.tsx';
-import QuitPlans from './pages/admin/QuitPlans.tsx';
 import BlogAdminPage from './pages/admin/Blog.tsx';
 import BlogFormPage from './pages/admin/BlogFormPage.tsx';
 import Notifications from './pages/admin/Notifications.tsx';
@@ -77,8 +75,6 @@ export const App = () => (
           <Route path="users" element={<Users />} />
           <Route path="profile" element={<AdminProfile />} />
           <Route path="plans" element={<Plans />} />
-          <Route path="quit-profiles" element={<QuitProfiles />} />
-          <Route path="quit-plans" element={<QuitPlans />} />
           <Route path="blog" element={<BlogAdminPage />} />
           <Route path="blog/create" element={<BlogFormPage />} />
           <Route path="blog/edit/:id" element={<BlogFormPage />} />
