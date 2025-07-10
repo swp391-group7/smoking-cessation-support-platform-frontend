@@ -4,14 +4,18 @@ FROM node:22 AS builder
 WORKDIR /app
 
 # Install dependencies
-COPY package*.json ./
+COPY package.json ./
+COPY package-lock.json ./
 RUN npm install
 
 # Copy all source code
 COPY . .
 
+# Rebuild esbuild after all files are copied
+RUN npm rebuild esbuild
+
 # Build the app
-RUN npm run build
+RUN npx vite build
 
 # Stage 2: Serve using Node.js and Express
 FROM node:22
@@ -19,8 +23,10 @@ FROM node:22
 WORKDIR /app
 
 # Install only prod dependencies (optional, but not needed here)
-COPY package*.json ./
+COPY package.json ./
+COPY package-lock.json ./
 RUN npm install
+RUN npm rebuild esbuild
 
 # Copy the built frontend
 COPY --from=builder /app/dist ./dist
