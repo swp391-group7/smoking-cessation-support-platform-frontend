@@ -8,7 +8,7 @@ import {
     deletePackageType,
     PackageType,
     PackageTypeCreateUpdateDto
-} from '@/api/membershipApi'; // Đảm bảo import đúng đường dẫn
+} from '@/api/membershipApi'; 
 
 // Component hoặc trang chính để quản lý Package Types
 const AdminMembershipPlanPage: React.FC = () => {

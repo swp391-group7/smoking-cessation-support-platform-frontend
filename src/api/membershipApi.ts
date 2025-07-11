@@ -69,6 +69,14 @@ export interface MembershipPackageDto {
   active: boolean;
   // …
 }
+// DTO for creating/updating a membership package
+export interface MembershipPackageCreateUpdateDto {
+  packageTypeId: string;
+  startDate: string;
+  endDate: string;
+  active: boolean;
+  userId?: string; // userId may be required for creation, or inferred by backend
+}
 
 /**
  * Fetch all package types for membership plans
@@ -340,3 +348,120 @@ export async function getActiveMembershipDetailsByUserId(userId: string): Promis
   }
 }
 
+/**
+ * Lấy thông tin một gói membership theo ID.
+ * GET /membership-packages/{id}
+ * Dành cho người dùng hiện tại (admin) nếu truy vấn gói của chính họ.
+ */
+export async function getMembershipPackageById(id: string): Promise<MembershipPackageDto> {
+  try {
+    const { data } = await membershipApi.get<MembershipPackageDto>(`/membership-packages/${id}`);
+    return data;
+  } catch (error) {
+    console.error(`Error fetching membership package by ID ${id} (current user):`, error);
+    if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+            throw new Error("Không tìm thấy gói membership với ID này.");
+        }
+    }
+    throw error;
+  }
+}
+
+/**
+ * Cập nhật gói membership của user hiện tại.
+ * PUT /membership-packages/{id}
+ */
+export async function updateMembershipPackage(
+  id: string,
+  updateData: MembershipPackageCreateUpdateDto
+): Promise<MembershipPackageDto> {
+  try {
+    const { data } = await membershipApi.put<MembershipPackageDto>(`/membership-packages/${id}`, updateData);
+    return data;
+  } catch (error) {
+    console.error(`Error updating membership package ${id} (current user):`, error);
+    if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+            throw new Error("Không tìm thấy gói membership để cập nhật.");
+        }
+        if (error.response?.status === 400) {
+            throw new Error(`Dữ liệu cập nhật không hợp lệ: ${error.response?.data?.message || error.message}`);
+        }
+    }
+    throw error;
+  }
+}
+
+/**
+ * Xóa gói membership của user hiện tại.
+ * DELETE /membership-packages/{id}
+ */
+export async function deleteMembershipPackage(id: string): Promise<void> {
+  try {
+    await membershipApi.delete(`/membership-packages/${id}`);
+  } catch (error) {
+    console.error(`Error deleting membership package ${id} (current user):`, error);
+    if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+            throw new Error("Không tìm thấy gói membership để xóa.");
+        }
+        if (error.response?.status === 403) {
+            throw new Error("Bạn không có quyền xóa gói membership này.");
+        }
+    }
+    throw error;
+  }
+}
+
+/**
+ * Tạo gói membership mới cho user hiện tại.
+ * POST /membership-packages/create
+ */
+export async function createMembershipPackage(
+  createData: MembershipPackageCreateUpdateDto
+): Promise<MembershipPackageDto> {
+  try {
+    const { data } = await membershipApi.post<MembershipPackageDto>('/membership-packages/create', createData);
+    return data;
+  } catch (error) {
+    console.error('Error creating membership package (current user):', error);
+    if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400) {
+            throw new Error(`Dữ liệu tạo gói không hợp lệ: ${error.response?.data?.message || error.message}`);
+        }
+    }
+    throw error;
+  }
+}
+
+/**
+ * Lấy danh sách gói membership của user hiện tại.
+ * GET /membership-packages/user
+ */
+export async function getAllMembershipPackagesForCurrentUser(): Promise<MembershipPackageDto[]> {
+  try {
+    const { data } = await membershipApi.get<MembershipPackageDto[]>('/membership-packages/user');
+    return data;
+  } catch (error) {
+    console.error('Error fetching all membership packages for current user:', error);
+    throw error;
+  }
+}
+
+/**
+ * Lấy gói mới nhất của user hiện tại.
+ * GET /membership-packages/user/latest
+ */
+export async function getLatestMembershipPackageForCurrentUser(): Promise<MembershipPackageDto> {
+  try {
+    const { data } = await membershipApi.get<MembershipPackageDto>('/membership-packages/user/latest');
+    return data;
+  } catch (error) {
+    console.error('Error fetching latest membership package for current user:', error);
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+        throw new Error("Người dùng hiện không có gói membership nào.");
+    }
+    throw error;
+  }
+}
