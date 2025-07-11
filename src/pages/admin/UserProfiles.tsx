@@ -10,7 +10,7 @@ import type { UserPlan } from "@/api/userPlanApi";
 import { getAllBadgesOfUser } from "@/api/userBadgeApi";
 import type { UserEarnedBadgeDetails } from "@/api/userBadgeApi";
 import { hasActiveMembership, getActiveMembershipDetailsByUserId } from "@/api/membershipApi";
-import type { MembershipPackageDto, PackageType } from "@/api/membershipApi";
+import type { MembershipPackageDto } from "@/api/membershipApi";
 
 
 // Define an extended UserInfo type for internal use in UserProfile
