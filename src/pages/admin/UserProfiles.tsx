@@ -258,13 +258,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                         className={`px-4 py-2 text-sm font-medium ${activeTab === "userInfo" ? "border-b-2 border-green-600 text-green-600" : "text-gray-600 hover:text-gray-800"}`}
                         onClick={() => setActiveTab("userInfo")}
                     >
-                        User information
+                        Information
                     </button>
                     <button
                         className={`px-4 py-2 text-sm font-medium ${activeTab === "quitPlan" ? "border-b-2 border-green-600 text-green-600" : "text-gray-600 hover:text-gray-800"}`}
                         onClick={() => setActiveTab("quitPlan")}
                     >
-                        Quit smoking plan
+                        Plan
                     </button>
                     <button
                         className={`px-4 py-2 text-sm font-medium ${activeTab === "badges" ? "border-b-2 border-green-600 text-green-600" : "text-gray-600 hover:text-gray-800"}`}
@@ -290,7 +290,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                 <div className="flex-grow overflow-y-auto">
                     {activeTab === "userInfo" && (
                         <section className="bg-gray-50 p-6 rounded-lg shadow-sm">
-                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">User information</h4>
+                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">User Information</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
                                 <p><strong>Fullname:</strong> {userInfo.fullName}</p>
                                 <p><strong>Email:</strong> {userInfo.email}</p>
@@ -303,7 +303,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
 
                     {activeTab === "quitPlan" && (
                         <section className="bg-gray-50 p-6 rounded-lg shadow-sm">
-                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Quit smoking plan</h4>
+                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Quit Smoking Plan</h4>
                             {renderSectionContent(
                                 loadingQuitPlan,
                                 errorQuitPlan,
@@ -387,7 +387,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
 
                     {activeTab === "membership" && (
                         <section className="bg-gray-50 p-6 rounded-lg shadow-sm">
-                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Gói Membership đang hoạt động</h4>
+                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Membership</h4>
                             {renderSectionContent(
                                 loadingMembership,
                                 errorMembership,
@@ -395,7 +395,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                                 () => (
                                     <div className="space-y-2 text-gray-700">
                                         <p>
-                                            <strong>Package status:</strong>{' '}
+                                            <strong>Status:</strong>{' '}
                                             {hasMembership ? (
                                                 <span className="font-bold text-green-600">Have an active package</span>
                                             ) : (
