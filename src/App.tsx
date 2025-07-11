@@ -16,7 +16,7 @@ import AdminLayout from './components/admin/Adminlayout.tsx';
 import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 import Dashboard from './pages/admin/Dashboard.tsx';
 import Users from './pages/admin/Users.tsx';
-import Plans from './pages/admin/Plans.tsx';
+import Membership from './pages/admin/MembershipPlans.tsx';
 import BlogAdminPage from './pages/admin/Blog.tsx';
 import BlogFormPage from './pages/admin/BlogFormPage.tsx';
 import Notifications from './pages/admin/Notifications.tsx';
@@ -74,7 +74,7 @@ export const App = () => (
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="profile" element={<AdminProfile />} />
-          <Route path="plans" element={<Plans />} />
+          <Route path="membership" element={<Membership />} />
           <Route path="blog" element={<BlogAdminPage />} />
           <Route path="blog/create" element={<BlogFormPage />} />
           <Route path="blog/edit/:id" element={<BlogFormPage />} />
