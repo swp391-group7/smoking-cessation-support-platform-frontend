@@ -8,11 +8,9 @@ import {
   Bell,
   CreditCard,
   FileText,
-  Heart,
   LayoutDashboard,
   MessageCircle,
   Star,
-  Target,
   Users,
 } from "lucide-react";
 
