@@ -45,7 +45,7 @@ const menuItems = [
       },
       {
         name: "Membership Plans",
-        path: "/admin/plans",
+        path: "/admin/membership",
         icon: CreditCard,
         description: "Subscription plans",
       },
