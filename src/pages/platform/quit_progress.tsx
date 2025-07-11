@@ -26,12 +26,7 @@ type Page = 'dashboard' | 'history' | 'badges' | 'chat';
 export default function Quit_Progress() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
 
-  // Mock data - replace these with API calls later
-  const progressData = {
-    daysSmokesFree: 17,
-    moneySaved: 85,
-    cigarettesAvoided: 340
-  };
+
 
   const history = [
     { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
@@ -174,9 +169,6 @@ export default function Quit_Progress() {
               className="space-y-8"
             >
               <ProgressOverview
-                daysSmokesFree={progressData.daysSmokesFree}
-                moneySaved={progressData.moneySaved}
-                cigarettesAvoided={progressData.cigarettesAvoided}
               />
 
               {/* Reminders in a more prominent position */}
