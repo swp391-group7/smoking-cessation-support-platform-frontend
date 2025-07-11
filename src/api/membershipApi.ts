@@ -63,6 +63,7 @@ export interface MembershipPackageDto {
   // add the misspelled key as well as the correct one
   packagetTypeId: string;
   packageTypeId: string;
+  packageTypeName: string;
   startDate: string;
   endDate: string;
   active: boolean;
