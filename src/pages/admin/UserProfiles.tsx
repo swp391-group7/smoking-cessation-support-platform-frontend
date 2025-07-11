@@ -9,8 +9,8 @@ import { getActivePlanOfAnUser } from "@/api/userPlanApi";
 import type { UserPlan } from "@/api/userPlanApi";
 import { getAllBadgesOfUser } from "@/api/userBadgeApi";
 import type { UserEarnedBadgeDetails } from "@/api/userBadgeApi";
-import { getActiveMembershipPackage } from "@/api/membershipApi";
-import type { MembershipPackageDto } from "@/api/membershipApi";
+import { hasActiveMembership, getActiveMembershipDetailsByUserId } from "@/api/membershipApi";
+import type { MembershipPackageDto, PackageType } from "@/api/membershipApi";
 
 
 // Define an extended UserInfo type for internal use in UserProfile
@@ -35,7 +35,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
     const [quitPlan, setQuitPlan] = useState<UserPlan | null>(null);
     const [badges, setBadges] = useState<UserEarnedBadgeDetails[]>([]);
     const [surveys, setSurveys] = useState<SurveyDetailDTO[]>([]);
-    const [activeMembership, setActiveMembership] = useState<MembershipPackageDto | null>(null);
+    const [hasMembership, setHasMembership] = useState<boolean | null>(null);
+    const [membershipDetails, setMembershipDetails] = useState<MembershipPackageDto | null>(null);
 
     // Loading and error states for each section
     const [loadingQuitPlan, setLoadingQuitPlan] = useState<boolean>(false);
@@ -47,8 +48,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
     const [loadingSurveys, setLoadingSurveys] = useState<boolean>(false);
     const [errorSurveys, setErrorSurveys] = useState<string | null>(null);
 
-    const [loadingMembership, setLoadingMembership] = useState<boolean>(false); 
-    const [errorMembership, setErrorMembership] = useState<string | null>(null); 
+    const [loadingMembership, setLoadingMembership] = useState<boolean>(false);
+    const [errorMembership, setErrorMembership] = useState<string | null>(null);
+
 
     // Active tab state
     const [activeTab, setActiveTab] = useState<ProfileTab>("userInfo");
@@ -66,7 +68,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                 });
             } catch (err) {
                 console.error("Failed to fetch initial user info:", err);
-                setErrorUserInfo("Không thể tải thông tin người dùng. Vui lòng thử lại.");
+                setErrorUserInfo("Unable to load user information. Please try again.");
             } finally {
                 setLoadingUserInfo(false);
             }
@@ -90,7 +92,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                             setQuitPlan(planData);
                         } catch (err) {
                             console.error("Failed to fetch quit plan:", err);
-                            setErrorQuitPlan("Không thể tải kế hoạch cai thuốc.");
+                            setErrorQuitPlan("Unable to load the quit smoking plan. Please try again.");
                         } finally {
                             setLoadingQuitPlan(false);
                         }
@@ -105,7 +107,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                             setBadges(badgesData);
                         } catch (err) {
                             console.error("Failed to fetch badges:", err);
-                            setErrorBadges("Không thể tải huy hiệu.");
+                            setErrorBadges("Unable to load badge. Please try again.");
                         } finally {
                             setLoadingBadges(false);
                         }
@@ -120,33 +122,47 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                             setSurveys(surveysData);
                         } catch (err) {
                             console.error("Failed to fetch surveys:", err);
-                            setErrorSurveys("Không thể tải khảo sát.");
+                            setErrorSurveys("Unable to load surveys. Please try again.");
                         } finally {
                             setLoadingSurveys(false);
                         }
                     }
                     break;
-                case "membership": // Logic mới cho tab membership
-                    if (activeMembership === null) { // Chỉ fetch nếu chưa có dữ liệu
+                case "membership":
+                    if (hasMembership === null && membershipDetails === null) {
                         setLoadingMembership(true);
                         setErrorMembership(null);
                         try {
-                            const { data: membershipData } = await (window as any).membershipApi.get<MembershipPackageDto>(`/membership-packages/user/${userId}/active`);
-                            setActiveMembership(membershipData);
-                        } catch (err: any) {
-                            console.error("Failed to fetch active membership:", err);
-                            // Kiểm tra lỗi 404 để hiển thị thông báo "Không có membership" rõ ràng hơn
-                            if (err.response && err.response.status === 404) {
-                                setErrorMembership("Người dùng này hiện không có gói membership nào đang hoạt động.");
+                            // Bước 1: Kiểm tra xem người dùng có gói active không
+                            const isActive = await hasActiveMembership(userId);
+                            setHasMembership(isActive);
+
+                            // Bước 2: Nếu có gói active, fetch chi tiết gói
+                            if (isActive) {
+                                const details = await getActiveMembershipDetailsByUserId(userId);
+                                setMembershipDetails(details);
                             } else {
-                                setErrorMembership("Không thể tải thông tin gói membership. Vui lòng thử lại.");
+                                setMembershipDetails(null); // Đảm bảo null nếu không có active
+                            }
+                        } catch (err: any) {
+                            console.error("Failed to fetch membership info for user:", err);
+                            setHasMembership(false); // Coi như không có active membership nếu có lỗi
+                            setMembershipDetails(null);
+                            // Xử lý thông báo lỗi chi tiết hơn nếu cần
+                            if (err.message.includes("User does not exist")) {
+                                setErrorMembership("This user was not found or membership information could not be retrieved.");
+                            } else if (err.message.includes("No access to this user's membership information")) {
+                                setErrorMembership("You do not have permission to access this user's membership information.");
+                            }
+                            else {
+                                setErrorMembership("Unable to load membership package information. Please try again.");
                             }
                         } finally {
                             setLoadingMembership(false);
                         }
                     }
                     break;
-                    
+
                 default:
                     // User info is already loaded initially
                     break;
@@ -154,7 +170,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
         };
 
         fetchDataForTab();
-    }, [activeTab, userId, quitPlan, badges, surveys, activeMembership]); // Add data states to dependencies to re-run if they become null for some reason
+    }, [activeTab, userId, quitPlan, badges, surveys, hasMembership, membershipDetails]);
 
 
     // Overall loading/error state for the modal itself
@@ -162,7 +178,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
         return (
             <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
                 <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl relative">
-                    <div className="text-center py-8 text-gray-600">Đang tải thông tin người dùng...</div>
+                    <div className="text-center py-8 text-gray-600">Loading user information...</div>
                 </div>
             </div>
         );
@@ -198,7 +214,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                     >
                         &times;
                     </button>
-                    <div className="text-center py-8 text-gray-600">Không tìm thấy thông tin người dùng.</div>
+                    <div className="text-center py-8 text-gray-600">User information not found.</div>
                 </div>
             </div>
         );
@@ -213,7 +229,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
         noDataMessage: string
     ) => {
         if (loading) {
-            return <div className="text-center py-4 text-gray-600">Đang tải dữ liệu...</div>;
+            return <div className="text-center py-4 text-gray-600">Loading data...</div>;
         }
         if (error) {
             return <div className="bg-red-100 text-red-700 p-3 rounded-lg text-center text-sm">{error}</div>;
@@ -242,25 +258,25 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                         className={`px-4 py-2 text-sm font-medium ${activeTab === "userInfo" ? "border-b-2 border-green-600 text-green-600" : "text-gray-600 hover:text-gray-800"}`}
                         onClick={() => setActiveTab("userInfo")}
                     >
-                        Thông tin người dùng
+                        User information
                     </button>
                     <button
                         className={`px-4 py-2 text-sm font-medium ${activeTab === "quitPlan" ? "border-b-2 border-green-600 text-green-600" : "text-gray-600 hover:text-gray-800"}`}
                         onClick={() => setActiveTab("quitPlan")}
                     >
-                        Kế hoạch cai thuốc
+                        Quit smoking plan
                     </button>
                     <button
                         className={`px-4 py-2 text-sm font-medium ${activeTab === "badges" ? "border-b-2 border-green-600 text-green-600" : "text-gray-600 hover:text-gray-800"}`}
                         onClick={() => setActiveTab("badges")}
                     >
-                        Huy hiệu
+                        Badge
                     </button>
                     <button
                         className={`px-4 py-2 text-sm font-medium ${activeTab === "survey" ? "border-b-2 border-green-600 text-green-600" : "text-gray-600 hover:text-gray-800"}`}
                         onClick={() => setActiveTab("survey")}
                     >
-                        Khảo sát
+                        Survey
                     </button>
                     <button
                         className={`px-4 py-2 text-sm font-medium ${activeTab === "membership" ? "border-b-2 border-green-600 text-green-600" : "text-gray-600 hover:text-gray-800"}`}
@@ -274,41 +290,41 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                 <div className="flex-grow overflow-y-auto">
                     {activeTab === "userInfo" && (
                         <section className="bg-gray-50 p-6 rounded-lg shadow-sm">
-                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Thông tin người dùng</h4>
+                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">User information</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
-                                <p><strong>Họ và tên:</strong> {userInfo.fullName}</p>
+                                <p><strong>Fullname:</strong> {userInfo.fullName}</p>
                                 <p><strong>Email:</strong> {userInfo.email}</p>
-                                <p><strong>Tên người dùng:</strong> {userInfo.username}</p>
-                                <p><strong>Ngày sinh:</strong> {userInfo.dob || "Chưa cập nhật"}</p>
-                                <p><strong>Số điện thoại:</strong> {userInfo.phoneNumber || "Chưa cập nhật"}</p>
+                                <p><strong>User name:</strong> {userInfo.username}</p>
+                                <p><strong>D.O.B:</strong> {userInfo.dob || "Not updated yet"}</p>
+                                <p><strong>Phone:</strong> {userInfo.phoneNumber || "Not updated yet"}</p>
                             </div>
                         </section>
                     )}
 
                     {activeTab === "quitPlan" && (
                         <section className="bg-gray-50 p-6 rounded-lg shadow-sm">
-                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Kế hoạch cai thuốc</h4>
+                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Quit smoking plan</h4>
                             {renderSectionContent(
                                 loadingQuitPlan,
                                 errorQuitPlan,
                                 quitPlan,
                                 () => (
                                     <div className="space-y-2 text-gray-700">
-                                        <p><strong>Phương pháp:</strong> {quitPlan?.method}</p>
-                                        <p><strong>Trạng thái:</strong> {quitPlan?.status}</p>
-                                        <p><strong>Ngày bắt đầu:</strong> {quitPlan?.startDate}</p>
-                                        <p><strong>Ngày mục tiêu:</strong> {quitPlan?.targetDate}</p>
-                                        <p><strong>Cập nhật lần cuối:</strong> {quitPlan?.updatedAt}</p>
+                                        <p><strong>Method:</strong> {quitPlan?.method}</p>
+                                        <p><strong>Status:</strong> {quitPlan?.status}</p>
+                                        <p><strong>Start date:</strong> {quitPlan?.startDate}</p>
+                                        <p><strong>Target date:</strong> {quitPlan?.targetDate}</p>
+                                        <p><strong>Last updated:</strong> {quitPlan?.updatedAt}</p>
                                     </div>
                                 ),
-                                "Người dùng này chưa có kế hoạch cai thuốc hoạt động."
+                                "This user has no active quit plan."
                             )}
                         </section>
                     )}
 
                     {activeTab === "badges" && (
                         <section className="bg-gray-50 p-6 rounded-lg shadow-sm">
-                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Huy hiệu</h4>
+                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Badge</h4>
                             {renderSectionContent(
                                 loadingBadges,
                                 errorBadges,
@@ -322,14 +338,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                                         ))}
                                     </div>
                                 ),
-                                "Người dùng này chưa có huy hiệu nào."
+                                "This user has no badges yet."
                             )}
                         </section>
                     )}
 
                     {activeTab === "survey" && (
                         <section className="bg-gray-50 p-6 rounded-lg shadow-sm">
-                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Khảo sát</h4>
+                            <h4 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Survey</h4>
                             {renderSectionContent(
                                 loadingSurveys,
                                 errorSurveys,
@@ -338,8 +354,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                                     <div className="space-y-4">
                                         {surveys.map((survey, index) => (
                                             <div key={survey.id} className="border-b pb-3 last:border-b-0">
-                                                <p className="font-medium text-gray-800">Khảo sát #{index + 1} (ID: {survey.id}) - Loại: {survey.typeSurvey}</p>
-                                                <p className="text-gray-700">Ngày tạo: {survey.createAt}</p>
+                                                <p className="font-medium text-gray-800">Survey #{index + 1} (ID: {survey.id}) - Type: {survey.typeSurvey}</p>
+                                                <p className="text-gray-700">Date created: {survey.createAt}</p>
                                                 {survey.questions.length > 0 ? (
                                                     <div className="ml-4 mt-2 space-y-2">
                                                         {survey.questions.map((q) => (
@@ -348,23 +364,23 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                                                                 {q.answers.length > 0 ? (
                                                                     <ul className="list-disc list-inside text-gray-600">
                                                                         {q.answers.map((a) => (
-                                                                            <li key={a.id}>{a.answerText} (Điểm: {a.point})</li>
+                                                                            <li key={a.id}>{a.answerText} (Point: {a.point})</li>
                                                                         ))}
                                                                     </ul>
                                                                 ) : (
-                                                                    <p className="text-gray-500 italic text-sm">Không có câu trả lời.</p>
+                                                                    <p className="text-gray-500 italic text-sm">No answer yet.</p>
                                                                 )}
                                                             </div>
                                                         ))}
                                                     </div>
                                                 ) : (
-                                                    <p className="text-gray-500 italic">Không có câu hỏi nào trong khảo sát này.</p>
+                                                    <p className="text-gray-500 italic">There are no questions in this survey.</p>
                                                 )}
                                             </div>
                                         ))}
                                     </div>
                                 ),
-                                "Người dùng này chưa hoàn thành khảo sát nào."
+                                "This user has not completed any surveys yet."
                             )}
                         </section>
                     )}
@@ -375,21 +391,31 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                             {renderSectionContent(
                                 loadingMembership,
                                 errorMembership,
-                                activeMembership,
+                                hasMembership !== null, // Sử dụng hasMembership để kiểm tra dữ liệu chung
                                 () => (
                                     <div className="space-y-2 text-gray-700">
-                                        <p><strong>ID gói Membership:</strong> {activeMembership?.id}</p>
-                                        <p><strong>ID loại gói:</strong> {activeMembership?.packageTypeId || activeMembership?.packagetTypeId}</p>
-                                        <p><strong>Ngày bắt đầu:</strong> {activeMembership?.startDate}</p>
-                                        <p><strong>Ngày kết thúc:</strong> {activeMembership?.endDate}</p>
-                                        <p><strong>Trạng thái hoạt động:</strong> {activeMembership?.active ? "Có" : "Không"}</p>
-                                        {/* Bạn có thể thêm thông tin chi tiết về PackageType nếu fetch được */}
-                                        {/* <p><strong>Tên gói:</strong> {activeMembership?.packageName}</p> */}
-                                        {/* <p><strong>Mô tả:</strong> {activeMembership?.packageDescription}</p> */}
-                                        {/* <p><strong>Giá:</strong> {activeMembership?.packagePrice}</p> */}
+                                        <p>
+                                            <strong>Package status:</strong>{' '}
+                                            {hasMembership ? (
+                                                <span className="font-bold text-green-600">Have an active package</span>
+                                            ) : (
+                                                <span className="font-bold text-red-600">No packages are active</span>
+                                            )}
+                                        </p>
+                                        {hasMembership && membershipDetails && (
+                                            <>
+                                                <p><strong>Package type:</strong> {membershipDetails.packageTypeName || "No update"}</p>
+                                                <p><strong>Start date:</strong> {membershipDetails.startDate}</p>
+                                                <p><strong>End date:</strong> {membershipDetails.endDate}</p>
+                                            </>
+                                        )}
+                                        {hasMembership && !membershipDetails && !loadingMembership && (
+                                            <p className="text-yellow-700 italic">Confirmed active package but unable to load details.</p>
+                                        )}
                                     </div>
                                 ),
-                                "Người dùng này hiện không có gói membership nào đang hoạt động."
+                                // Message khi không có gói nào hoạt động (hasMembership là false)
+                                "This user currently has no active memberships."
                             )}
                         </section>
                     )}
