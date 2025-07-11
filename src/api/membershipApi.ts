@@ -287,3 +287,55 @@ export async function getActiveMembershipPackage(): Promise<MembershipPackageDto
     throw error;
   }
 }
+
+/**
+ * Check if a specific user has an active membership package.
+ * GET /membership-packages/user/{userId}/has-active
+ * Returns true if active, false if not. Throws 404 if user not found.
+ */
+export async function hasActiveMembership(userId: string): Promise<boolean> {
+  try {
+    const { data } = await membershipApi.get<boolean>(
+      `/membership-packages/user/${userId}/has-active`
+    );
+    return data;
+  } catch (error) {
+    console.error(`Error checking active membership for user ${userId}:`, error);
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error("User does not exist or package information not found.");
+      }
+      if (error.response?.status === 401 || error.response?.status === 403) {
+          throw new Error("No access to this user's membership information.");
+      }
+    }
+    // For any other error, assume no active membership or a general error
+    return false; // Or re-throw error if you want to show a general error message
+  }
+}
+
+/**
+ * Fetch the active membership package details for a specific user.
+ * GET /membership-packages/user/{userId}/active-package
+ * Returns MembershipPackageDto if active package found, throws 404 if not found.
+ */
+export async function getActiveMembershipDetailsByUserId(userId: string): Promise<MembershipPackageDto> {
+  try {
+    const { data } = await membershipApi.get<MembershipPackageDto>(
+      `/membership-packages/user/${userId}/active-package`
+    );
+    return data;
+  } catch (error) {
+    console.error(`Error fetching active membership details for user ${userId}:`, error);
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error("This user currently has no active memberships..");
+      }
+      if (error.response?.status === 401 || error.response?.status === 403) {
+          throw new Error("No access to this user's membership information.");
+      }
+    }
+    throw error; // Re-throw other errors
+  }
+}
+
