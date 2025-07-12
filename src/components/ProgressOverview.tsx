@@ -7,7 +7,7 @@ import {
   getMoneySaved,
   getCurrentZeroStreak,
   type QuitPlanDto 
-} from '../api/progressoverviewApi';
+} from '../api/progressOverViewApi';
 
 interface ProgressData {
   daysSmokesFree: number;

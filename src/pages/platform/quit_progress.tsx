@@ -1,5 +1,5 @@
 // src/pages/Quit_Progress.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 
 // Import your components
@@ -59,15 +59,6 @@ export default function Quit_Progress() {
     { name: "Two Weeks", description: "Two weeks smoke-free", earned: false, icon: "⚠️" },
     { name: "Long Haul", description: "One month smoke-free", earned: false, icon: "🏃" },
   ];
-
-  const planSteps = [
-    { name: "Step 1: Prepare and Commit", completed: true },
-    { name: "Step 2: Cope with Cravings", completed: true },
-    { name: "Step 3: Develop New Habits", completed: false },
-    { name: "Step 4: Maintain and Live Healthy", completed: false },
-    { name: "Step 5: Celebrate Success", completed: false },
-  ];
-  const currentStepIndex = 2;
 
   const handleDailyCheckIn = (data: DailyFormValues) => {
     console.log("Daily check-in submitted:", data);
@@ -176,7 +167,7 @@ export default function Quit_Progress() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <DailyCheckIn onSubmit={handleDailyCheckIn} />
-                <PlanStepProgress steps={planSteps} currentStepIndex={currentStepIndex} />
+                <PlanStepProgress/>
               </div>
             </motion.div>
           )}
