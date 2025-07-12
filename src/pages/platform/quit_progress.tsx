@@ -24,23 +24,7 @@ export default function Quit_Progress() {
 
 
 
-  const history = [
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 16, 2025", text: "Smoked 3 cigarettes", success: false },
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 16, 2025", text: "Smoke-free day", success: true },
-    { date: "June 16, 2025", text: "Smoke-free day", success: true },
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 10, 2025", text: "Smoke-free day", success: true },
-    { date: "June 9, 2025", text: "Smoke-free day", success: true },
-    { date: "June 8, 2025", text: "Smoked 2 cigarettes", success: false },
-    { date: "June 7, 2025", text: "Smoke-free day", success: true },
-    { date: "June 6, 2025", text: "Smoke-free day", success: true },
-    { date: "June 5, 2025", text: "Smoked 1 cigarette", success: false },
-  ];
+
 
   const reminders = [
     { time: "10:00 AM", text: "Stay strong! The first week is the hardest.", icon: "📘" },
@@ -174,7 +158,7 @@ export default function Quit_Progress() {
               exit="exit"
               className="space-y-8"
             >
-              <HistorySidebar history={history} /> {/* Display the history component here */}
+              <HistorySidebar/> 
             </motion.div>
           )}
 
