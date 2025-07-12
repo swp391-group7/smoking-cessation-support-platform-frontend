@@ -15,10 +15,6 @@ import CoachChat from '../../components/CoachChat';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
-type DailyFormValues = {
-  numCigarettes: number;
-  smokedToday: boolean;
-};
 
 // Define new page types
 type Page = 'dashboard' | 'history' | 'badges' | 'chat';
@@ -60,10 +56,6 @@ export default function Quit_Progress() {
     { name: "Long Haul", description: "One month smoke-free", earned: false, icon: "🏃" },
   ];
 
-  const handleDailyCheckIn = (data: DailyFormValues) => {
-    console.log("Daily check-in submitted:", data);
-    // TODO: Replace with API call
-  };
 
   const handleSendMessage = (message: string) => {
     console.log("Message sent to coach:", message);
@@ -166,7 +158,7 @@ export default function Quit_Progress() {
               <RemindersSidebar reminders={reminders} />
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <DailyCheckIn onSubmit={handleDailyCheckIn} />
+                <DailyCheckIn/>
                 <PlanStepProgress/>
               </div>
             </motion.div>
