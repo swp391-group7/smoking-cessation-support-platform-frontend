@@ -55,7 +55,36 @@ export interface PackageType {
   des4: string;
   des5: string;
   price: number;
+  duration: number; 
+  createdAt: string;
 }
+
+// DTO for creating a new package type
+export interface PackageTypeCreateDto {
+  name: string;
+  description: string;
+  des1: string;
+  des2: string;
+  des3: string;
+  des4: string;
+  des5: string;
+  price: number;
+  duration: number;
+}
+
+// DTO for updating an existing package type
+export interface PackageTypeUpdateDto {
+  name?: string;
+  description?: string;
+  des1?: string;
+  des2?: string;
+  des3?: string;
+  des4?: string;
+  des5?: string;
+  price?: number;
+  duration?: number;
+}
+
 // --- Membership Packages ---
 export interface MembershipPackageDto {
   id: string;
@@ -461,6 +490,84 @@ export async function getLatestMembershipPackageForCurrentUser(): Promise<Member
     console.error('Error fetching latest membership package for current user:', error);
     if (axios.isAxiosError(error) && error.response?.status === 404) {
         throw new Error("Người dùng hiện không có gói membership nào.");
+    }
+    throw error;
+  }
+}
+
+
+/**
+ * Fetch a single package type by ID.
+ * GET /package-types/{id}
+ */
+export async function getPackageTypeById(id: string): Promise<PackageType> {
+  try {
+    const { data } = await membershipApi.get<PackageType>(`/package-types/${id}`);
+    return data;
+  } catch (error) {
+    console.error(`Error fetching package type by ID ${id}:`, error);
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      throw new Error("Không tìm thấy loại gói với ID này.");
+    }
+    throw error;
+  }
+}
+
+/**
+ * Create a new package type.
+ * POST /package-types
+ */
+export async function createPackageType(newPackage: PackageTypeCreateDto): Promise<PackageType> {
+  try {
+    const { data } = await membershipApi.post<PackageType>('/package-types', newPackage);
+    return data;
+  } catch (error) {
+    console.error('Error creating package type:', error);
+    if (axios.isAxiosError(error) && error.response?.status === 400) {
+      throw new Error(`Dữ liệu tạo gói không hợp lệ: ${error.response?.data?.message || error.message}`);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Update an existing package type.
+ * PUT /package-types/{id}
+ */
+export async function updatePackageType(id: string, updatedPackage: PackageTypeUpdateDto): Promise<PackageType> {
+  try {
+    const { data } = await membershipApi.put<PackageType>(`/package-types/${id}`, updatedPackage);
+    return data;
+  } catch (error) {
+    console.error(`Error updating package type ${id}:`, error);
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error("Không tìm thấy loại gói để cập nhật.");
+      }
+      if (error.response?.status === 400) {
+        throw new Error(`Dữ liệu cập nhật không hợp lệ: ${error.response?.data?.message || error.message}`);
+      }
+    }
+    throw error;
+  }
+}
+
+/**
+ * Delete a package type.
+ * DELETE /package-types/{id}
+ */
+export async function deletePackageType(id: string): Promise<void> {
+  try {
+    await membershipApi.delete(`/package-types/${id}`);
+  } catch (error) {
+    console.error(`Error deleting package type ${id}:`, error);
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error("Không tìm thấy loại gói để xóa.");
+      }
+      if (error.response?.status === 403) {
+        throw new Error("Bạn không có quyền xóa loại gói này.");
+      }
     }
     throw error;
   }
