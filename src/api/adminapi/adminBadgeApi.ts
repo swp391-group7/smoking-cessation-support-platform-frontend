@@ -20,6 +20,7 @@ export interface BadgeRequest {
   badgeName: string;
   badgeDescription: string;
   badgeImageUrl: string;
+  condition: string; // Điều kiện để nhận huy hiệu
 }
 
 export interface BadgeDto extends BadgeRequest {
