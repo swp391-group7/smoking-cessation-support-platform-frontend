@@ -39,6 +39,7 @@ const DailyCheckIn: React.FC = () => {
         setPlan(activePlan);
         const steps = await getPlanSteps(activePlan.id);
         const today = new Date();
+        today.setDate(today.getDate() + 1);
         const current = steps.find(s => {
           const start = new Date(s.stepStartDate);
           const end = new Date(s.stepEndDate);

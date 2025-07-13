@@ -31,14 +31,7 @@ export default function Quit_Progress() {
     
   ];
 
-  const badges = [
-    { name: "First Day", description: "Completed your first smoke-free day", earned: true, icon: "🥇" },
-    { name: "One Week", description: "One week smoke-free", earned: true, icon: "🎉" },
-    { name: "Money Saved", description: "Saved $50", earned: true, icon: "💰" },
-    { name: "Health Improvement", description: "Your lungs are healing", earned: false, icon: "🫁" },
-    { name: "Two Weeks", description: "Two weeks smoke-free", earned: false, icon: "⚠️" },
-    { name: "Long Haul", description: "One month smoke-free", earned: false, icon: "🏃" },
-  ];
+ 
 
 
   const handleSendMessage = (message: string) => {
@@ -171,7 +164,7 @@ export default function Quit_Progress() {
               exit="exit"
               className="space-y-8"
             >
-              <BadgesSidebar badges={badges} />
+              <BadgesSidebar />
             </motion.div>
           )}
 
