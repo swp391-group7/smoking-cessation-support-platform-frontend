@@ -84,6 +84,13 @@ export async function getSurveyByUserId(): Promise<GetSurveyRequest> {
   return data;
 }
 
+/** Lấy tất cả khảo sát của một người dùng theo ID */
+export async function getAllSurveysOfUser(userId: string): Promise<SurveyDetailDTO[]> {
+    const { data } = await usersurveyApi.get<SurveyDetailDTO[]>(
+        `/user-surveys/get-all-surveys-of-user/${userId}`
+    );
+    return data;
+}
 
 /**
  * Fetches survey details (questions + answers) by surveyId.

@@ -45,7 +45,7 @@ export async function getCurrentUser(): Promise<UserInfo> {
 }
 
 /** Lấy thông tin người dùng theo ID */
-export async function getUserById(userId: number): Promise<UserInfo> {
+export async function getUserById(userId: string): Promise<UserInfo> {
   const { data } = await userApi.get<UserInfo>(`/users/get/${userId}`);
   return data;
 }
