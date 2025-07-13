@@ -68,6 +68,14 @@ export const ResourcDropdown: React.FC = () => {
             Guides 
           </NavLink>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <NavLink
+            to="/chat"
+            className="block w-full px-2 py-1 text-sm text-gray-700 hover:bg-emerald-100"
+          >
+            Chat
+          </NavLink>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

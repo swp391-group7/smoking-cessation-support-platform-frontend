@@ -10,6 +10,7 @@ import Quit_Plan from './pages/platform/quit_plan.tsx';
 import UserSurvey from './pages/platform/user_survey.tsx';
 import BlogPost from './pages/platform/blog.tsx';
 import UserInfo from './pages/platform/user_info.tsx';
+import UserChatPage from './pages/platform/UserChatPage.tsx';
 
 // Admin pages
 import AdminLayout from './components/admin/Adminlayout.tsx';
@@ -38,7 +39,8 @@ import CoachLayout from './components/coach/CoachLayout.tsx';
 import CoachProtectedRoute from './components/coach/CoachProtectedRoute';
 import CoachDashboard from './pages/coach/CoachDashboard.tsx';
 import CoachProfile from './pages/coach/Profile.tsx';
-
+import CoachUserList from './pages/coach/CoachUserList.tsx';
+import CoachChatRoom from './pages/coach/CoachChatRoom.tsx';
 import MembershipPage from './pages/platform/membership.tsx';
 import ScrollToTop from './components/ScrollToTop.tsx';
 
@@ -62,6 +64,7 @@ export const App = () => (
           <Route path="/user_info" element={<UserInfo />} />
           <Route path="quit_form" element={<PlanForm />} />
            <Route path="/membership" element={<MembershipPage />} />
+          <Route path="chat" element={<UserChatPage />} />
         </Route>
 
         {/* Admin Route + Bảo vệ bằng role admin */}
@@ -104,6 +107,8 @@ export const App = () => (
           <Route path="dashboard" element={<CoachDashboard />} />
           <Route path="profile" element={<CoachProfile />} />  
           <Route path="*" element={<Navigate to="/coach/dashboard" replace />} />
+          <Route path="clients" element={<CoachUserList />} />
+          <Route path="chat/:userId" element={<CoachChatRoom />} />
         </Route>
       </Routes>
     </Router>

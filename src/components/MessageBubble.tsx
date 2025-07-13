@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Message, User } from '../api/typechat';
+import type { Message} from '../api/typechat';
 
 interface MessageBubbleProps {
   message: Message;

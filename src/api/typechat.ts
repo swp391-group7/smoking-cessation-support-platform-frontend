@@ -1,12 +1,10 @@
-// types/chat.ts
-export interface Role {
-  id: string;
-  role: string;
-}
-
+// File: src/types/chat.ts
 export interface User {
   id: string;
-  role: Role;
+  role: {
+    id: string;
+    role: string;
+  };
   username: string;
   password: string;
   email: string;
@@ -41,27 +39,12 @@ export interface ChatRoomMember {
   joinedAt: string;
 }
 
-export interface CreateChatRoomRequest {
-  sender: User;
-  name: string;
-  type: string;
-}
-
 export interface SendMessageRequest {
   content: string;
 }
 
-export type UserRole = 'admin' | 'coach' | 'user';
-
-export interface ApiResponse<T> {
-  data: T;
-  status: number;
-  message?: string;
-}
-
-export interface ApiError {
-  timestamp: string;
-  status: number;
-  error: string;
-  path: string;
+export interface CreateChatRoomRequest {
+  sender: User;
+  name: string;
+  type: string;
 }

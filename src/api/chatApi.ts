@@ -1,94 +1,145 @@
-// api/chatApi.ts
-// api/chatApi.ts
-import type {
-    ChatRoom,
-    Message,
-    ChatRoomMember,
-    CreateChatRoomRequest,
-    SendMessageRequest,
-    ApiError
-} from '../api/typechat';
+// File: src/services/chatApi.ts
+// File: src/services/chatApi.ts
+import type { Message, ChatRoom, ChatRoomMember, SendMessageRequest, CreateChatRoomRequest } from '../api/typechat';
 
-const BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost:8080';
 
-class ChatApi {
-  private async request<T>(
-    url: string, 
-    options: RequestInit = {}
-  ): Promise<T> {
-    try {
-      const token = localStorage.getItem('authToken');
-      const headers = {
+export class ChatApi {
+  // Message endpoints
+  static async sendMessage(roomId: string, request: SendMessageRequest): Promise<Message> {
+    const response = await fetch(`${API_BASE_URL}/messages/sendMessage/${roomId}/send`, {
+      method: 'POST',
+      headers: {
         'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` }),
-        ...options.headers,
-      };
+      },
+      body: JSON.stringify(request),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to send message');
+    }
+    
+    return response.json();
+  }
 
-      const response = await fetch(`${BASE_URL}${url}`, {
-        ...options,
-        headers,
-      });
+  static async getNewestMessages(roomId: string): Promise<Message[]> {
+    const response = await fetch(`${API_BASE_URL}/messages/room/${roomId}/newest`, {
+      method: 'GET',
+      headers: {
+        'Accept': '*/*',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to get newest messages');
+    }
+    
+    return response.json();
+  }
 
-      if (!response.ok) {
-        const errorData: ApiError = await response.json();
-        throw new Error(`API Error: ${errorData.error} (${errorData.status})`);
-      }
+  static async getMessages(roomId: string): Promise<Message[]> {
+    const response = await fetch(`${API_BASE_URL}/messages/room/${roomId}/getMessages`, {
+      method: 'GET',
+      headers: {
+        'Accept': '*/*',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to get messages');
+    }
+    
+    return response.json();
+  }
 
-      return await response.json();
-    } catch (error) {
-      console.error('API Request failed:', error);
-      throw error;
+  // Chat room endpoints
+  static async getChatRooms(): Promise<ChatRoom[]> {
+    const response = await fetch(`${API_BASE_URL}/chatrooms`, {
+      method: 'GET',
+      headers: {
+        'Accept': '*/*',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to get chat rooms');
+    }
+    
+    return response.json();
+  }
+
+  static async createChatRoom(request: CreateChatRoomRequest): Promise<ChatRoom> {
+    const response = await fetch(`${API_BASE_URL}/chatrooms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to create chat room');
+    }
+    
+    return response.json();
+  }
+
+  static async getChatRoom(id: string): Promise<ChatRoom> {
+    const response = await fetch(`${API_BASE_URL}/chatrooms/${id}`, {
+      method: 'GET',
+      headers: {
+        'Accept': '*/*',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to get chat room');
+    }
+    
+    return response.json();
+  }
+
+  // Chat room member endpoints
+  static async addMember(roomId: string, userId: string): Promise<ChatRoomMember> {
+    const response = await fetch(`${API_BASE_URL}/chatroom-members/add?roomId=${roomId}&userId=${userId}`, {
+      method: 'POST',
+      headers: {
+        'Accept': '*/*',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to add member');
+    }
+    
+    return response.json();
+  }
+
+  static async getRoomMembers(roomId: string): Promise<ChatRoomMember[]> {
+    const response = await fetch(`${API_BASE_URL}/chatroom-members/room/${roomId}`, {
+      method: 'GET',
+      headers: {
+        'Accept': '*/*',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to get room members');
+    }
+    
+    return response.json();
+  }
+
+  static async removeMember(roomId: string, userId: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/chatroom-members/remove?roomId=${roomId}&userId=${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': '*/*',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to remove member');
     }
   }
-
-  // Chat Room APIs
-  async getChatRooms(): Promise<ChatRoom[]> {
-    return this.request<ChatRoom[]>('/chatrooms');
-  }
-
-  async createChatRoom(data: CreateChatRoomRequest): Promise<ChatRoom> {
-    return this.request<ChatRoom>('/chatrooms', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async getChatRoomById(id: string): Promise<ChatRoom> {
-    return this.request<ChatRoom>(`/chatrooms/${id}`);
-  }
-
-  // Chat Room Member APIs
-  async addMemberToRoom(roomId: string, userId: string): Promise<ChatRoomMember> {
-    return this.request<ChatRoomMember>(`/chatroom-members/add?roomId=${roomId}&userId=${userId}`, {
-      method: 'POST',
-    });
-  }
-
-  async getRoomMembers(roomId: string): Promise<ChatRoomMember[]> {
-    return this.request<ChatRoomMember[]>(`/chatroom-members/room/${roomId}`);
-  }
-
-  async removeMemberFromRoom(roomId: string, userId: string): Promise<void> {
-    return this.request<void>(`/chatroom-members/remove?roomId=${roomId}&userId=${userId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Message APIs
-  async sendMessage(roomId: string, data: SendMessageRequest): Promise<Message> {
-    return this.request<Message>(`/messages/sendMessage/${roomId}/send`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async getNewestMessages(roomId: string): Promise<Message[]> {
-    return this.request<Message[]>(`/messages/room/${roomId}/newest`);
-  }
-
-  async getAllMessages(roomId: string): Promise<Message[]> {
-    return this.request<Message[]>(`/messages/room/${roomId}/getMessages`);
-  }
 }
-
-export const chatApi = new ChatApi();
