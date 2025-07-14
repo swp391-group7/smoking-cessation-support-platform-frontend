@@ -38,6 +38,7 @@ import CoachProfile from './pages/coach/Profile.tsx';
 
 import MembershipPage from './pages/platform/membership.tsx';
 import ScrollToTop from './components/ScrollToTop.tsx';
+import CoachSelectionPage from './components/selectCoach.tsx';
 
 
 export const App = () => (
@@ -59,6 +60,7 @@ export const App = () => (
           <Route path="/user_info" element={<UserInfo />} />
           <Route path="quit_form" element={<PlanForm />} />
            <Route path="/membership" element={<MembershipPage />} />
+           <Route path="/coach_select" element={<CoachSelectionPage/>} />
         </Route>
 
         {/* Admin Route + Bảo vệ bằng role admin */}
