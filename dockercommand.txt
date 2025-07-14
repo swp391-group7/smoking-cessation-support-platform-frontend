@@ -1,0 +1,5 @@
+#run on port 3000
+docker run -p 5173:3000 smoking-fe
+
+#build image
+docker build -t smoking-fe .

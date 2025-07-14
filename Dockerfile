@@ -1,5 +1,10 @@
+
 # Stage 1: Build the Vite app
 FROM node:22 AS builder
+
+# Pass VITE_API_URL from docker-compose build args
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 
 WORKDIR /app
 
@@ -15,7 +20,7 @@ COPY . .
 RUN npm rebuild esbuild
 
 # Build the app
-RUN npx vite build
+RUN npx vite build --mode production
 
 # Stage 2: Serve using Node.js and Express
 FROM node:22
