@@ -524,8 +524,7 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
 
 
 
-
- if (isSubmitted) {
+if (isSubmitted) {
   return (
     <div className="max-w-3xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-green-100 text-center animate-fade-in-up">
       <div className="flex items-center justify-center mb-4">
@@ -533,9 +532,9 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </div>
-      <h1 className="text-3xl font-semibold text-green-700 mb-4">Cảm ơn bạn!</h1>
-      <p className="text-lg text-gray-800 mb-6">Khảo sát của bạn đã được gửi thành công.</p>
-      <p className="text-md text-gray-600 mb-4">Phản hồi của bạn rất có giá trị!</p>
+      <h1 className="text-3xl font-semibold text-green-700 mb-4">Thank you!</h1>
+      <p className="text-lg text-gray-800 mb-6">Your survey has been submitted successfully.</p>
+      <p className="text-md text-gray-600 mb-4">Your feedback is very valuable!</p>
       
       {/* Loading indicator */}
       <div className="flex items-center justify-center">
@@ -543,7 +542,7 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <span className="text-sm text-gray-600">Đang chuyển hướng...</span>
+        <span className="text-sm text-gray-600">Redirecting...</span>
       </div>
     </div>
   );
@@ -553,33 +552,33 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
     <>  {dialogs}
     <div className="max-w-5xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-8 border border-green-100">
       <form onSubmit={handleSubmit} className="max-w-6xl mx-auto px-6 py-12 text-black">
-        {/* --- Về Thói Quen của Bạn --- */}
+        {/* --- About Your Habits --- */}
         <div className="p-5 border border-gray-200 rounded-lg shadow-sm bg-gray-50 mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <svg className="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Thói Quen của Bạn
+            Your Smoking Habits
           </h2>
           <label htmlFor="smoke_duration" className="block text-lg font-medium text-gray-700 mb-2">
-            Bạn đã hút thuốc bao lâu? <span className="text-red-500">*</span>
+            How long have you been smoking? <span className="text-red-500">*</span>
           </label>
           <input
             id="smoke_duration"
             name="smoke_duration"
-            placeholder="Ví dụ: 5 năm, 10 tháng"
+            placeholder="Example: 5 years, 10 months"
             value={formData.smoke_duration}
             onChange={handleChange}
             className={`w-full p-2 border rounded-md focus:ring-green-500 focus:border-green-500 ${errors.smoke_duration ? "border-red-500" : "border-gray-300"
               } mb-1`}
           />
           {errors.smoke_duration && <p className="text-red-500 text-sm">{errors.smoke_duration}</p>}
-          <p className="text-sm text-gray-500 mb-4">Ví dụ: "10 năm", "2 năm 6 tháng"</p>
+          <p className="text-sm text-gray-500 mb-4">Example: "10 years", "2 years 6 months"</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6 mb-4">
             <div>
               <label htmlFor="cigarettes_per_day" className="block text-lg font-medium text-gray-700">
-                Số điếu/ngày <span className="text-red-500">*</span>
+                Cigarettes per day <span className="text-red-500">*</span>
               </label>
               <input
                 id="cigarettes_per_day"
@@ -595,7 +594,7 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
             </div>
             <div>
               <label htmlFor="price_each" className="block text-lg font-medium text-gray-700">
-                Giá mỗi bao <span className="text-red-500">*</span>
+                Price per pack <span className="text-red-500">*</span>
               </label>
               <input
                 id="price_each"
@@ -619,17 +618,17 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
               onChange={handleChange}
               className="accent-green-500 w-4 h-4"
             />
-            Bạn đã từng cố gắng bỏ thuốc chưa?
+            Have you ever tried to quit smoking?
           </label>
         </div>
 
-        {/* --- Tình Trạng Sức Khỏe & Ý Định của Bạn --- */}
+        {/* --- Health Status & Intentions --- */}
         <div className="p-5 border border-gray-200 rounded-lg shadow-sm bg-gray-50 mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <svg className="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.002 12.002 0 003 12c0 2.651 1.03 5.147 2.81 7.076L12 22l6.19-2.924C20.97 17.147 22 14.651 22 12c0-3.091-.706-6.046-2.19-8.616z" />
             </svg>
-            Tình Trạng Sức Khỏe & Ý Định
+            Health Status & Intentions
           </h2>
           <select
             id="health_status"
@@ -639,23 +638,23 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
             className={`w-full p-2 border rounded-md focus:ring-green-500 focus:border-green-500 ${errors.health_status ? "border-red-500" : "border-gray-300"
               } mb-1`}
           >
-            <option value="">-- Chọn tình trạng sức khỏe --</option>
-            <option>Xuất sắc</option>
-            <option>Tốt</option>
-            <option>Trung bình</option>
-            <option>Khá</option>
-            <option>Kém</option>
+            <option value="">-- Select health status --</option>
+            <option>Excellent</option>
+            <option>Good</option>
+            <option>Average</option>
+            <option>Fair</option>
+            <option>Poor</option>
           </select>
           {errors.health_status && <p className="text-red-500 text-sm">{errors.health_status}</p>}
         </div>
 
-        {/* --- Câu Hỏi Khảo Sát Chi Tiết --- */}
+        {/* --- Detailed Survey Questions --- */}
         <div className="p-5 border border-gray-200 rounded-lg shadow-sm bg-gray-50 mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <svg className="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9.207a1 1 0 011.414 0l.006.006a.998.998 0 01-.006 1.414l-2.071 2.071a.999.999 0 01-1.414-1.414l.006-.006A.998.998 0 018.228 9.207zM15 15l1.414-1.414a1 1 0 011.414 0l.006.006a.998.998 0 01-.006 1.414l-2.071 2.071a.999.999 0 01-1.414-1.414l.006-.006A.998.998 0 0115 15z" />
             </svg>
-            Hiểu sâu về thói quen hút thuốc
+            Understanding Your Smoking Habits
           </h2>
           {surveyQuestions.map(({ key, question, options }, idx) => (
             <div key={key} className={`mb-6 p-4 border rounded-md ${errors[key] ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
@@ -683,17 +682,17 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
           ))}
         </div>
 
-        {/* --- Mức Độ Phụ Thuộc Chung --- */}
+        {/* --- Overall Dependency Level --- */}
         <div className="p-5 border border-gray-200 rounded-lg shadow-sm bg-gray-50 mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <svg className="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2zM21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.11C6.233 14.9 8.95 14 12 14c4.97 0 9-3.582 9-8s-4.03-8-9-8-9 3.582-9 8c0 1.48.51 2.906 1.396 4.192l-.128.283a.5.5 0 00-.094.137l-2.732 6.136a.5.5 0 00.672.672l6.136-2.732a.5.5 0 00.137-.094l.283-.128A10.014 10.014 0 0012 21c4.97 0 9-3.582 9-8z" />
             </svg>
-            Mức Độ Phụ Thuộc Chung <span className="text-red-500">*</span>
+            Overall Dependency Level <span className="text-red-500">*</span>
           </h2>
           <div className={`flex items-center justify-between px-4 py-6 bg-white rounded-xl shadow-md ${errors.dependency_level ? 'border-2 border-red-500' : ''
             }`}>
-            <span className="font-medium text-gray-700">Thấp</span>
+            <span className="font-medium text-gray-700">Low</span>
             <div className="flex gap-4">
               {[1, 2, 3, 4, 5].map(lvl => {
                 const colors = ["#A8E6CF", "#DCE775", "#FFF59D", "#FFAB91", "#EF9A9A"];
@@ -717,15 +716,15 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
                 );
               })}
             </div>
-            <span className="font-medium text-gray-700">Cao</span>
+            <span className="font-medium text-gray-700">High</span>
           </div>
           {errors.dependency_level && <p className="text-red-500 mt-2">{errors.dependency_level}</p>}
         </div>
 
-        {/* --- Ghi chú (tùy chọn) --- */}
+        {/* --- Notes (optional) --- */}
         <div className="p-5 border border-gray-200 rounded-lg shadow-sm bg-gray-50 mb-8">
           <label htmlFor="note" className="block mb-2 text-lg font-medium text-gray-700">
-            Ghi chú (tùy chọn)
+            Notes (optional)
           </label>
           <textarea
             id="note"
@@ -737,27 +736,27 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
           />
         </div>
 
-        {/* --- Tóm tắt các mục nhập của bạn --- */}
+        {/* --- Summary of your entries --- */}
         <div className="mb-8 p-6 bg-green-50 rounded-lg border border-green-200">
-          <h2 className="text-xl font-semibold text-green-800 mb-4">Tóm tắt câu trả lời của bạn</h2>
-          <p><strong>Thời gian hút:</strong> {formData.smoke_duration || 'Chưa nhập'}</p>
-          <p><strong>Điếu/ngày:</strong> {formData.cigarettes_per_day > 0 ? formData.cigarettes_per_day : 'Chưa nhập'}</p>
-          <p><strong>Giá/bao:</strong> {formData.price_each > 0 ? formData.price_each : 'Chưa nhập'}</p>
-          <p><strong>Từng cố bỏ:</strong> {formData.tried_to_quit ? 'Có' : 'Không'}</p>
-          <p><strong>Tình trạng sức khỏe:</strong> {formData.health_status || 'Chưa chọn'}</p>
-          <p><strong>Mức độ phụ thuộc:</strong> {formData.dependency_level > 0 ? formData.dependency_level : 'Chưa chọn'}</p>
+          <h2 className="text-xl font-semibold text-green-800 mb-4">Summary of Your Responses</h2>
+          <p><strong>Smoking duration:</strong> {formData.smoke_duration || 'Not entered'}</p>
+          <p><strong>Cigarettes per day:</strong> {formData.cigarettes_per_day > 0 ? formData.cigarettes_per_day : 'Not entered'}</p>
+          <p><strong>Price per pack:</strong> {formData.price_each > 0 ? formData.price_each : 'Not entered'}</p>
+          <p><strong>Tried to quit:</strong> {formData.tried_to_quit ? 'Yes' : 'No'}</p>
+          <p><strong>Health status:</strong> {formData.health_status || 'Not selected'}</p>
+          <p><strong>Dependency level:</strong> {formData.dependency_level > 0 ? formData.dependency_level : 'Not selected'}</p>
           {surveyQuestions.map((q, i) => (
             <p key={`summary-${i}`}>
-              <strong>Câu {i + 1}:</strong> {
+              <strong>Question {i + 1}:</strong> {
                 formData[`a${i + 1}` as SurveyKey] !== null
-                  ? q.options.find(opt => opt.point === formData[`a${i + 1}` as SurveyKey])?.text || 'Câu trả lời không hợp lệ'
-                  : 'Chưa trả lời'
+                  ? q.options.find(opt => opt.point === formData[`a${i + 1}` as SurveyKey])?.text || 'Invalid answer'
+                  : 'Not answered'
               }
             </p>
           ))}
         </div>
 
-        {/* --- Gửi --- */}
+        {/* --- Submit --- */}
         <div className="text-center">
           {submissionError && (
             <p className="text-red-600 mb-4 text-lg font-medium">{submissionError}</p>
@@ -767,7 +766,7 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
             className="bg-emerald-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isLoading}
           >
-            {isLoading ? 'Đang gửi...' : 'Gửi khảo sát'}
+            {isLoading ? 'Submitting...' : 'Submit Survey'}
           </button>
         </div>
       </form>

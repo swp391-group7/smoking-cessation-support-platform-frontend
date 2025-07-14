@@ -1,5 +1,5 @@
 // src/pages/Quit_Progress.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 
 // Import your components
@@ -15,10 +15,6 @@ import CoachChat from '../../components/CoachChat';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
-type DailyFormValues = {
-  numCigarettes: number;
-  smokedToday: boolean;
-};
 
 // Define new page types
 type Page = 'dashboard' | 'history' | 'badges' | 'chat';
@@ -26,30 +22,9 @@ type Page = 'dashboard' | 'history' | 'badges' | 'chat';
 export default function Quit_Progress() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
 
-  // Mock data - replace these with API calls later
-  const progressData = {
-    daysSmokesFree: 17,
-    moneySaved: 85,
-    cigarettesAvoided: 340
-  };
 
-  const history = [
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 16, 2025", text: "Smoked 3 cigarettes", success: false },
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 16, 2025", text: "Smoke-free day", success: true },
-    { date: "June 16, 2025", text: "Smoke-free day", success: true },
-    { date: "June 16, 2025", text: "Smoked 1 cigarette", success: false },
-    { date: "June 10, 2025", text: "Smoke-free day", success: true },
-    { date: "June 9, 2025", text: "Smoke-free day", success: true },
-    { date: "June 8, 2025", text: "Smoked 2 cigarettes", success: false },
-    { date: "June 7, 2025", text: "Smoke-free day", success: true },
-    { date: "June 6, 2025", text: "Smoke-free day", success: true },
-    { date: "June 5, 2025", text: "Smoked 1 cigarette", success: false },
-  ];
+
+
 
   const reminders = [
     { time: "10:00 AM", text: "Stay strong! The first week is the hardest.", icon: "📘" },
@@ -65,19 +40,6 @@ export default function Quit_Progress() {
     { name: "Long Haul", description: "One month smoke-free", earned: false, icon: "🏃" },
   ];
 
-  const planSteps = [
-    { name: "Step 1: Prepare and Commit", completed: true },
-    { name: "Step 2: Cope with Cravings", completed: true },
-    { name: "Step 3: Develop New Habits", completed: false },
-    { name: "Step 4: Maintain and Live Healthy", completed: false },
-    { name: "Step 5: Celebrate Success", completed: false },
-  ];
-  const currentStepIndex = 2;
-
-  const handleDailyCheckIn = (data: DailyFormValues) => {
-    console.log("Daily check-in submitted:", data);
-    // TODO: Replace with API call
-  };
 
   const handleSendMessage = (message: string) => {
     console.log("Message sent to coach:", message);
@@ -174,17 +136,14 @@ export default function Quit_Progress() {
               className="space-y-8"
             >
               <ProgressOverview
-                daysSmokesFree={progressData.daysSmokesFree}
-                moneySaved={progressData.moneySaved}
-                cigarettesAvoided={progressData.cigarettesAvoided}
               />
 
               {/* Reminders in a more prominent position */}
               <RemindersSidebar reminders={reminders} />
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <DailyCheckIn onSubmit={handleDailyCheckIn} />
-                <PlanStepProgress steps={planSteps} currentStepIndex={currentStepIndex} />
+                <DailyCheckIn/>
+                <PlanStepProgress/>
               </div>
             </motion.div>
           )}
@@ -199,7 +158,7 @@ export default function Quit_Progress() {
               exit="exit"
               className="space-y-8"
             >
-              <HistorySidebar history={history} /> {/* Display the history component here */}
+              <HistorySidebar/> 
             </motion.div>
           )}
 

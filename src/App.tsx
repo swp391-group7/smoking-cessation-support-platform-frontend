@@ -16,16 +16,13 @@ import AdminLayout from './components/admin/Adminlayout.tsx';
 import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 import Dashboard from './pages/admin/Dashboard.tsx';
 import Users from './pages/admin/Users.tsx';
-import Plans from './pages/admin/Plans.tsx';
-import QuitProfiles from './pages/admin/QuitProfiles.tsx';
-import QuitPlans from './pages/admin/QuitPlans.tsx';
+import Membership from './pages/admin/MembershipPlans.tsx';
 import BlogAdminPage from './pages/admin/Blog.tsx';
 import BlogFormPage from './pages/admin/BlogFormPage.tsx';
 import Notifications from './pages/admin/Notifications.tsx';
 import Community from './pages/admin/Community.tsx';
-import Consultations from './pages/admin/Consultations.tsx';
-import Reports from './pages/admin/Reports.tsx';
-import UserProfiles from './pages/admin/UserProfiles.tsx';
+import Feedback from './pages/admin/Feedback.tsx';
+// import UserProfiles from './pages/admin/UserProfiles.tsx';
 import Settings from './pages/admin/Settings.tsx';
 import Badges from './pages/admin/Badges.tsx';
 import AdminProfile from './pages/admin/Profile.tsx';
@@ -77,17 +74,14 @@ export const App = () => (
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="profile" element={<AdminProfile />} />
-          <Route path="plans" element={<Plans />} />
-          <Route path="quit-profiles" element={<QuitProfiles />} />
-          <Route path="quit-plans" element={<QuitPlans />} />
+          <Route path="membership" element={<Membership />} />
           <Route path="blog" element={<BlogAdminPage />} />
           <Route path="blog/create" element={<BlogFormPage />} />
           <Route path="blog/edit/:id" element={<BlogFormPage />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="community" element={<Community />} />
-          <Route path="consultations" element={<Consultations />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="user-profiles" element={<UserProfiles />} />
+          <Route path="feedback" element={<Feedback />} />
+          {/* <Route path="user-profiles" element={<UserProfiles />} /> */}
           <Route path="badges" element={<Badges />} />
           <Route path="settings" element={<Settings />} />
           <Route path="survey-management" element={<AdminSurveyManagement />} />

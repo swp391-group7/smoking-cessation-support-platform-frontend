@@ -113,3 +113,11 @@ export async function getUserPlans(): Promise<UserPlan[]> {
   const { data } = await userPlanApi.get<UserPlan[]>('/quit-plans/active');
   return data;
 }
+
+/** Lấy kế hoạch cai thuốc đang hoạt động của một người dùng theo ID */
+export async function getActivePlanOfAnUser(userId: string): Promise<UserPlan | null> {
+    const { data } = await userPlanApi.get<UserPlan | null>(
+        `/quit-plans/active-plan-of-an-user/${userId}`
+    );
+    return data;
+}
