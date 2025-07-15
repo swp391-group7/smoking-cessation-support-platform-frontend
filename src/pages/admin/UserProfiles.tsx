@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { getUserById } from "@/api/userApi";
 import type { UserInfo } from "@/api/userApi";
 import { getAllSurveysOfUser } from "@/api/usersurveyApi";
-import type { SurveyDetailDTO } from "@/api/usersurveyApi";
+import type { UserSurveyDto } from "@/api/usersurveyApi";
 import { getActivePlanOfAnUser } from "@/api/userPlanApi";
 import type { UserPlan } from "@/api/userPlanApi";
 import { getAllBadgesOfUser } from "@/api/userBadgeApi";
@@ -34,7 +34,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
     // Data for each section
     const [quitPlan, setQuitPlan] = useState<UserPlan | null>(null);
     const [badges, setBadges] = useState<UserEarnedBadgeDetails[]>([]);
-    const [surveys, setSurveys] = useState<SurveyDetailDTO[]>([]);
+    const [surveys, setSurveys] = useState<UserSurveyDto[]>([]);
     const [hasMembership, setHasMembership] = useState<boolean | null>(null);
     const [membershipDetails, setMembershipDetails] = useState<MembershipPackageDto | null>(null);
 
@@ -172,6 +172,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
         fetchDataForTab();
     }, [activeTab, userId, quitPlan, badges, surveys, hasMembership, membershipDetails]);
 
+    // Helper function to get dependency level description
+    const getDependencyLevelDescription = (level: number): string => {
+        if (level <= 2) return "Very Low";
+        if (level <= 4) return "Low";
+        if (level <= 6) return "Moderate";
+        if (level <= 8) return "High";
+        return "Very High";
+    };
 
     // Overall loading/error state for the modal itself
     if (loadingUserInfo) {
@@ -242,7 +250,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
-            <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-3xl relative h-[90vh] overflow-y-auto">
+            <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-4xl relative h-[90vh] overflow-y-auto">
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl transition-colors duration-200"
@@ -351,30 +359,58 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                                 errorSurveys,
                                 surveys,
                                 () => (
-                                    <div className="space-y-4">
+                                    <div className="space-y-6">
                                         {surveys.map((survey, index) => (
-                                            <div key={survey.id} className="border-b pb-3 last:border-b-0">
-                                                <p className="font-medium text-gray-800">Survey #{index + 1} (ID: {survey.id}) - Type: {survey.typeSurvey}</p>
-                                                <p className="text-gray-700">Date created: {survey.createAt}</p>
-                                                {survey.questions.length > 0 ? (
-                                                    <div className="ml-4 mt-2 space-y-2">
-                                                        {survey.questions.map((q) => (
-                                                            <div key={q.id}>
-                                                                <p className="font-semibold text-gray-700">{q.content}</p>
-                                                                {q.answers.length > 0 ? (
-                                                                    <ul className="list-disc list-inside text-gray-600">
-                                                                        {q.answers.map((a) => (
-                                                                            <li key={a.id}>{a.answerText} (Point: {a.point})</li>
-                                                                        ))}
-                                                                    </ul>
-                                                                ) : (
-                                                                    <p className="text-gray-500 italic text-sm">No answer yet.</p>
-                                                                )}
-                                                            </div>
-                                                        ))}
+                                            <div key={survey.id} className="border border-gray-200 rounded-lg p-4 bg-white">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <h5 className="text-lg font-semibold text-gray-800">Survey #{index + 1}</h5>
+                                                    <span className="text-sm text-gray-500">Created: {new Date(survey.createAt).toLocaleDateString()}</span>
+                                                </div>
+                                                
+                                                {/* Basic Information */}
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                    <div>
+                                                        <p className="text-sm text-gray-600"><strong>Smoke Duration:</strong> {survey.smokeDuration}</p>
+                                                        <p className="text-sm text-gray-600"><strong>Cigarettes Per Day:</strong> {survey.cigarettesPerDay}</p>
+                                                        <p className="text-sm text-gray-600"><strong>Price Each:</strong> ${survey.priceEach}</p>
                                                     </div>
-                                                ) : (
-                                                    <p className="text-gray-500 italic">There are no questions in this survey.</p>
+                                                    <div>
+                                                        <p className="text-sm text-gray-600"><strong>Tried to Quit:</strong> {survey.triedToQuit ? "Yes" : "No"}</p>
+                                                        <p className="text-sm text-gray-600"><strong>Health Status:</strong> {survey.healthStatus}</p>
+                                                        <p className="text-sm text-gray-600">
+                                                            <strong>Dependency Level:</strong> 
+                                                            <span className={`ml-2 px-2 py-1 rounded text-xs font-semibold ${
+                                                                survey.dependencyLevel <= 4 ? 'bg-green-100 text-green-800' :
+                                                                survey.dependencyLevel <= 6 ? 'bg-yellow-100 text-yellow-800' :
+                                                                'bg-red-100 text-red-800'
+                                                            }`}>
+                                                                {survey.dependencyLevel}/10 ({getDependencyLevelDescription(survey.dependencyLevel)})
+                                                            </span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Survey Answers */}
+                                                <div className="border-t pt-4">
+                                                    <h6 className="font-semibold text-gray-800 mb-2">Survey Answers:</h6>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                                        {survey.a1 && <p><strong>Q1:</strong> {survey.a1}</p>}
+                                                        {survey.a2 && <p><strong>Q2:</strong> {survey.a2}</p>}
+                                                        {survey.a3 && <p><strong>Q3:</strong> {survey.a3}</p>}
+                                                        {survey.a4 && <p><strong>Q4:</strong> {survey.a4}</p>}
+                                                        {survey.a5 && <p><strong>Q5:</strong> {survey.a5}</p>}
+                                                        {survey.a6 && <p><strong>Q6:</strong> {survey.a6}</p>}
+                                                        {survey.a7 && <p><strong>Q7:</strong> {survey.a7}</p>}
+                                                        {survey.a8 && <p><strong>Q8:</strong> {survey.a8}</p>}
+                                                    </div>
+                                                </div>
+
+                                                {/* Notes */}
+                                                {survey.note && (
+                                                    <div className="border-t pt-4 mt-4">
+                                                        <h6 className="font-semibold text-gray-800 mb-2">Notes:</h6>
+                                                        <p className="text-sm text-gray-600 italic">{survey.note}</p>
+                                                    </div>
                                                 )}
                                             </div>
                                         ))}
@@ -426,4 +462,3 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
 };
 
 export default UserProfile;
-

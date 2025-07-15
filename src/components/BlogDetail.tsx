@@ -13,7 +13,8 @@ interface BlogDetailModalProps {
   post: BlogPost;
   children: React.ReactNode;                
 }
-
+//dùng url ảnh 16:9 để hiển thị ảnh đẹp hơn
+//ví dụ : https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimages.wondershare.com%2Ffilmora%2Farticle-images%2F2021%2Fimportance-with-video-walls-1.jpg&f=1&nofb=1&ipt=3fbe08d67057223892ae810119f2b486634a16918b9cd36c5090cefad604661d
 export default function BlogDetailModal({ post, children }: BlogDetailModalProps) {
   const getTypeLabel = (type: string) => {
     switch (type) {
