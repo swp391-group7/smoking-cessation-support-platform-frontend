@@ -184,7 +184,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
     // Overall loading/error state for the modal itself
     if (loadingUserInfo) {
         return (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4 blackdrop-blur-sm">
                 <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl relative">
                     <div className="text-center py-8 text-gray-600">Loading user information...</div>
                 </div>
@@ -194,7 +194,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
 
     if (errorUserInfo) {
         return (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4 blackdrop-blur-sm">
                 <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl relative">
                     <button
                         onClick={onClose}
@@ -213,7 +213,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
 
     if (!userInfo) {
         return (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4 blackdrop-blur-sm">
                 <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl relative">
                     <button
                         onClick={onClose}
@@ -249,7 +249,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] flex items-center justify-center z-50 p-4 blackdrop-blur-sm">
             <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-4xl relative h-[90vh] overflow-y-auto">
                 <button
                     onClick={onClose}
