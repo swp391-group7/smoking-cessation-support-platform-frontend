@@ -56,7 +56,7 @@ const GoogleLoginButton = () => {
       const redirectPath = redirectMap[user.role] ?? "/";
       setTimeout(() => navigate(redirectPath), 700);
     } catch (error: unknown) {
-      let message = "feature under development, please try again later";
+      let message = "Feature under development, please try again later !";
       if (axios.isAxiosError(error) && error.response?.data?.error) {
         message = error.response.data.error;
       }
@@ -68,7 +68,7 @@ const GoogleLoginButton = () => {
   };
 
   const handleError = () => {
-    toast.error("feature under development, please try again later");
+    toast.error("Feature under development, please try again later !");
   };
 
   return (
