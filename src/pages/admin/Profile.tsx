@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 
-type EditingField = "fullName" | "phoneNumber" | "dob" | "email" | null;
+type EditingField = "fullName" | "phoneNumber" | "dob" | "email" | "sex" | null;
 
 export default function UserProfile() {
   const [formData, setFormData] = useState<UserInfo>({
@@ -19,6 +19,7 @@ export default function UserProfile() {
     fullName: "",
     phoneNumber: "",
     dob: "",
+    sex: "",
     avatarPath: "",
     password: ""
   });
@@ -53,6 +54,7 @@ export default function UserProfile() {
       email: rest.email,
       phoneNumber: rest.phoneNumber,
       dob: rest.dob,
+      sex: rest.sex,
       avatarPath: rest.avatarPath,
       };
       
@@ -148,6 +150,8 @@ export default function UserProfile() {
           {renderField("phoneNumber", "Phone", "tel")}
           <hr className="border-gray-200" />
           {renderField("dob", "D.O.B", "date")}
+          <hr className="border-gray-200" />
+          {renderField("sex", "Gender")}
           {/* Password is not directly editable here for security; usually done via a separate "Change Password" flow */}
         </div>
 
