@@ -8,13 +8,16 @@ import {
 import { ChevronDownIcon } from 'lucide-react';
 import { BlogType } from '@/api/blog';
 
-interface FilterBarProps {
-  selectedType: BlogType | 'ALL';
-  onTypeChange: (type: BlogType | 'ALL') => void;
+interface PremiumFilterBarProps {
+  selectedType: BlogType | 'ALL' | 'RECOMMENDED';
+  onTypeChange: (type: BlogType | 'ALL' | 'RECOMMENDED') => void;
 }
 
-export default function PremiumFilterBar({ selectedType, onTypeChange }: FilterBarProps) {
-  const getTypeLabel = (type: BlogType | 'ALL') => {
+export default function PremiumFilterBar({
+  selectedType,
+  onTypeChange,
+}: PremiumFilterBarProps) {
+  const getTypeLabel = (type: BlogType | 'ALL' | 'RECOMMENDED') => {
     switch (type) {
       case BlogType.HEALTH:
         return 'Health';
@@ -24,6 +27,8 @@ export default function PremiumFilterBar({ selectedType, onTypeChange }: FilterB
         return 'Smoke Harm';
       case BlogType.PREMIUM:
         return 'Premium Content';
+      case 'RECOMMENDED':
+        return 'Recommended';
       default:
         return 'Topic';
     }
@@ -31,10 +36,24 @@ export default function PremiumFilterBar({ selectedType, onTypeChange }: FilterB
 
   return (
     <div className="flex flex-wrap gap-2 mb-6">
+      {/* Recommended Button */}
+      <Button
+        variant={selectedType === 'RECOMMENDED' ? 'default' : 'outline'}
+        className={
+          selectedType === 'RECOMMENDED'
+            ? 'bg-yellow-600 text-white'
+            : 'border-yellow-600 text-yellow-600'
+        }
+        onClick={() => onTypeChange('RECOMMENDED')}
+      >
+        Recommended
+      </Button>
+
+      {/* Dropdown Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="border-yellow-600 text-yellow-600 flex items-center gap-2"
           >
             {getTypeLabel(selectedType)}
