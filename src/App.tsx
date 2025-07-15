@@ -10,7 +10,6 @@ import Quit_Plan from './pages/platform/quit_plan.tsx';
 import UserSurvey from './pages/platform/user_survey.tsx';
 import BlogPost from './pages/platform/blog.tsx';
 import UserInfo from './pages/platform/user_info.tsx';
-import UserChatPage from './pages/platform/UserChatPage.tsx';
 
 // Admin pages
 import AdminLayout from './components/admin/Adminlayout.tsx';
@@ -60,7 +59,6 @@ export const App = () => (
           <Route path="/user_info" element={<UserInfo />} />
           <Route path="quit_form" element={<PlanForm />} />
            <Route path="/membership" element={<MembershipPage />} />
-          <Route path="chat" element={<UserChatPage />} />
         </Route>
 
         {/* Admin Route + Bảo vệ bằng role admin */}
