@@ -39,7 +39,7 @@ export default function UserProfile() {
       });
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -84,6 +84,18 @@ export default function UserProfile() {
       <div className="flex flex-col">
         <span className="text-sm font-medium text-gray-500">{label}</span>
         {editing === field ? (
+          field === "sex" ? ( 
+            <select
+              name="sex"
+              value={formData.sex}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm p-2 border"
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          ) : (
           <Input
             type={type}
             name={field!}
@@ -91,6 +103,7 @@ export default function UserProfile() {
             onChange={handleChange}
             className="mt-1"
           />
+          )
         ) : (
           <span className="text-lg font-semibold">{formData[field as keyof UserInfo] || "None"}</span>
         )}
@@ -100,7 +113,7 @@ export default function UserProfile() {
           <Pencil className="h-4 w-4" />
         </Button>
       ) : (
-        <Button onClick={handleSave} className="ml-2">Lưu</Button>
+        <Button onClick={handleSave} className="ml-2">Save</Button>
       )}
     </div>
   );
