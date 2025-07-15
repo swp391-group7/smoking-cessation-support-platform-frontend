@@ -10,6 +10,9 @@ interface LatestPostProps {
   isLoading: boolean;
 }
 
+// Component hiển thị bài viết mới nhất với hiệu ứng loading
+// Sử dụng LatestPostProps để định nghĩa props cho component
+//dao diện bài viết mới nhất, kèm nút đọc thêm
 export default function PremiumLatestPost({ post, isLoading }: LatestPostProps) {
   const getTypeLabel = (type: string) => {
     switch (type) {
@@ -20,7 +23,7 @@ export default function PremiumLatestPost({ post, isLoading }: LatestPostProps) 
       case 'SMOKEHARM':
         return 'Smoke Harm';
       case 'PREMIUM':
-        return 'Premium Content'; // ✅ THÊM label cho premium
+        return 'Premium Content'; // THÊM label cho premium
       default:
         return type;
     }
@@ -35,7 +38,7 @@ export default function PremiumLatestPost({ post, isLoading }: LatestPostProps) 
       case 'SMOKEHARM':
         return 'bg-red-100 text-red-800';
       case 'PREMIUM':
-        return 'bg-yellow-100 text-yellow-800'; // ✅ THÊM màu riêng cho premium
+        return 'bg-yellow-100 text-yellow-800'; //  THÊM màu riêng cho premium
       default:
         return 'bg-gray-100 text-gray-800';
     }

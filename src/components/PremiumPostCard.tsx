@@ -1,14 +1,16 @@
-import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BlogPost } from '@/api/blog';
 import BlogDetailModal from './BlogDetail';
 
+// Định nghĩa giao diện PostCardProps để bao gồm post và isLoading
 interface PostCardProps {
   post?: BlogPost;
   isLoading: boolean;
 }
 
+// Hoàn thành component PremiumPostCard
+// Sử dụng PostCardProps để định nghĩa props cho component
 export default function PremiumPostCard({ post, isLoading }: PostCardProps) {
   const getTypeLabel = (type: string) => {
     switch (type) {
@@ -25,7 +27,9 @@ export default function PremiumPostCard({ post, isLoading }: PostCardProps) {
     }
   };
 
-  const getTypeColor = (type: string) => {
+// Hàm để lấy màu sắc dựa trên loại bài viết
+// Thêm loại PREMIUM vào hàm này
+  const getTypeColor = (type: string) => {  
     switch (type) {
       case 'HEALTH':
         return 'bg-blue-100 text-blue-800';
