@@ -304,6 +304,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                                 <p><strong>Email:</strong> {userInfo.email}</p>
                                 <p><strong>User name:</strong> {userInfo.username}</p>
                                 <p><strong>D.O.B:</strong> {userInfo.dob || "Not updated yet"}</p>
+                                <p><strong>Gender:</strong> {userInfo.sex || "Not updated yet"}</p>
                                 <p><strong>Phone:</strong> {userInfo.phoneNumber || "Not updated yet"}</p>
                             </div>
                         </section>
