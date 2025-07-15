@@ -56,7 +56,7 @@ const GoogleLoginButton = () => {
       const redirectPath = redirectMap[user.role] ?? "/";
       setTimeout(() => navigate(redirectPath), 700);
     } catch (error: unknown) {
-      let message = "Google login failed (server error)";
+      let message = "feature under development, please try again later";
       if (axios.isAxiosError(error) && error.response?.data?.error) {
         message = error.response.data.error;
       }
@@ -68,7 +68,7 @@ const GoogleLoginButton = () => {
   };
 
   const handleError = () => {
-    toast.error("Google login failed");
+    toast.error("feature under development, please try again later");
   };
 
   return (
@@ -76,8 +76,8 @@ const GoogleLoginButton = () => {
       <GoogleLogin
         onSuccess={handleSuccess}
         onError={handleError}
-        useOneTap={false} // ✅ Fix FedCM bug
-        ux_mode="popup"   // ✅ Use popup mode
+        useOneTap={false}
+        ux_mode="popup"  
         theme="outline"
         size="large"
         shape="pill"
