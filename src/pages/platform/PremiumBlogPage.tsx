@@ -15,7 +15,7 @@ export default function BlogPage() {
   const [selectedType, setSelectedType] = useState<BlogType | 'ALL' | 'RECOMMENDED'>('RECOMMENDED');
   const [page, setPage] = useState(1);
 
-  // Load tất cả blogs khi component mount
+  // Load tất cả blogs khi component mount (lấy hết bài viết, bao gồm cả premium)
   useEffect(() => {
     setIsLoading(true);
     fetchAllBlogs()

@@ -1,4 +1,3 @@
-import React from 'react';
 import PremiumPostCard from './PremiumPostCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { BlogPost } from '@/api/blog';
@@ -8,6 +7,10 @@ interface PostGridProps {
   isLoading: boolean;
 }
 
+// Component hiển thị lưới các bài viết gồm cả premium
+// Sử dụng PostGridProps để định nghĩa props cho component
+// Hiển thị skeleton khi isLoading là true     
+//hiển thị bài viết với hiệu ứng loading
 export default function PremiumPostGrid({ posts, isLoading }: PostGridProps) {
   const skeletons = Array.from({ length: 12 }, (_, idx) => ({ id: `skeleton-${idx}` }));
 

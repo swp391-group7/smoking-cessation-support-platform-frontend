@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import FilterBar from '@/components/FilterBar';
 import LatestPost from '@/components/LastestPost';
 import PostGrid from '@/components/PostGrid';
@@ -8,6 +8,8 @@ import { fetchAllBlogs, BlogType } from '@/api/blog';
 
 const POSTS_PER_PAGE = 12;
 
+// Trang blog chính, hiển thị bài viết mới nhất và danh sách bài viết
+// Sử dụng useState và useEffect để quản lý trạng thái và tải dữ liệu
 export default function BlogPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [allPosts, setPosts] = useState<BlogPost[]>([]);
@@ -20,7 +22,7 @@ export default function BlogPage() {
     setIsLoading(true);
     fetchAllBlogs()
   .then((data) => {
-    const nonPremium = data.filter(post => post.blog_type !== BlogType.PREMIUM);
+    const nonPremium = data.filter(post => post.blog_type !== BlogType.PREMIUM); // Lọc bỏ các bài viết premium vì ng dùng thường không có quyền truy cập
     setPosts(nonPremium);
     setFilteredPosts(nonPremium);
   })
