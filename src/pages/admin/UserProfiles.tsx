@@ -384,7 +384,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                                                                 survey.dependencyLevel <= 6 ? 'bg-yellow-100 text-yellow-800' :
                                                                 'bg-red-100 text-red-800'
                                                             }`}>
-                                                                {survey.dependencyLevel}/10 ({getDependencyLevelDescription(survey.dependencyLevel)})
+                                                                {survey.dependencyLevel}/5 ({getDependencyLevelDescription(survey.dependencyLevel)})
                                                             </span>
                                                         </p>
                                                     </div>
