@@ -19,7 +19,7 @@ export const BlogType = {
   HEALTH: 'HEALTH',
   SMOKEQUIT: 'SMOKEQUIT',
   SMOKEHARM: 'SMOKEHARM',
-  ACTIVEUSER: 'PREMIUM', // Thêm type mới cho premium user
+  PREMIUM: 'PREMIUM', // Thêm type mới cho premium user
 } as const;
 
 export type BlogType = typeof BlogType[keyof typeof BlogType];
