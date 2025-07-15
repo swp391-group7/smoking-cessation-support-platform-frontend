@@ -24,6 +24,8 @@ export default function BlogAdminPage() {
         return 'Smoke Quit';
       case BlogType.SMOKEHARM:
         return 'Smoke Harm';
+      case BlogType.PREMIUM: //Thêm dòng này
+        return 'Premium';
       default:
         return type;
     }
@@ -37,6 +39,8 @@ export default function BlogAdminPage() {
         return 'bg-green-100 text-green-800';
       case BlogType.SMOKEHARM:
         return 'bg-red-100 text-red-800';
+      case BlogType.PREMIUM:
+        return 'bg-purple-100 text-purple-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }

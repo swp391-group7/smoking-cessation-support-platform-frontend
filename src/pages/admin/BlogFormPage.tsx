@@ -63,6 +63,8 @@ export default function BlogFormPage() {
         return 'Smoke Quit';
       case BlogType.SMOKEHARM:
         return 'Smoke Harm';
+      case BlogType.PREMIUM: // thêm dòng này
+        return 'Premium';
       default:
         return type;
     }
@@ -110,6 +112,9 @@ export default function BlogFormPage() {
               </SelectItem>
               <SelectItem value={BlogType.SMOKEHARM}>
                 {getBlogTypeLabel(BlogType.SMOKEHARM)}
+              </SelectItem>
+              <SelectItem value={BlogType.PREMIUM}>
+                {getBlogTypeLabel(BlogType.PREMIUM)}
               </SelectItem>
             </SelectContent>
           </Select>
