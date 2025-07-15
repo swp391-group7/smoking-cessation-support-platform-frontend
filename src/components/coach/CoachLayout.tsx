@@ -94,13 +94,6 @@ const menuItems = [
     title: "Communication",
     items: [
       {
-        name: "Messages",
-        path: "/coach/messages",
-        icon: MessageCircle,
-        description: "Chat with clients",
-        badge: "3",
-      },
-      {
         name: "Notifications",
         path: "/coach/notifications",
         icon: Bell,
@@ -128,7 +121,27 @@ const menuItems = [
       },
     ],
   },
+  {
+  title: "Coach Tools",
+  items: [
+    {
+      name: "User List",
+      path: "/coach/clients",
+      icon: Users,
+      description: "Danh sách người dùng",
+      badge: null,
+    },
+    {
+      name: "Chat Room",
+      path: "/coach/chat/1", // default userId ví dụ để hiển thị
+      icon: MessageCircle,
+      description: "Trò chuyện với người dùng",
+      badge: null,
+    },
+  ],
+},
 ];
+
 
 const CoachLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
