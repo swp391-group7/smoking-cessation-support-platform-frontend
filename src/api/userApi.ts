@@ -35,6 +35,7 @@ export interface FrontendUpdateRequestBody {
     phoneNumber?: string;
     dob?: string;
     avatarPath?: string;
+    sex?: string;
     password?: string; 
     roleName?: string;
 }
