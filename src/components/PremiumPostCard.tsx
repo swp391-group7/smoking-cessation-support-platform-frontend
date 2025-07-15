@@ -63,8 +63,8 @@ export default function PremiumPostCard({ post, isLoading }: PostCardProps) {
       <Card className="h-80 cursor-pointer hover:shadow-lg transition-shadow duration-200">
         <CardContent className="p-4">
           <img
-            src={post.imageUrl}
-            alt={post.title}
+            src={post.imageUrl} // Đảm bảo post có thuộc tính imageUrl
+            alt={post.title} // Đảm bảo post có thuộc tính title
             className="w-full h-40 object-cover rounded mb-4"
           />
           <div className="flex items-center gap-2 mb-2">

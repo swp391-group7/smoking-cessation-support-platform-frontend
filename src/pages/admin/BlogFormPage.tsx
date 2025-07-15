@@ -20,6 +20,9 @@ interface BlogFormValues {
   blogType: BlogType;
 }
 
+// Trang quản lý blog, cho phép tạo mới hoặc chỉnh sửa bài viết
+// Sử dụng useForm để quản lý form và useParams để lấy ID bài viết nếu
+
 export default function BlogFormPage() {
   const { id } = useParams();
   const isEdit = Boolean(id);
@@ -55,6 +58,7 @@ export default function BlogFormPage() {
     }
   };
 
+// Sử dụng useNavigate để điều hướng sau khi lưu bài viết
   const getBlogTypeLabel = (type: BlogType) => {
     switch (type) {
       case BlogType.HEALTH:
@@ -69,7 +73,7 @@ export default function BlogFormPage() {
         return type;
     }
   };
-
+// Sử dụng useNavigate để điều hướng sau khi lưu bài viết
   return (
     <div className="max-w-2xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">{isEdit ? 'Edit Blog' : 'Create Blog'}</h1>
