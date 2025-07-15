@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BlogPost } from '@/api/blog';
@@ -9,6 +8,7 @@ interface PostCardProps {
   isLoading: boolean;
 }
 
+// Sử dụng PostCardProps để định nghĩa props cho component
 export default function PostCard({ post, isLoading }: PostCardProps) {
   const getTypeLabel = (type: string) => {
     switch (type) {
@@ -23,6 +23,7 @@ export default function PostCard({ post, isLoading }: PostCardProps) {
     }
   };
 
+  // Hàm để lấy màu sắc dựa trên loại bài viết
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'HEALTH':

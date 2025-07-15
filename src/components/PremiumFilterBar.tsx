@@ -26,7 +26,7 @@ export default function PremiumFilterBar({
       case BlogType.SMOKEHARM:
         return 'Smoke Harm';
       case BlogType.PREMIUM:
-        return 'Premium Content';
+        return 'Premium Content'; // THÊM label cho premium
       case 'RECOMMENDED':
         return 'Recommended';
       default:
@@ -49,7 +49,8 @@ export default function PremiumFilterBar({
         Recommended
       </Button>
 
-      {/* Dropdown Menu */}
+
+      {/* Dropdown Menu, thêm premium so với filterbar */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

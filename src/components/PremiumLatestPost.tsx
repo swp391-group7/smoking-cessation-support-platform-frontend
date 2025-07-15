@@ -1,4 +1,3 @@
-import React from 'react';
 import type { BlogPost } from '@/api/blog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -57,7 +56,7 @@ export default function PremiumLatestPost({ post, isLoading }: LatestPostProps) 
       </div>
     );
   }
-
+//hơi khác màu với regular user là màu vàng thay vì màu xanh (nút đọc thêm)
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
       <div className="mb-8 flex flex-col md:flex-row bg-white shadow-md rounded-lg overflow-hidden">

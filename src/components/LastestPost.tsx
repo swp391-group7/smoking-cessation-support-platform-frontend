@@ -1,4 +1,3 @@
-import React from 'react';
 import type { BlogPost } from '@/api/blog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,6 +9,9 @@ interface LatestPostProps {
   isLoading: boolean;
 }
 
+// Component hiển thị bài viết mới nhất với hiệu ứng loading
+// Sử dụng LatestPostProps để định nghĩa props cho component
+// Dao diện bài viết mới nhất, kèm nút đọc thêm
 export default function LatestPost({ post, isLoading }: LatestPostProps) {
   const getTypeLabel = (type: string) => {
     switch (type) {
@@ -51,6 +53,7 @@ export default function LatestPost({ post, isLoading }: LatestPostProps) {
     );
   }
 
+//giao diện bài viết mới nhất
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
       <div className="mb-8 flex flex-col md:flex-row bg-white shadow-md rounded-lg overflow-hidden">
