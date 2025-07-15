@@ -11,10 +11,12 @@ import type { BlogPost } from '@/api/blog';
 
 interface BlogDetailModalProps {
   post: BlogPost;
-  children: React.ReactNode;                
+  children: React.ReactNode;
 }
-//dùng url ảnh 16:9 để hiển thị ảnh đẹp hơn
-//ví dụ : https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimages.wondershare.com%2Ffilmora%2Farticle-images%2F2021%2Fimportance-with-video-walls-1.jpg&f=1&nofb=1&ipt=3fbe08d67057223892ae810119f2b486634a16918b9cd36c5090cefad604661d
+
+// dùng url ảnh 16:9 để hiển thị ảnh đẹp hơn
+// ví dụ: https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimages.wondershare.com%2Ffilmora%2Farticle-images%2F2021%2Fimportance-with-video-walls-1.jpg&f=1&nofb=1&ipt=...
+
 export default function BlogDetailModal({ post, children }: BlogDetailModalProps) {
   const getTypeLabel = (type: string) => {
     switch (type) {
@@ -24,8 +26,20 @@ export default function BlogDetailModal({ post, children }: BlogDetailModalProps
         return 'Smoke Quit';
       case 'SMOKEHARM':
         return 'Smoke Harm';
+      case 'PREMIUM':
+        return 'Premium Content'; //  Thêm dòng này
       default:
         return type;
+    }
+  };
+
+  // style riêng cho premium
+  const getBadgeStyle = (type: string) => {
+    switch (type) {
+      case 'PREMIUM':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-green-100 text-green-800';
     }
   };
 
@@ -46,7 +60,7 @@ export default function BlogDetailModal({ post, children }: BlogDetailModalProps
               className="w-full h-64 object-cover rounded-lg"
             />
             <div className="flex items-center gap-4 text-sm text-gray-500">
-              <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">
+              <span className={`${getBadgeStyle(post.blog_type)} px-2 py-1 rounded-full`}>
                 {getTypeLabel(post.blog_type)}
               </span>
               <span>{new Date(post.createdAt).toLocaleDateString()}</span>

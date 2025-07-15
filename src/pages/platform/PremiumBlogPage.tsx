@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import FilterBar from '@/components/FilterBar';
-import LatestPost from '@/components/LastestPost';
-import PostGrid from '@/components/PostGrid';
+import FilterBar from '@/components/PremiumFilterBar';
+import LatestPost from '@/components/PremiumLatestPost';
+import PostGrid from '@/components/PremiumPostGrid';
 import PaginationControl from '@/components/PaginationControl';
 import type { BlogPost } from '@/api/blog';
 import { fetchAllBlogs, BlogType } from '@/api/blog';
@@ -19,11 +19,10 @@ export default function BlogPage() {
   useEffect(() => {
     setIsLoading(true);
     fetchAllBlogs()
-  .then((data) => {
-    const nonPremium = data.filter(post => post.blog_type !== BlogType.PREMIUM);
-    setPosts(nonPremium);
-    setFilteredPosts(nonPremium);
-  })
+      .then((data) => {
+        setPosts(data);
+        setFilteredPosts(data);
+      })
       .finally(() => setIsLoading(false));
   }, []);
 
