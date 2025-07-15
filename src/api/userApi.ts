@@ -23,6 +23,7 @@ export interface UserInfo  {
     phoneNumber: string;
     dob: string;
     avatarPath: string;
+    sex: string;
     password?: string;
     roleName?: string;
 }
