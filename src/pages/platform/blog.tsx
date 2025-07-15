@@ -19,10 +19,11 @@ export default function BlogPage() {
   useEffect(() => {
     setIsLoading(true);
     fetchAllBlogs()
-      .then((data) => {
-        setPosts(data);
-        setFilteredPosts(data);
-      })
+  .then((data) => {
+    const nonPremium = data.filter(post => post.blog_type !== BlogType.PREMIUM);
+    setPosts(nonPremium);
+    setFilteredPosts(nonPremium);
+  })
       .finally(() => setIsLoading(false));
   }, []);
 
