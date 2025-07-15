@@ -1,22 +1,21 @@
+// src/pages/platform/PlanFormGenForMember.tsx
 import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Stage, PlanType } from "@/api/plantype";
-import { Button } from "@/components/ui/button";
-import { DatePicker } from "@/components/ui/date-picker";
-import { StageItem } from "./StageItem";
-// sửa thành
 import {
   deleteDraftPlan,
   deleteDraftSteps,
   createDefaultStep,
   deleteStepByNumber,
   updateStepByNumber,
-  updateLatestDraftPlan
+  updateLatestDraftPlan,
 } from "@/api/userPlanApi";
-import type { UpdateStepData } from "@/api/userPlanApi";
+import type { GeneratedPlan, GeneratedStep, UpdateStepData } from "@/api/userPlanApi";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { StageItem } from "./StageItem";
 import { toast } from "sonner";
 
 interface PlanFormType {
@@ -24,42 +23,62 @@ interface PlanFormType {
   overallEnd: Date | null;
 }
 
-export const PlanForm: React.FC = () => {
-  const { state } = useLocation();
-  const planType = state?.planType as PlanType;
-  const planId = state?.planId as string || sessionStorage.getItem('currentDraftPlanId');
-  const navigate = useNavigate();
+interface Stage {
+  id: string;
+  title: string;
+  description: string;
+  start: Date;
+  end: Date | null;
+  targetCigarettes: number;
+}
 
- const today = new Date();
-today.setDate(today.getDate() + 1);
-today.setHours(0, 0, 0, 0);
+export const PlanFormGenForMember: React.FC = () => {
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const samplePlan = state?.samplePlan as GeneratedPlan;
+  const planId = samplePlan?.id;
+
+  // Khởi tạo ngày today = ngày kế tiếp
+  const today = new Date();
+  today.setDate(today.getDate() + 1);
+  today.setHours(0, 0, 0, 0);
 
   const { handleSubmit, control, watch, reset } = useForm<PlanFormType>({
-    defaultValues: { overallStart: today, overallEnd: null }
+    defaultValues: {
+      overallStart: new Date(samplePlan?.startDate || today),
+      overallEnd: new Date(samplePlan?.targetDate || today),
+    },
   });
 
   const [stages, setStages] = useState<Stage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
   const overallStart = watch("overallStart");
   const overallEnd = watch("overallEnd");
 
-  // Khởi tạo stage đầu tiên
+  // Chuyển đổi GeneratedStep thành Stage
+  const convertStepToStage = (step: GeneratedStep, index: number): Stage => ({
+    id: step.id,
+    title: `Giai đoạn ${index + 1}${index === 0 ? ": Bắt đầu hành trình" : ""}`,
+    description: step.stepDescription,
+    start: new Date(step.stepStartDate),
+    end: new Date(step.stepEndDate),
+    targetCigarettes: step.targetCigarettesPerDay,
+  });
+
+  // Lấy list steps từ samplePlan và chuyển đổi thành stages
   useEffect(() => {
-    if (overallStart && stages.length === 0) {
-      setStages([{
-        id: `stage-${Date.now()}`,
-        title: "Giai đoạn 1: Bắt đầu hành trình",
-        description: "Xác định mục tiêu chính và bước đầu tiên của bạn.",
-        start: overallStart,
-        end: null,
-        targetCigarettes: 20
-      }]);
+    if (samplePlan?.steps) {
+      const convertedStages = samplePlan.steps.map((step, index) => 
+        convertStepToStage(step, index)
+      );
+      setStages(convertedStages);
     }
-  }, [overallStart, stages.length]);
+  }, [samplePlan]);
 
   // Đảm bảo ngày bắt đầu stage 1 = ngày bắt đầu plan
   useEffect(() => {
-    if (overallStart && stages[0]?.start?.getTime() !== overallStart.getTime()) {
+    if (overallStart && stages.length > 0 && stages[0]?.start?.getTime() !== overallStart.getTime()) {
       setStages(prev => prev.map((s, idx) => idx === 0 ? { ...s, start: overallStart } : s));
     }
   }, [overallStart, stages]);
@@ -83,11 +102,11 @@ today.setHours(0, 0, 0, 0);
       for (let i = 0; i < stages.length; i++) {
         const stage = stages[i];
         const stepData: UpdateStepData = {
-          stepStartDate: stage.start!.toISOString().split('T')[0],
-          stepEndDate:   stage.end!.toISOString().split('T')[0],
-          targetCigarettesPerDay: stage.targetCigarettes ?? 0,
+          stepStartDate: stage.start.toISOString().split('T')[0],
+          stepEndDate: stage.end!.toISOString().split('T')[0],
+          targetCigarettesPerDay: stage.targetCigarettes,
           stepDescription: stage.description,
-          status: "active"  // hoặc lấy từ state nếu bạn quản lý status động
+          status: "active"
         };
         await updateStepByNumber(planId, i + 1, stepData);
       }
@@ -99,9 +118,6 @@ today.setHours(0, 0, 0, 0);
       });
 
       showSuccess("Kế hoạch đã được lưu thành công!");
-      
-      // Xóa planId khỏi sessionStorage
-      sessionStorage.removeItem('currentDraftPlanId');
       
       // Reset form
       reset({ overallStart: today, overallEnd: null });
@@ -153,7 +169,7 @@ today.setHours(0, 0, 0, 0);
         description: "",
         start: newStart,
         end: null,
-        targetCigarettes: Math.max(0, last.targetCigarettes! - 5)
+        targetCigarettes: Math.max(0, last.targetCigarettes - 5)
       }]);
       
       showSuccess(`Đã thêm giai đoạn ${stages.length + 1}`);
@@ -185,7 +201,7 @@ today.setHours(0, 0, 0, 0);
       // Cập nhật lại state
       const newStages = stages.filter(s => s.id !== id);
       
-      // Cập nhật lại ngày bắt đầu cho các stage sau
+      // Cập nhật lại ngày bắt đầu và title cho các stage sau
       const updatedStages = newStages.map((stage, index) => {
         if (index === 0) {
           // Stage đầu tiên luôn bắt đầu từ ngày bắt đầu plan
@@ -257,14 +273,6 @@ today.setHours(0, 0, 0, 0);
     return m;
   };
 
-  if (!planType) {
-    return <div className="text-center text-red-500 mt-10">Thông tin kế hoạch không hợp lệ.</div>;
-  }
-
-  if (!planId) {
-    return <div className="text-center text-red-500 mt-10">Không tìm thấy ID kế hoạch.</div>;
-  }
-
   const handleDeleteAndBack = async () => {
     if (!planId) {
       navigate(-1);
@@ -277,8 +285,6 @@ today.setHours(0, 0, 0, 0);
       await deleteDraftSteps(planId);
       // Sau đó xóa draft plan
       await deleteDraftPlan();
-      // Xóa planId khỏi sessionStorage
-      sessionStorage.removeItem('currentDraftPlanId');
       navigate(-1);
     } catch (error) {
       console.error('Error deleting draft:', error);
@@ -287,6 +293,14 @@ today.setHours(0, 0, 0, 0);
       setIsLoading(false);
     }
   };
+
+  if (!samplePlan) {
+    return <div className="text-center text-red-500 mt-10">Không tìm thấy kế hoạch mẫu.</div>;
+  }
+
+  if (!planId) {
+    return <div className="text-center text-red-500 mt-10">Không tìm thấy ID kế hoạch.</div>;
+  }
 
   return (
     <motion.div
@@ -299,7 +313,7 @@ today.setHours(0, 0, 0, 0);
         {/* Header Section */}
         <div className="flex justify-between items-center border-b pb-4 mb-4 border-gray-200">
           <h2 className="text-3xl font-bold text-green-700">
-            {planType === "Gradual Reduction" ? "Kế Hoạch Giảm Dần" : "Kế Hoạch Cai Ngay Lập Tức"}
+            Kế Hoạch Giảm Dần - Kế Hoạch Mẫu
           </h2>
           <Button
             className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full px-4 py-2 transition-colors duration-200 flex items-center space-x-2"
@@ -313,98 +327,110 @@ today.setHours(0, 0, 0, 0);
           </Button>
         </div>
 
-        {/* Overall Dates Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border border-blue-100 rounded-lg bg-blue-50">
-          <div>
-            <label className="block text-sm font-medium text-blue-800 mb-2">Ngày bắt đầu kế hoạch</label>
-            <Controller
-              control={control}
-              name="overallStart"
-              defaultValue={today}
-              render={({ field }) => (
-                <DatePicker
-                  selected={field.value}
-                  onChange={field.onChange}
-                  minDate={today}
-                  className="w-full border border-blue-300 rounded-md p-2.5 bg-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Chọn ngày"
-                  disabled
-                  preventKeyboardInput
-                />
-              )}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-blue-800 mb-2">
-              Ngày dự kiến cai (Tối thiểu 2 tuần)
-            </label>
-            <Controller
-              control={control}
-              name="overallEnd"
-              render={({ field }) => (
-                <DatePicker
-                  selected={field.value}
-                  onChange={field.onChange}
-                  minDate={getMinOverallEndDate()}
-                  className="w-full border border-blue-300 rounded-md p-2.5 bg-white shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Chọn ngày"
-                />
-              )}
-            />
-          </div>
+        {/* Sample Plan Info */}
+        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <h3 className="text-lg font-semibold text-blue-800 mb-2">Thông tin kế hoạch mẫu</h3>
+          <p className="text-blue-700 text-sm">
+            Đây là kế hoạch mẫu được tạo tự động dựa trên phương pháp <strong>Giảm Dần</strong>. 
+            Bạn có thể chỉnh sửa các giai đoạn theo nhu cầu của mình.
+          </p>
         </div>
 
-        {/* Stages Section */}
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold text-gray-800">Các giai đoạn cai</h3>
-            <Button
-              onClick={addStage}
-              disabled={!overallStart || !overallEnd || isLoading}
-              className="bg-green-600 hover:bg-green-700 text-white rounded-md px-5 py-2 transition-colors duration-200 shadow-md disabled:opacity-50"
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Overall Dates Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border border-blue-100 rounded-lg bg-blue-50">
+            <div>
+              <label className="block text-sm font-medium text-blue-800 mb-2">Ngày bắt đầu kế hoạch</label>
+              <Controller
+                control={control}
+                name="overallStart"
+                render={({ field }) => (
+                  <DatePicker
+                    selected={field.value}
+                    onChange={field.onChange}
+                    minDate={today}
+                    className="w-full border border-blue-300 rounded-md p-2.5 bg-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Chọn ngày"
+                    disabled
+                    preventKeyboardInput
+                  />
+                )}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-blue-800 mb-2">
+                Ngày dự kiến cai (Tối thiểu 2 tuần)
+              </label>
+              <Controller
+                control={control}
+                name="overallEnd"
+                render={({ field }) => (
+                  <DatePicker
+                    selected={field.value}
+                    onChange={field.onChange}
+                    minDate={getMinOverallEndDate()}
+                    className="w-full border border-blue-300 rounded-md p-2.5 bg-white shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Chọn ngày"
+                  />
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Stages Section */}
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold text-gray-800">Các giai đoạn cai</h3>
+              <Button
+                type="button"
+                onClick={addStage}
+                disabled={!overallStart || !overallEnd || isLoading}
+                className="bg-green-600 hover:bg-green-700 text-white rounded-md px-5 py-2 transition-colors duration-200 shadow-md disabled:opacity-50"
+              >
+                + Thêm Giai đoạn
+              </Button>
+            </div>
+
+            <AnimatePresence>
+              <div className="space-y-4">
+                {stages.map((stage, index) => (
+                  <motion.div
+                    key={stage.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <StageItem
+                      stage={stage}
+                      index={index}
+                      onUpdate={updateStage}
+                      onRemove={removeStage}
+                      overallStartDate={overallStart}
+                      overallEndDate={overallEnd}
+                      prevStageEnd={index > 0 ? stages[index - 1]?.end : null}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </AnimatePresence>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-4 mt-8 pt-4 border-t border-gray-200">
+            <Button 
+              type="submit"
+              disabled={isLoading}
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-6 py-2 shadow-md transition-colors duration-200 disabled:opacity-50"
             >
-              + Thêm Giai đoạn
+              {isLoading ? "Đang lưu..." : "Lưu Kế Hoạch"}
             </Button>
           </div>
-
-          <AnimatePresence>
-            <div className="space-y-4">
-              {stages.map((stage, index) => (
-                <motion.div
-                  key={stage.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <StageItem
-                    stage={stage}
-                    index={index}
-                    planType={planType}
-                    onUpdate={updateStage}
-                    onRemove={removeStage}
-                    overallStartDate={overallStart}
-                    overallEndDate={overallEnd}
-                    prevStageEnd={index > 0 ? stages[index - 1]?.end : null}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </AnimatePresence>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-end space-x-4 mt-8 pt-4 border-t border-gray-200">
-          <Button 
-            onClick={handleSubmit(onSubmit)} 
-            disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-6 py-2 shadow-md transition-colors duration-200 disabled:opacity-50"
-          >
-            {isLoading ? "Đang lưu..." : "Lưu Kế Hoạch"}
-          </Button>
-        </div>
+        </form>
       </div>
     </motion.div>
   );
 };
+
+export default PlanFormGenForMember;

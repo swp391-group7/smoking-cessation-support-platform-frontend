@@ -46,7 +46,7 @@ const LoginPage: React.FC = () => {
       const redirectPath = {
         admin: "/admin/dashboard",
         coach: "/coach/dashboard",
-        user: "/quit_progress",
+        user: "/", // Or "/" depending on your design
       }[user.role] || "/";
 
       setTimeout(() => navigate(redirectPath), 700);

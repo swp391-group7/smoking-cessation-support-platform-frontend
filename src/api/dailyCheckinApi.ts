@@ -36,10 +36,26 @@ export interface DailyCheckinDto {
     note : string;
     }
     
-// 1. Create a new check-in (POST /cessation-progress/create)
+    // --- Interface cho Badge ---
+export interface BadgeDto {
+  id: string;
+  badgeName: string;
+  badgeDescription: string;
+  badgeImageUrl: string;
+  condition: number;
+}
+export interface CreateCheckinResponse {
+  progress: DailyCheckinDto;
+  newBadges: BadgeDto[];
+}
+
+// --- Gọi API POST /cessation-progress/create ---
 export const createDailyCheckin = async (
   payload: CreateDailyCheckinRequest
-): Promise<DailyCheckinDto> => {
-  const response = await api.post<DailyCheckinDto>('/cessation-progress/create', payload);
+): Promise<CreateCheckinResponse> => {
+  const response = await api.post<CreateCheckinResponse>(
+    '/cessation-progress/create',
+    payload
+  );
   return response.data;
 };

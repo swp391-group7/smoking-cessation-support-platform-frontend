@@ -14,8 +14,11 @@ const MembershipPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PackageType | null>(null);
   const [paymentLoading, setPaymentLoading] = useState<boolean>(false);
-  const [activePackage, setActivePackage] = useState<MembershipPackageDto | null>(null)
-  const [checkingActive, setCheckingActive] = useState(true)
+  const [activePackage, setActivePackage] = useState<MembershipPackageDto | null>(null);
+  const [checkingActive, setCheckingActive] = useState(true);
+  // New state for success dialog
+  const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
+
   // Ref để tránh double execution trong StrictMode
   const paymentProcessedRef = useRef<boolean>(false);
 
@@ -29,18 +32,17 @@ const MembershipPage: React.FC = () => {
     }
   }, []);
 
- useEffect(() => {
-  getActiveMembershipPackage()
-    .then(pkg => {
-      console.log('Active package response:', pkg);
-      setActivePackage(pkg);
-    })
-    .catch(err => {
-      if (err.response?.status !== 404) console.error(err);
-    })
-    .finally(() => setCheckingActive(false));
-}, []);
-
+  useEffect(() => {
+    getActiveMembershipPackage()
+      .then(pkg => {
+        console.log('Active package response:', pkg);
+        setActivePackage(pkg);
+      })
+      .catch(err => {
+        if (err.response?.status !== 404) console.error(err);
+      })
+      .finally(() => setCheckingActive(false));
+  }, []);
 
   // Handle PayPal redirect and execute payment
   useEffect(() => {
@@ -54,17 +56,20 @@ const MembershipPage: React.FC = () => {
 
     if (success === 'true' && paymentId && payerId) {
       paymentProcessedRef.current = true;
-      
+
       (async () => {
         try {
           setPaymentLoading(true);
-          
+
           // Clear URL ngay lập tức để tránh re-run
           window.history.replaceState({}, '', '/membership');
-          
+
           await executePayment(paymentId, payerId);
-          alert('Payment successful! Welcome to your new membership plan.');
-          navigate('/membership', { replace: true });
+          // Show the custom success dialog instead of alert
+          setShowSuccessDialog(true);
+          // Re-fetch active package to reflect new subscription
+          getActiveMembershipPackage().then(setActivePackage).catch(console.error);
+
         } catch (e) {
           console.error('Payment execution error:', e);
           alert('Error finalizing payment. Please contact support.');
@@ -74,12 +79,12 @@ const MembershipPage: React.FC = () => {
       })();
     } else if (success === 'false') {
       paymentProcessedRef.current = true;
-      
+
       // Clear URL ngay lập tức
       window.history.replaceState({}, '', '/membership');
       alert('Payment was cancelled. You can try again anytime.');
     }
-  }, [search, navigate]);
+  }, [search]); // Removed navigate from dependency array as it's not directly used here anymore
 
   // Fetch plans
   useEffect(() => {
@@ -112,7 +117,7 @@ const MembershipPage: React.FC = () => {
     try {
       setPaymentLoading(true);
       const userId = getUserId();
-      
+
       if (!userId) {
         alert('Please log in to subscribe to a membership plan.');
         navigate('/login');
@@ -137,9 +142,9 @@ const MembershipPage: React.FC = () => {
       }
     } catch (err) {
       console.error('Payment creation error:', err);
-      
+
       let errorMessage = 'Failed to initiate payment. Please try again.';
-      
+
       if (err instanceof Error) {
         if (err.message.includes('401')) {
           errorMessage = 'Session expired. Please log in again.';
@@ -150,7 +155,7 @@ const MembershipPage: React.FC = () => {
           errorMessage = `Payment error: ${err.message}`;
         }
       }
-      
+
       alert(errorMessage);
     } finally {
       setPaymentLoading(false);
@@ -174,13 +179,22 @@ const MembershipPage: React.FC = () => {
       if (event.key === 'Escape' && selectedPlan && !paymentLoading) {
         setSelectedPlan(null);
       }
+      if (event.key === 'Escape' && showSuccessDialog) { // Allow escape to close success dialog too
+        setShowSuccessDialog(false);
+      }
     };
 
-    if (selectedPlan) {
+    if (selectedPlan || showSuccessDialog) {
       document.addEventListener('keydown', handleEscape);
       return () => document.removeEventListener('keydown', handleEscape);
     }
-  }, [selectedPlan, paymentLoading]);
+  }, [selectedPlan, paymentLoading, showSuccessDialog]);
+
+  // Navigate to Coach Selection Page
+  const goToCoachSelection = useCallback(() => {
+    setShowSuccessDialog(false); // Close the dialog
+    navigate('/coach_select'); // Adjust this path if your coach selection page has a different route
+  }, [navigate]);
 
   if (paymentLoading) {
     return (
@@ -231,67 +245,67 @@ const MembershipPage: React.FC = () => {
         </p>
 
         <div className="flex flex-col lg:flex-row justify-center items-stretch gap-8 mb-12">
-  {plans.map(plan => {
-     const activeId = activePackage?.packagetTypeId ?? activePackage?.packageTypeId;
-     const isActive = activePackage?.active === true && plan.id === activeId;
+          {plans.map(plan => {
+            const activeId = activePackage?.packagetTypeId ?? activePackage?.packageTypeId;
+            const isActive = activePackage?.active === true && plan.id === activeId;
 
-    return (
-      <div
-        key={plan.id}
-        className="flex-1 flex flex-col bg-white rounded-2xl shadow-lg p-6 border-2 border-green-100 hover:border-green-300 transition-all duration-300"
-      >
-        <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
-          {plan.name}
-        </h2>
-        <p className="text-4xl text-green-600 font-bold mb-4">
-          ${plan.price}
-          {plan.price > 0 && (
-            <span className="text-lg text-gray-500">/month</span>
-          )}
-        </p>
-        <p className="text-gray-600 mb-6 flex-grow">{plan.description}</p>
+            return (
+              <div
+                key={plan.id}
+                className="flex-1 flex flex-col bg-white rounded-2xl shadow-lg p-6 border-2 border-green-100 hover:border-green-300 transition-all duration-300"
+              >
+                <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
+                  {plan.name}
+                </h2>
+                <p className="text-4xl text-green-600 font-bold mb-4">
+                  ${plan.price}
+                  {plan.price > 0 && (
+                    <span className="text-lg text-gray-500">/month</span>
+                  )}
+                </p>
+                <p className="text-gray-600 mb-6 flex-grow">{plan.description}</p>
 
-        <ul className="text-gray-700 mb-8 space-y-3">
-          {mapFeatures(plan).map((feature, idx) => (
-            <li key={idx} className="flex items-start">
-              <CheckCircleIcon className="w-6 h-6 text-green-500 mr-3 flex-shrink-0" />
-              <span className="text-base">{feature}</span>
-            </li>
-          ))}
-        </ul>
+                <ul className="text-gray-700 mb-8 space-y-3">
+                  {mapFeatures(plan).map((feature, idx) => (
+                    <li key={idx} className="flex items-start">
+                      <CheckCircleIcon className="w-6 h-6 text-green-500 mr-3 flex-shrink-0" />
+                      <span className="text-base">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
 
-        <button
-          onClick={() => handleSignUpClick(plan)}
-          disabled={paymentLoading || checkingActive || isActive}
-          className={`w-full py-3 rounded-full font-semibold text-lg transition-all duration-300 shadow-md
-            ${
-              isActive
-                ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                : plan.price === 0
-                  ? 'bg-gray-300 text-gray-600 hover:bg-gray-400'
-                  : 'bg-green-600 text-white hover:bg-green-700 hover:scale-105'
-            }
-            disabled:opacity-50 disabled:cursor-not-allowed
-          `}
-        >
-          {isActive
-            ? 'Active'
-            : plan.price === 0
-              ? 'Start Free'
-              : 'Subscribe'
-          }
-        </button>
-      </div>
-    );
-  })}
-</div>
+                <button
+                  onClick={() => handleSignUpClick(plan)}
+                  disabled={paymentLoading || checkingActive || isActive}
+                  className={`w-full py-3 rounded-full font-semibold text-lg transition-all duration-300 shadow-md
+                    ${
+                      isActive
+                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                        : plan.price === 0
+                          ? 'bg-gray-300 text-gray-600 hover:bg-gray-400'
+                          : 'bg-green-600 text-white hover:bg-green-700 hover:scale-105'
+                    }
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                  `}
+                >
+                  {isActive
+                    ? 'Active'
+                    : plan.price === 0
+                      ? 'Start Free'
+                      : 'Subscribe'
+                  }
+                </button>
+              </div>
+            );
+          })}
+        </div>
 
         {selectedPlan && (
-          <div 
+          <div
             className="fixed inset-0 bg-opacity-30 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
             onClick={handleCloseModal}
           >
-            <div 
+            <div
               className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-left relative animate-fade-in-up"
               onClick={(e) => e.stopPropagation()}
             >
@@ -337,16 +351,53 @@ const MembershipPage: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <img 
-                        src="https://www.paypalobjects.com/digitalassets/c/website/marketing/na/us/logos-badges/ppc_white.png" 
-                        alt="PayPal" 
-                        className="h-6 mr-2" 
+                      <img
+                        src="https://www.paypalobjects.com/digitalassets/c/website/marketing/na/us/logos-badges/ppc_white.png"
+                        alt="PayPal"
+                        className="h-6 mr-2"
                       />
                       Pay with PayPal
                     </>
                   )}
                 </button>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Success Dialog */}
+        {showSuccessDialog && (
+          <div
+            className="fixed inset-0 bg-opacity-30 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
+            onClick={() => setShowSuccessDialog(false)} // Close on overlay click
+          >
+            <div
+              className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center relative animate-fade-in-up"
+              onClick={(e) => e.stopPropagation()} // Prevent closing on content click
+            >
+              <button
+                onClick={() => setShowSuccessDialog(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold transition-colors"
+                aria-label="Close success message"
+              >
+                ×
+              </button>
+              <CheckCircleIcon className="w-20 h-20 text-green-500 mx-auto mb-6" />
+              <h2 className="text-3xl font-bold text-green-700 mb-4">
+                Congratulations!
+              </h2>
+              <p className="text-lg text-gray-700 mb-6">
+                You have successfully subscribed to your new membership plan! All app features are now unlocked.
+              </p>
+              <p className="text-md text-gray-600 mb-8">
+                To continue your journey, please select a coach to accompany you throughout this plan.
+              </p>
+              <button
+                onClick={goToCoachSelection}
+                className="w-full bg-green-600 text-white py-3 rounded-full font-semibold text-lg hover:bg-green-700 transition-colors duration-300 shadow-md"
+              >
+                Select Your Coach
+              </button>
             </div>
           </div>
         )}

@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { X } from "lucide-react";
 import { getUserPlans } from "@/api/userPlanApi";
 import type { UserPlan } from "@/api/userPlanApi";
-
+import { hasActiveMembership } from '@/api/membershipApi';
 // ID khảo sát cố định
 const FIXED_SURVEY_ID = "bff1b96e-74e9-46a3-b46e-1b625531c1ad";
 
@@ -72,6 +72,9 @@ const UserSurveyForm: React.FC = () => {
  // Thêm state để check xem có plan nào đang hoạt động không
   const [showActivePlanDialog, setShowActivePlanDialog] = useState(false);
   const [showConfirmRestart, setShowConfirmRestart] = useState(false);
+
+  const [showMembershipDialog, setShowMembershipDialog] = useState(false);
+
   useEffect(() => {
     const checkExistingSurvey = async () => {
       try {
@@ -187,6 +190,7 @@ const UserSurveyForm: React.FC = () => {
     return Object.keys(newErr).length === 0;
   };
 
+// Updated handleSubmit with active membership check
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setSubmissionError(null);
@@ -198,7 +202,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   setIsLoading(true);
 
   try {
-    // Ánh xạ formData sang payload CreateSurveyRequest
+    // 1) Map formData to payload
     const payload: CreateSurveyRequest = {
       smokeDuration: formData.smoke_duration,
       cigarettesPerDay: formData.cigarettes_per_day,
@@ -207,25 +211,24 @@ const handleSubmit = async (e: React.FormEvent) => {
       healthStatus: formData.health_status,
       dependencyLevel: formData.dependency_level,
       note: formData.note,
-      a1: surveyQuestions.find(q => q.key === "a1")?.options.find(opt => opt.point === formData.a1)?.text || "",
-      a2: surveyQuestions.find(q => q.key === "a2")?.options.find(opt => opt.point === formData.a2)?.text || "",
-      a3: surveyQuestions.find(q => q.key === "a3")?.options.find(opt => opt.point === formData.a3)?.text || "",
-      a4: surveyQuestions.find(q => q.key === "a4")?.options.find(opt => opt.point === formData.a4)?.text || "",
-      a5: surveyQuestions.find(q => q.key === "a5")?.options.find(opt => opt.point === formData.a5)?.text || "",
-      a6: surveyQuestions.find(q => q.key === "a6")?.options.find(opt => opt.point === formData.a6)?.text || "",
-      a7: surveyQuestions.find(q => q.key === "a7")?.options.find(opt => opt.point === formData.a7)?.text || "",
-      a8: surveyQuestions.find(q => q.key === "a8")?.options.find(opt => opt.point === formData.a8)?.text || "",
+      a1: surveyQuestions.find(q => q.key === "a1")?.options.find(o => o.point === formData.a1)?.text || "",
+      a2: surveyQuestions.find(q => q.key === "a2")?.options.find(o => o.point === formData.a2)?.text || "",
+      a3: surveyQuestions.find(q => q.key === "a3")?.options.find(o => o.point === formData.a3)?.text || "",
+      a4: surveyQuestions.find(q => q.key === "a4")?.options.find(o => o.point === formData.a4)?.text || "",
+      a5: surveyQuestions.find(q => q.key === "a5")?.options.find(o => o.point === formData.a5)?.text || "",
+      a6: surveyQuestions.find(q => q.key === "a6")?.options.find(o => o.point === formData.a6)?.text || "",
+      a7: surveyQuestions.find(q => q.key === "a7")?.options.find(o => o.point === formData.a7)?.text || "",
+      a8: surveyQuestions.find(q => q.key === "a8")?.options.find(o => o.point === formData.a8)?.text || "",
     };
 
+    // 2) Submit survey
     await createSurvey(payload);
-    
-    // Thay vì chỉ set isSubmitted = true, bạn cần:
-    // 1. Hiển thị thông báo thành công tạm thời
+
+    // 3) Show temporary thank-you state
     setIsSubmitted(true);
-    
-    // 2. Sau 3 giây, tự động chuyển sang trạng thái "existing survey"
+
+    // 4) After thank-you, set existing survey state
     setTimeout(() => {
-      // Cập nhật state để hiển thị như đã có existing survey
       setHasExistingSurvey(true);
       setExistingSurveyData({
         smokeDuration: payload.smokeDuration,
@@ -244,16 +247,29 @@ const handleSubmit = async (e: React.FormEvent) => {
         a7: payload.a7,
         a8: payload.a8,
       });
-      setIsSubmitted(false); // Tắt thông báo cảm ơn
+      setAllowResurvey(false);
+      setIsSubmitted(false);
     }, 1500);
-    
+
+    // 5) Check active membership and show dialog or navigate
+    const storedUserId = localStorage.getItem('userId');
+    if (!storedUserId) {
+      throw new Error('User ID not found in localStorage');
+    }
+
+    const hasMembership = await hasActiveMembership(storedUserId);
+    if (hasMembership) {
+      setShowMembershipDialog(true);
+    } else {
+      navigate('/quit-gen');
+    }
   } catch (error) {
     if (error instanceof AxiosError) {
-      console.error("Lỗi khi gửi khảo sát:", error);
-      setSubmissionError(error.response?.data?.message || "Không thể gửi khảo sát. Vui lòng thử lại.");
+      console.error("Error submitting survey:", error);
+      setSubmissionError(error.response?.data?.message || "Failed to submit survey. Please try again.");
     } else {
-      console.error("Một lỗi không mong muốn đã xảy ra:", error);
-      setSubmissionError("Một lỗi không mong muốn đã xảy ra. Vui lòng thử lại.");
+      console.error("Unexpected error:", error);
+      setSubmissionError("An unexpected error occurred. Please try again.");
     }
   } finally {
     setIsLoading(false);
@@ -386,6 +402,34 @@ const dialogs = (
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+
+<AlertDialog open={showMembershipDialog} onOpenChange={setShowMembershipDialog}>
+  <AlertDialogContent className="bg-white text-gray-800 rounded-lg shadow-xl p-6 max-w-sm mx-auto">
+    <AlertDialogHeader className="mb-6">
+      <AlertDialogTitle className="text-2xl font-extrabold text-green-700">
+        You have a draft quit plan!
+      </AlertDialogTitle>
+      <AlertDialogDescription className="text-gray-600 mt-2 text-base">
+        Based on the survey you just completed, we detected you already have a draft quit plan. Would you like to go to the Quit Plan Generator now?
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter className="flex flex-col sm:flex-row-reverse justify-end gap-3 mt-4">
+      <AlertDialogAction
+        onClick={() => navigate('/quit-gen')}
+        className="w-full sm:w-auto bg-green-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition ease-in-out duration-150"
+      >
+        Go to Quit Generator
+      </AlertDialogAction>
+      <AlertDialogCancel
+        onClick={() => setShowMembershipDialog(false)}
+        className="w-full sm:w-auto bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-opacity-50 transition ease-in-out duration-150"
+      >
+        Stay Here
+      </AlertDialogCancel>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+
   </>
 );
   // Hiển thị loading khi đang kiểm tra survey

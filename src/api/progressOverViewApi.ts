@@ -21,6 +21,7 @@ api.interceptors.request.use((config) => {
 export interface QuitPlanDto {
   id: string;
   userId: string;
+  userSurveyId: string; // optional, if not applicable
   startDate: string; // định dạng YYYY-MM-DD
   method: string;
   targetDate: string;
