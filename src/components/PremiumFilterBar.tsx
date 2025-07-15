@@ -42,7 +42,7 @@ export default function PremiumFilterBar({
         className={
           selectedType === 'RECOMMENDED'
             ? 'bg-yellow-600 text-white'
-            : 'border-yellow-600 text-yellow-600'
+            : 'border-yellow-600 text-yellow      -600'
         }
         onClick={() => onTypeChange('RECOMMENDED')}
       >
