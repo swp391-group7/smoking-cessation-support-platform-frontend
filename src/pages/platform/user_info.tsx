@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 
-type EditingField = "fullName" | "phoneNumber" | "dob" | "email" | null;
+type EditingField = "fullName" | "phoneNumber" | "dob" | "email" | "sex" | null;
 
 export default function UserProfile() {
   const [formData, setFormData] = useState<UserInfo>({
@@ -18,6 +18,7 @@ export default function UserProfile() {
     fullName: "",
     phoneNumber: "",
     dob: "",
+    sex: "",
     avatarPath: "",
     password: ""
   });
@@ -37,7 +38,7 @@ export default function UserProfile() {
       });
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -45,16 +46,17 @@ export default function UserProfile() {
   const handleSave = async () => {
     try {
       // Chuẩn bị payload cho backend (loại trừ ID và có thể là username)
-      const { id, username, ...rest  } = formData; // Trích xuất id và username
-      
+      const { id, username, ...rest } = formData; // Trích xuất id và username
+
       const payload: FrontendUpdateRequestBody = {
-      fullName: rest.fullName,
-      email: rest.email,
-      phoneNumber: rest.phoneNumber,
-      dob: rest.dob,
-      avatarPath: rest.avatarPath,
+        fullName: rest.fullName,
+        email: rest.email,
+        phoneNumber: rest.phoneNumber,
+        dob: rest.dob,
+        sex: rest.sex,
+        avatarPath: rest.avatarPath,
       };
-      
+
       await updateUser(payload);
       toast.success("🎉 Update successful!");
       setEditing(null);
@@ -81,13 +83,26 @@ export default function UserProfile() {
       <div className="flex flex-col">
         <span className="text-sm font-medium text-gray-500">{label}</span>
         {editing === field ? (
-          <Input
-            type={type}
-            name={field!}
-            value={formData[field as keyof UserInfo]}
-            onChange={handleChange}
-            className="mt-1"
-          />
+          field === "sex" ? (
+            <select
+              name="sex"
+              value={formData.sex}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm p-2 border"
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          ) : (
+            <Input
+              type={type}
+              name={field!}
+              value={formData[field as keyof UserInfo]}
+              onChange={handleChange}
+              className="mt-1"
+            />
+          )
         ) : (
           <span className="text-lg font-semibold">{formData[field as keyof UserInfo] || "None"}</span>
         )}
@@ -97,7 +112,7 @@ export default function UserProfile() {
           <Pencil className="h-4 w-4" />
         </Button>
       ) : (
-        <Button onClick={handleSave} className="ml-2">Lưu</Button>
+        <Button onClick={handleSave} className="ml-2">Save</Button>
       )}
     </div>
   );
@@ -147,6 +162,8 @@ export default function UserProfile() {
           {renderField("phoneNumber", "Phone", "tel")}
           <hr className="border-gray-200" />
           {renderField("dob", "D.O.B", "date")}
+          <hr className="border-gray-200" />
+          {renderField("sex", "Gender")}
           {/* Password is not directly editable here for security; usually done via a separate "Change Password" flow */}
         </div>
 
