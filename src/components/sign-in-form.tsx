@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaFacebookF, FaGoogle } from "react-icons/fa";
+import { FaFacebookF } from "react-icons/fa";
 import { register as registerApi } from "../api/auth";
 import { Toaster, toast } from "sonner";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
