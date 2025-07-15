@@ -47,17 +47,17 @@ export default function UserProfile() {
   const handleSave = async () => {
     try {
       // Chuẩn bị payload cho backend (loại trừ ID và có thể là username)
-      const { id, username, ...rest  } = formData; // Trích xuất id và username
-      
+      const { id, username, ...rest } = formData; // Trích xuất id và username
+
       const payload: FrontendUpdateRequestBody = {
-      fullName: rest.fullName,
-      email: rest.email,
-      phoneNumber: rest.phoneNumber,
-      dob: rest.dob,
-      sex: rest.sex,
-      avatarPath: rest.avatarPath,
+        fullName: rest.fullName,
+        email: rest.email,
+        phoneNumber: rest.phoneNumber,
+        dob: rest.dob,
+        sex: rest.sex,
+        avatarPath: rest.avatarPath,
       };
-      
+
       await updateUser(payload);
       toast.success("🎉 Update successful!");
       setEditing(null);
@@ -84,7 +84,7 @@ export default function UserProfile() {
       <div className="flex flex-col">
         <span className="text-sm font-medium text-gray-500">{label}</span>
         {editing === field ? (
-          field === "sex" ? ( 
+          field === "sex" ? (
             <select
               name="sex"
               value={formData.sex}
@@ -96,13 +96,13 @@ export default function UserProfile() {
               <option value="Female">Female</option>
             </select>
           ) : (
-          <Input
-            type={type}
-            name={field!}
-            value={formData[field as keyof UserInfo]}
-            onChange={handleChange}
-            className="mt-1"
-          />
+            <Input
+              type={type}
+              name={field!}
+              value={formData[field as keyof UserInfo]}
+              onChange={handleChange}
+              className="mt-1"
+            />
           )
         ) : (
           <span className="text-lg font-semibold">{formData[field as keyof UserInfo] || "None"}</span>
