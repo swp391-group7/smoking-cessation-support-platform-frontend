@@ -37,7 +37,6 @@ import CoachProtectedRoute from './components/coach/CoachProtectedRoute';
 import CoachDashboard from './pages/coach/CoachDashboard.tsx';
 import CoachProfile from './pages/coach/Profile.tsx';
 import CoachUserList from './pages/coach/CoachUserList.tsx';
-import CoachChatRoom from './pages/coach/CoachChatRoom.tsx';
 import MembershipPage from './pages/platform/membership.tsx';
 import ScrollToTop from './components/ScrollToTop.tsx';
 
@@ -102,7 +101,6 @@ export const App = () => (
           <Route path="profile" element={<CoachProfile />} />  
           <Route path="*" element={<Navigate to="/coach/dashboard" replace />} />
           <Route path="clients" element={<CoachUserList />} />
-          <Route path="chat/:userId" element={<CoachChatRoom />} />
         </Route>
       </Routes>
     </Router>
