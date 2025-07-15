@@ -18,14 +18,15 @@ blogApi.interceptors.request.use(config => {
 export const BlogType = {
   HEALTH: 'HEALTH',
   SMOKEQUIT: 'SMOKEQUIT',
-  SMOKEHARM: 'SMOKEHARM'
+  SMOKEHARM: 'SMOKEHARM',
+  ACTIVEUSER: 'ACTIVEUSER', // Thêm type mới cho premium user
 } as const;
 
 export type BlogType = typeof BlogType[keyof typeof BlogType];
 
 export interface BlogPost {
   id: string;
-  blog_type: BlogType;
+  blog_type: BlogType; 
   title: string;
   content: string;
   imageUrl: string;
