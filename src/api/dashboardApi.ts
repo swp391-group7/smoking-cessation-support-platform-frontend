@@ -1,13 +1,13 @@
 // src/api/dashboardApi.ts
 import axios from 'axios';
 
-export const userApi = axios.create({
+export const dashboardApi = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
     headers: { 'Content-Type': 'application/json' },
 });
 
 // Gắn JWT tự động cho mọi request
-userApi.interceptors.request.use(config => {
+dashboardApi.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
     if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -32,22 +32,20 @@ export interface AgeGroupStatistic {
 
 /**
  * Lấy thống kê người dùng hàng tháng theo năm.
- * @param year Năm cần lấy thống kê.
- * @returns Mảng các đối tượng thống kê hàng tháng.
  */
 export const getMonthlyUserStatistics = async (year: number): Promise<MonthlyUserStatistic[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/statistics/users/monthly/${year}`);
-    if (!response.ok) {
-      // Xử lý lỗi HTTP (ví dụ: 404 Not Found, 500 Internal Server Error)
-      const errorData = await response.json();
-      throw new Error(errorData.message || `Lỗi khi lấy thống kê hàng tháng: ${response.statusText}`);
-    }
-    const data: MonthlyUserStatistic[] = await response.json();
-    return data;
-  } catch (error) {
+    const response = await dashboardApi.get<MonthlyUserStatistic[]>(`/api/statistics/users/monthly/${year}`);
+    return response.data; 
+  } catch (error: any) {
     console.error("Lỗi khi gọi API getMonthlyUserStatistics:", error);
-    throw error; // Ném lỗi để component gọi có thể xử lý
+    if (error.response) {
+      throw new Error(error.response.data.message || `Lỗi từ server: ${error.response.status}`);
+    } else if (error.request) {
+      throw new Error("Không nhận được phản hồi từ server.");
+    } else {
+      throw new Error(`Lỗi khi thiết lập yêu cầu: ${error.message}`);
+    }
   }
 };
 
@@ -57,16 +55,17 @@ export const getMonthlyUserStatistics = async (year: number): Promise<MonthlyUse
  */
 export const getGenderStatistics = async (): Promise<GenderStatistic[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/statistics/users/gender`);
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `Lỗi khi lấy thống kê giới tính: ${response.statusText}`);
-    }
-    const data: GenderStatistic[] = await response.json();
-    return data;
-  } catch (error) {
+    const response = await dashboardApi.get<GenderStatistic[]>('/api/statistics/users/gender');
+    return response.data;
+  } catch (error: any) {
     console.error("Lỗi khi gọi API getGenderStatistics:", error);
-    throw error;
+    if (error.response) {
+      throw new Error(error.response.data.message || `Lỗi từ server: ${error.response.status}`);
+    } else if (error.request) {
+      throw new Error("Không nhận được phản hồi từ server.");
+    } else {
+      throw new Error(`Lỗi khi thiết lập yêu cầu: ${error.message}`);
+    }
   }
 };
 
@@ -76,15 +75,16 @@ export const getGenderStatistics = async (): Promise<GenderStatistic[]> => {
  */
 export const getAgeGroupStatistics = async (): Promise<AgeGroupStatistic[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/statistics/users/age-groups`);
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `Lỗi khi lấy thống kê nhóm tuổi: ${response.statusText}`);
-    }
-    const data: AgeGroupStatistic[] = await response.json();
-    return data;
-  } catch (error) {
+    const response = await dashboardApi.get<AgeGroupStatistic[]>('/api/statistics/users/age-groups');
+    return response.data;
+  } catch (error: any) {
     console.error("Lỗi khi gọi API getAgeGroupStatistics:", error);
-    throw error;
+    if (error.response) {
+      throw new Error(error.response.data.message || `Lỗi từ server: ${error.response.status}`);
+    } else if (error.request) {
+      throw new Error("Không nhận được phản hồi từ server.");
+    } else {
+      throw new Error(`Lỗi khi thiết lập yêu cầu: ${error.message}`);
+    }
   }
 };
