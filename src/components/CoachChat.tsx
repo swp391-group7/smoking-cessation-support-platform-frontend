@@ -36,7 +36,7 @@ const CoachChat: React.FC<CoachChatProps> = ({ onClose, onNewMessageCountChange,
   const [activeMembership, setActiveMembership] = useState<MembershipPackageDto | null>(null);
   const [planLoading, setPlanLoading] = useState(true);
 
-  // States mới để quản lý scroll và tin nhắn mới
+  // States để quản lý scroll và tin nhắn mới
   const [showNewMessageButton, setShowNewMessageButton] = useState(false);
   const [unreadChatMessagesCount, setUnreadChatMessagesCount] = useState(0);
 
@@ -144,7 +144,7 @@ const CoachChat: React.FC<CoachChatProps> = ({ onClose, onNewMessageCountChange,
 
   // Check if user is near bottom (within 100px)
   const isNearBottom = useCallback((containerRef: React.RefObject<HTMLDivElement | null>) => {
-    if (!containerRef.current) return true;
+    if (!containerRef.current) return true; // Cần kiểm tra null vì current có thể là null ban đầu
     const container = containerRef.current;
     const threshold = 100;
     return container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
@@ -166,34 +166,35 @@ const CoachChat: React.FC<CoachChatProps> = ({ onClose, onNewMessageCountChange,
       if (JSON.stringify(chatMessages) !== JSON.stringify(sortedMessages)) {
         const currentUserId = getCurrentUserId();
         const newMessagesArrived = sortedMessages.length > chatMessages.length;
-        let newUnreadCount = 0;
+        let newUnreadCountThisFetch = 0;
 
         if (newMessagesArrived) {
-          // Tính số tin nhắn mới từ người khác (không phải của mình)
+          // Lấy các tin nhắn mới từ lần fetch này (chưa có trong state cũ)
           const latestMessages = sortedMessages.slice(chatMessages.length);
-          newUnreadCount = latestMessages.filter(msg => msg.senderId !== currentUserId).length;
+          // Tính số tin nhắn mới từ người khác (không phải của mình)
+          newUnreadCountThisFetch = latestMessages.filter(msg => msg.senderId !== currentUserId).length;
         }
 
-        // Kiểm tra xem người dùng có đang ở cuối chat không
+        // Kiểm tra xem người dùng có đang ở cuối chat không TRƯỚC KHI cập nhật state
         const wasNearBottom = isNearBottom(chatContainerRef);
         
-        setChatMessages(sortedMessages);
+        setChatMessages(sortedMessages); // Cập nhật state tin nhắn
 
-        // Nếu có tin nhắn mới và chat đang mở:
-        // - Nếu người dùng đang ở cuối, tự động scroll.
-        // - Nếu người dùng đang scroll lên, hiển thị nút "New messages" và tăng unread count.
         if (newMessagesArrived) {
-          if (isVisible) { // Chỉ xử lý scroll và nút nếu chat widget đang mở
+          if (isVisible) { // Nếu chat widget đang mở
             if (wasNearBottom) {
+              // Nếu đang ở cuối và có tin mới, tự động cuộn
               setTimeout(() => {
                 scrollToBottom();
               }, 100);
             } else {
+              // Nếu chat mở nhưng người dùng đã cuộn lên, hiển thị nút "New messages"
               setShowNewMessageButton(true);
-              setUnreadChatMessagesCount(prev => prev + newUnreadCount); // Tăng unread count
+              setUnreadChatMessagesCount(prev => prev + newUnreadCountThisFetch);
             }
-          } else { // Nếu chat widget không hiển thị, chỉ tăng unread count
-            setUnreadChatMessagesCount(prev => prev + newUnreadCount);
+          } else { // Nếu chat widget không hiển thị (đang đóng)
+            setUnreadChatMessagesCount(prev => prev + newUnreadCountThisFetch); // Tăng unread count
+            setShowNewMessageButton(true); // Có thể ẩn nút này nếu chat đóng, hoặc để hiển thị khi mở lại
           }
         }
       }
@@ -594,7 +595,8 @@ const CoachChat: React.FC<CoachChatProps> = ({ onClose, onNewMessageCountChange,
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             onClick={scrollToBottom}
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs px-3 py-1.5 rounded-full shadow-lg hover:bg-green-700 transition-colors duration-200 z-10 flex items-center space-x-1"
+            // Đã thay đổi bottom để sát hơn với ô chat
+            className="sticky bottom-[55px] left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs px-3 py-1.5 rounded-full shadow-lg hover:bg-green-700 transition-colors duration-200 z-20 flex items-center space-x-1"
           >
             <span>New messages ({unreadChatMessagesCount})</span>
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

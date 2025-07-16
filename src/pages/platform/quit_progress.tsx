@@ -20,7 +20,7 @@ type Page = 'dashboard' | 'history' | 'badges' | 'noti';
 export default function Quit_Progress() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [unreadMessageCount, setUnreadMessageCount] = useState(0); // State mới để lưu số tin nhắn chưa đọc
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0); // State để lưu số tin nhắn chưa đọc
 
   const reminders = [
     { time: "10:00 AM", text: "Stay strong! The first week is the hardest.", icon: "📘" },
@@ -44,7 +44,9 @@ export default function Quit_Progress() {
     if (!isChatOpen) {
       setUnreadMessageCount(count);
     } else {
-      setUnreadMessageCount(0); // Khi chat mở, reset số tin nhắn chưa đọc
+      // Khi chat mở, số tin nhắn chưa đọc sẽ được reset bên trong CoachChat
+      // và sau đó callback này sẽ nhận được 0, vì vậy ta cũng reset ở đây.
+      setUnreadMessageCount(0); 
     }
   }, [isChatOpen]);
 
@@ -210,7 +212,7 @@ export default function Quit_Progress() {
           transition={{ duration: 0.3 }}
           onClick={() => {
             setIsChatOpen(true);
-            setUnreadMessageCount(0); // Reset count when opening chat
+            setUnreadMessageCount(0); // Reset count khi mở chat
           }}
           className="fixed bottom-4 right-4 z-50 bg-green-600 text-white rounded-full p-4 shadow-xl hover:bg-green-700 transition-colors duration-300 transform hover:scale-105"
           title="Open Coach Chat"
@@ -218,7 +220,7 @@ export default function Quit_Progress() {
           <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
           </svg>
-          {unreadMessageCount > 0 && (
+          {unreadMessageCount > 0 && ( // Chỉ hiển thị khi có tin nhắn chưa đọc
             <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
               {unreadMessageCount}
             </span>
