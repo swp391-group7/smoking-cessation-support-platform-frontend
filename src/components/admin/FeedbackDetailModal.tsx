@@ -93,9 +93,11 @@ const FeedbackDetailModal: React.FC<FeedbackDetailModalProps> = ({
     ));
   };
 
+  // FIX: Sửa lại hàm để truyền coachId thay vì membershipPkgId
   const handleViewOtherFeedback = () => {
-    if (feedback && feedback.targetType === 'COACH' && onViewOtherFeedback) {
-      onViewOtherFeedback(feedback.membershipPkgId);
+    if (feedback && feedback.targetType === 'COACH' && feedback.membershipPackage && onViewOtherFeedback) {
+      // Truyền coachId thay vì membershipPkgId
+      onViewOtherFeedback(feedback.membershipPackage.coachId);
       onClose();
     }
   };
@@ -195,12 +197,15 @@ const FeedbackDetailModal: React.FC<FeedbackDetailModalProps> = ({
                 <div className="bg-green-50 p-4 rounded-lg">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold text-gray-900">Coach Information</h3>
-                    <button
-                      onClick={handleViewOtherFeedback}
-                      className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
-                    >
-                      View Other Feedback
-                    </button>
+                    {/* Only show button if we have membershipPackage data */}
+                    {feedback.membershipPackage && (
+                      <button
+                        onClick={handleViewOtherFeedback}
+                        className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+                      >
+                        View Other Feedback
+                      </button>
+                    )}
                   </div>
                   
                   {feedback.coachInfo && coachUserInfo ? (

@@ -3,17 +3,19 @@ import React, { useState, useEffect } from 'react';
 import { 
   fetchAllFeedbacks, 
   fetchFeedbackStats,
-  type Feedback, 
+  fetchMembershipPackageById,
   type FeedbackStats, 
   TargetType  //'SYSTEM' hoặc 'COACH'
 } from '../../api/feedbackApi';
 import FeedbackDetailModal from './FeedbackDetailModal';
+import {
+  type FeedbackWithDetails} from '../../api/feedbackApi';
 
 const FeedbackManagement: React.FC = () => {
   // Danh sách tất cả feedbacks
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [feedbacks, setFeedbacks] = useState<FeedbackWithDetails[]>([]);
   // Danh sách feedbacks đã lọc
-  const [filteredFeedbacks, setFilteredFeedbacks] = useState<Feedback[]>([]);
+  const [filteredFeedbacks, setFilteredFeedbacks] = useState<FeedbackWithDetails[]>([]);
   // Thống kê feedbacks
   const [stats, setStats] = useState<FeedbackStats | null>(null);
   // Trạng thái loading và lỗi
@@ -33,7 +35,9 @@ const FeedbackManagement: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Trạng thái lọc theo coach ID
   const [coachFilter, setCoachFilter] = useState<string | null>(null);
-
+  // Loading state for coach filter
+  const [coachFilterLoading, setCoachFilterLoading] = useState(false);
+  
   // Hàm gọi API để lấy feedbacks và thống kê khi component mount
   useEffect(() => {
     loadFeedbacks();
@@ -41,7 +45,11 @@ const FeedbackManagement: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    filterFeedbacks();
+    if (coachFilter) {
+      loadCoachFeedbacks();
+    } else {
+      filterFeedbacks();
+    }
   }, [feedbacks, selectedType, searchTerm, coachFilter]);
 
   // Hàm tải feedbacks từ API
@@ -69,20 +77,66 @@ const FeedbackManagement: React.FC = () => {
     }
   };
 
-  // Hàm lọc feedbacks theo loại, từ khóa tìm kiếm và coach ID
+  // Hàm tải feedbacks của coach cụ thể
+  const loadCoachFeedbacks = async () => {
+    if (!coachFilter) return;
+    
+    try {
+      setCoachFilterLoading(true);
+      
+      // Lấy tất cả coach feedbacks
+      const coachFeedbacks = feedbacks.filter(f => f.targetType === 'COACH');
+      
+      // Load membership package info cho từng feedback để lấy coachId
+      const coachFeedbacksWithDetails = await Promise.all(
+        coachFeedbacks.map(async (feedback) => {
+          try {
+            const membershipPackage = await fetchMembershipPackageById(feedback.membershipPkgId);
+            return {
+              ...feedback,
+              membershipPackage,
+              coachId: membershipPackage.coachId
+            };
+          } catch (error) {
+            console.error('Error loading membership package:', error);
+            return feedback;
+          }
+        })
+      );
+      
+      // Lọc theo coachId
+      const filteredCoachFeedbacks = coachFeedbacksWithDetails.filter(f => 
+        f.coachId === coachFilter || 
+        (f.membershipPackage && f.membershipPackage.coachId === coachFilter)
+      );
+      
+      // Apply search filter if exists
+      let finalFiltered = filteredCoachFeedbacks;
+      if (searchTerm) {
+        finalFiltered = filteredCoachFeedbacks.filter(f => 
+          f.comment.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          f.userId.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      
+      setFilteredFeedbacks(finalFiltered);
+      setCurrentPage(1);
+      
+    } catch (error) {
+      console.error('Error loading coach feedbacks:', error);
+      setError('Unable to load coach feedbacks');
+    } finally {
+      setCoachFilterLoading(false);
+    }
+  };
+
+  // Hàm lọc feedbacks theo loại, từ khóa tìm kiếm
   const filterFeedbacks = () => { 
     let filtered = feedbacks;
 
     // Lọc theo type
     if (selectedType !== 'ALL') {
       filtered = filtered.filter(f => f.targetType === selectedType);
-    }
-
-    // Lọc theo coach ID (nếu có)
-    if (coachFilter) {
-      filtered = filtered.filter(f => 
-        f.targetType === 'COACH' && f.membershipPkgId === coachFilter
-      );
     }
 
     // Lọc theo search term
@@ -124,6 +178,9 @@ const FeedbackManagement: React.FC = () => {
     setSelectedType('COACH');
     setSearchTerm('');
     setCurrentPage(1);
+    // Đóng modal để người dùng có thể thấy danh sách filtered
+    setIsModalOpen(false);
+    setSelectedFeedbackId(null);
   };
 
   // Hàm reset bộ lọc
@@ -267,6 +324,9 @@ const FeedbackManagement: React.FC = () => {
               {coachFilter && (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
                   Coach: {coachFilter.substring(0, 8)}...
+                  {coachFilterLoading && (
+                    <div className="ml-2 animate-spin rounded-full h-3 w-3 border-b-2 border-green-600"></div>
+                  )}
                 </span>
               )}
               
@@ -285,6 +345,14 @@ const FeedbackManagement: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Loading state for coach filter */}
+        {coachFilterLoading && (
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-gray-600">Loading coach feedbacks...</span>
+          </div>
+        )}
 
         {/* Feedback Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -427,9 +495,19 @@ const FeedbackManagement: React.FC = () => {
           )}
         </div>
 
-        {filteredFeedbacks.length === 0 && (
+        {filteredFeedbacks.length === 0 && !coachFilterLoading && (
           <div className="text-center py-12">
-            <div className="text-gray-500 text-lg">Cannot find any feedback</div>
+            <div className="text-gray-500 text-lg">
+              {coachFilter ? 'No feedback found for this coach' : 'Cannot find any feedback'}
+            </div>
+            {coachFilter && (
+              <button
+                onClick={handleResetFilters}
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Show All Feedbacks
+              </button>
+            )}
           </div>
         )}
       </div>
