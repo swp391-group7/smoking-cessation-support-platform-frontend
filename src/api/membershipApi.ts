@@ -91,6 +91,7 @@ export interface MembershipPackageDto {
   userId: string;
   // add the misspelled key as well as the correct one
   packagetTypeId: string;
+  coachId?: string; // Optional, if coach is assigned
   packageTypeId: string;
   packageTypeName: string;
   startDate: string;
