@@ -1,3 +1,4 @@
+
 // src/components/admin/FeedbackManagement.tsx
 import React, { useState, useEffect } from 'react';
 import { 
@@ -6,7 +7,8 @@ import {
   type Feedback, 
   type FeedbackStats, 
   TargetType  //'SYSTEM' hoặc 'COACH'
-} from '../../api/feedbackApi'; // Hàm API: lấy thống kê feedback, lấy tất cả feedbacks
+} from '../../api/feedbackApi';
+import FeedbackDetailModal from './FeedbackDetailModal';
 
 const FeedbackManagement: React.FC = () => {
   // Danh sách tất cả feedbacks
@@ -17,7 +19,7 @@ const FeedbackManagement: React.FC = () => {
   const [stats, setStats] = useState<FeedbackStats | null>(null);
   // Trạng thái loading và lỗi
   const [loading, setLoading] = useState(true);
- // Trạng thái lỗi
+  // Trạng thái lỗi
   const [error, setError] = useState<string | null>(null);
   // Trạng thái lọc theo loại feedback và từ khóa tìm kiếm
   const [selectedType, setSelectedType] = useState<'ALL' | TargetType>('ALL');
@@ -27,9 +29,13 @@ const FeedbackManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   // Số lượng mục hiển thị mỗi trang
   const [itemsPerPage] = useState(10);
+  // Trạng thái modal chi tiết feedback
+  const [selectedFeedbackId, setSelectedFeedbackId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Trạng thái lọc theo coach ID
+  const [coachFilter, setCoachFilter] = useState<string | null>(null);
 
   // Hàm gọi API để lấy feedbacks và thống kê khi component mount
-  // và khi lọc hoặc tìm kiếm thay đổi
   useEffect(() => {
     loadFeedbacks();
     loadStats();
@@ -37,10 +43,9 @@ const FeedbackManagement: React.FC = () => {
 
   useEffect(() => {
     filterFeedbacks();
-  }, [feedbacks, selectedType, searchTerm]);
+  }, [feedbacks, selectedType, searchTerm, coachFilter]);
 
-  // Hàm tải feedbacks và thống kê từ API
-  // và cập nhật trạng thái
+  // Hàm tải feedbacks từ API
   const loadFeedbacks = async () => {
     try {
       setLoading(true);
@@ -56,7 +61,6 @@ const FeedbackManagement: React.FC = () => {
   };
 
   // Hàm tải thống kê feedbacks từ API
-  // và cập nhật trạng thái
   const loadStats = async () => {
     try {
       const statsData = await fetchFeedbackStats();
@@ -66,15 +70,20 @@ const FeedbackManagement: React.FC = () => {
     }
   };
 
-  // Hàm lọc feedbacks theo loại và từ khóa tìm kiếm
-  // và cập nhật danh sách feedbacks đã lọc
-  // Cập nhật trạng thái currentPage về 1 mỗi khi lọc
+  // Hàm lọc feedbacks theo loại, từ khóa tìm kiếm và coach ID
   const filterFeedbacks = () => { 
     let filtered = feedbacks;
 
     // Lọc theo type
     if (selectedType !== 'ALL') {
       filtered = filtered.filter(f => f.targetType === selectedType);
+    }
+
+    // Lọc theo coach ID (nếu có)
+    if (coachFilter) {
+      filtered = filtered.filter(f => 
+        f.targetType === 'COACH' && f.membershipPkgId === coachFilter
+      );
     }
 
     // Lọc theo search term
@@ -90,12 +99,43 @@ const FeedbackManagement: React.FC = () => {
   };
 
   // Hàm xử lý thay đổi loại feedback
-  // Cập nhật trạng thái selectedType
   const handleTypeChange = (type: 'ALL' | TargetType) => {
     setSelectedType(type);
+    // Reset coach filter when changing type
+    if (type !== 'COACH') {
+      setCoachFilter(null);
+    }
   };
+
+  // Hàm xử lý click vào row để hiển thị modal chi tiết
+  const handleRowClick = (feedbackId: string) => {
+    setSelectedFeedbackId(feedbackId);
+    setIsModalOpen(true);
+  };
+
+  // Hàm đóng modal chi tiết
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedFeedbackId(null);
+  };
+
+  // Hàm xử lý xem feedback khác của coach
+  const handleViewOtherFeedback = (coachId: string) => {
+    setCoachFilter(coachId);
+    setSelectedType('COACH');
+    setSearchTerm('');
+    setCurrentPage(1);
+  };
+
+  // Hàm reset bộ lọc
+  const handleResetFilters = () => {
+    setSelectedType('ALL');
+    setSearchTerm('');
+    setCoachFilter(null);
+    setCurrentPage(1);
+  };
+
   // Hàm định dạng ngày tháng
-  // để hiển thị trong bảng
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -108,7 +148,6 @@ const FeedbackManagement: React.FC = () => {
   };
 
   // Hàm lấy màu sắc cho điểm đánh giá
-  // dựa trên giá trị rating
   const getRatingColor = (rating: number) => {
     if (rating >= 4) return 'text-green-600';
     if (rating >= 3) return 'text-yellow-600';
@@ -116,21 +155,16 @@ const FeedbackManagement: React.FC = () => {
   };
 
   // Hàm lấy màu sắc cho loại feedback
-  // dựa trên targetType
   const getTypeColor = (type: string) => {
     return type === 'SYSTEM' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
   };
 
   // Pagination
-  // Tính toán số trang và các mục hiển thị
-  // Dựa trên số lượng feedbacks đã lọc
   const totalPages = Math.ceil(filteredFeedbacks.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentFeedbacks = filteredFeedbacks.slice(startIndex, endIndex);
 
-  // Hiển thị loading spinner nếu đang tải
-  // Hoặc hiển thị thông báo lỗi nếu có
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -155,9 +189,6 @@ const FeedbackManagement: React.FC = () => {
     );
   }
 
-  // Hiển thị giao diện quản lý feedbacks
-  // Bao gồm tiêu đề, thống kê, bộ lọc và bảng feedbacks
-  //đồng thời là UI chính của trang
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -194,7 +225,7 @@ const FeedbackManagement: React.FC = () => {
 
         {/* Filters */}
         <div className="bg-white p-6 rounded-lg shadow mb-6">
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 mb-4">
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 SEARCH
@@ -222,6 +253,38 @@ const FeedbackManagement: React.FC = () => {
               </select>
             </div>
           </div>
+
+          {/* Active Filters Display */}
+          {(coachFilter || selectedType !== 'ALL' || searchTerm) && (
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="text-sm text-gray-600">Active filters:</span>
+              
+              {selectedType !== 'ALL' && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                  Type: {selectedType}
+                </span>
+              )}
+              
+              {coachFilter && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
+                  Coach: {coachFilter.substring(0, 8)}...
+                </span>
+              )}
+              
+              {searchTerm && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">
+                  Search: "{searchTerm}"
+                </span>
+              )}
+              
+              <button
+                onClick={handleResetFilters}
+                className="text-sm text-red-600 hover:text-red-800 underline"
+              >
+                Clear all
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Feedback Table */}
@@ -245,11 +308,18 @@ const FeedbackManagement: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Created At
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentFeedbacks.map((feedback) => (
-                  <tr key={feedback.id} className="hover:bg-gray-50">
+                  <tr 
+                    key={feedback.id} 
+                    className="hover:bg-gray-50 cursor-pointer transition-colors"
+                    onClick={() => handleRowClick(feedback.id)}
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
                         {feedback.userId.substring(0, 8)}...
@@ -273,13 +343,24 @@ const FeedbackManagement: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(feedback.createdAt)}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRowClick(feedback.id);
+                        }}
+                        className="text-blue-600 hover:text-blue-900 transition-colors"
+                      >
+                        View
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          {/* Pagination,  */}
+          {/* Pagination */}
           {totalPages > 1 && (
             <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
               <div className="flex-1 flex justify-between sm:hidden">
@@ -348,6 +429,16 @@ const FeedbackManagement: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Feedback Detail Modal */}
+      {selectedFeedbackId && (
+        <FeedbackDetailModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          feedbackId={selectedFeedbackId}
+          onViewOtherFeedback={handleViewOtherFeedback}
+        />
+      )}
     </div>
   );
 };

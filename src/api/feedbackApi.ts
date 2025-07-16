@@ -22,6 +22,26 @@ export const TargetType = {
 
 export type TargetType = typeof TargetType[keyof typeof TargetType];
 
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  dob: string;
+  sex: string | null;
+  avtarPath: string | null;
+  createdAt: string;
+  roleName: string;
+}
+
+export interface Coach {
+  userId: string;
+  bio: string;
+  qualification: string;
+  avgRating: number;
+}
+
 export interface Feedback {
   id: string;
   userId: string;
@@ -30,6 +50,11 @@ export interface Feedback {
   rating: number;
   comment: string;
   createdAt: string;
+}
+
+export interface FeedbackWithDetails extends Feedback {
+  userInfo?: User;
+  coachInfo?: Coach;
 }
 
 export interface FeedbackStats {
@@ -57,19 +82,29 @@ export async function fetchFeedbackById(id: string): Promise<Feedback> {
 }
 
 /**
- * Lấy feedbacks theo target type (SYSTEM hoặc COACH)
+ * Lấy thông tin user theo ID
  */
-export async function fetchFeedbacksByType(type: TargetType): Promise<Feedback[]> {
-  const { data } = await feedbackApi.get<Feedback[]>(`/feedbacks/target/${type}`);
+export async function fetchUserById(userId: string): Promise<User> {
+  const { data } = await feedbackApi.get<User>(`/users/get/${userId}`);
   return data;
 }
 
 /**
- * Lấy feedbacks cho một coach cụ thể
+ * Lấy feedback chi tiết với thông tin user
  */
-export async function fetchFeedbacksByCoachId(coachId: string): Promise<Feedback[]> {
-  const { data } = await feedbackApi.get<Feedback[]>(`/feedbacks/coach/${coachId}`);
-  return data;
+export async function fetchFeedbackWithDetails(id: string): Promise<FeedbackWithDetails> {
+  const feedback = await fetchFeedbackById(id);
+  const feedbackWithDetails: FeedbackWithDetails = { ...feedback };
+
+  try {
+    // Lấy thông tin user
+    const userInfo = await fetchUserById(feedback.userId);
+    feedbackWithDetails.userInfo = userInfo;
+  } catch (error) {
+    console.error('Error fetching user info:', error);
+  }
+
+  return feedbackWithDetails;
 }
 
 /**
