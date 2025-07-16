@@ -1,4 +1,3 @@
-
 // src/components/admin/FeedbackManagement.tsx
 import React, { useState, useEffect } from 'react';
 import { 
@@ -302,7 +301,7 @@ const FeedbackManagement: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Rating
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
                     Comment
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -315,8 +314,8 @@ const FeedbackManagement: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentFeedbacks.map((feedback) => (
-                  <tr 
-                    key={feedback.id} 
+                  <tr
+                    key={feedback.id}
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                     onClick={() => handleRowClick(feedback.id)}
                   >
@@ -326,7 +325,9 @@ const FeedbackManagement: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTypeColor(feedback.targetType)}`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTypeColor(feedback.targetType)}`}
+                      >
                         {feedback.targetType}
                       </span>
                     </td>
@@ -335,8 +336,11 @@ const FeedbackManagement: React.FC = () => {
                         {feedback.rating}/5
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 max-w-xs truncate">
+                    <td
+                      className="px-6 py-4 max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis"
+                      title={feedback.comment}
+                    >
+                      <div className="text-sm text-gray-900 truncate">
                         {feedback.comment || 'No comment provided'}
                       </div>
                     </td>
