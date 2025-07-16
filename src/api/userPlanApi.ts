@@ -84,6 +84,12 @@ export async function createDefaultStep(planId: string): Promise<PlanStep> {
   );
   return data;
 }
+export async function createDefaultStep1(planId: string): Promise<GeneratedStep> {
+  const { data } = await userPlanApi.post<GeneratedStep>(
+    `/quit-plan_step/${planId}/create-default`
+  );
+  return data;
+}
 
 export async function deleteDraftSteps(planId: string): Promise<void> {
   await userPlanApi.delete(`/quit-plan_step/${planId}/delete-drafts`);
@@ -120,4 +126,41 @@ export async function getActivePlanOfAnUser(userId: string): Promise<UserPlan | 
         `/quit-plans/active-plan-of-an-user/${userId}`
     );
     return data;
+}
+// --- add these interfaces at the top of the file ---
+export interface GeneratedStep {
+  id: string;
+  quitPlanId: string;
+  stepNumber: number;
+  stepStartDate: string;
+  stepEndDate: string;
+  targetCigarettesPerDay: number;
+  stepDescription: string;
+  status: string;
+  createAt: string;
+}
+
+export interface GeneratedPlan {
+  id: string;
+  userId: string;
+  userSurveyId: string; // ID của survey đã dùng để tạo plan
+  startDate: string;
+  targetDate: string;
+  method: string;
+  status: string;
+  currentZeroStreak: number;
+  maxZeroStreak: number;
+  createAt: string;
+  steps: GeneratedStep[];
+}
+
+// --- add this function alongside your other exports ---
+/**
+ * Generate a sample (draft) quit plan + steps for the current member
+ */
+export async function generateSamplePlan(): Promise<GeneratedPlan> {
+  const { data } = await userPlanApi.post<GeneratedPlan>(
+    '/quit-plans/generate-from-survey'
+  );
+  return data;
 }

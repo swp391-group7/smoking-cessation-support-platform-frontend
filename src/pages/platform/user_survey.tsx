@@ -261,7 +261,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     if (hasMembership) {
       setShowMembershipDialog(true);
     } else {
-      navigate('/quit-gen');
+      navigate('/plan-gen');
     }
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -415,7 +415,7 @@ const dialogs = (
     </AlertDialogHeader>
     <AlertDialogFooter className="flex flex-col sm:flex-row-reverse justify-end gap-3 mt-4">
       <AlertDialogAction
-        onClick={() => navigate('/quit-gen')}
+        onClick={() => navigate('/plan-gen')}
         className="w-full sm:w-auto bg-green-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition ease-in-out duration-150"
       >
         Go to Quit Generator

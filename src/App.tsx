@@ -10,7 +10,6 @@ import Quit_Plan from './pages/platform/quit_plan.tsx';
 import UserSurvey from './pages/platform/user_survey.tsx';
 import BlogPost from './pages/platform/blog.tsx';
 import UserInfo from './pages/platform/user_info.tsx';
-import PremiumBlogPage from './pages/platform/PremiumBlogPage.tsx';
 
 // Admin pages
 import AdminLayout from './components/admin/Adminlayout.tsx';
@@ -22,7 +21,7 @@ import BlogAdminPage from './pages/admin/Blog.tsx';
 import BlogFormPage from './pages/admin/BlogFormPage.tsx';
 import Notifications from './pages/admin/Notifications.tsx';
 import Community from './pages/admin/Community.tsx';
-import FeedbackPage from './pages/admin/Feedback.tsx';
+import Feedback from './pages/admin/Feedback.tsx';
 // import UserProfiles from './pages/admin/UserProfiles.tsx';
 import Settings from './pages/admin/Settings.tsx';
 import Badges from './pages/admin/Badges.tsx';
@@ -36,10 +35,11 @@ import CoachLayout from './components/coach/CoachLayout.tsx';
 import CoachProtectedRoute from './components/coach/CoachProtectedRoute';
 import CoachDashboard from './pages/coach/CoachDashboard.tsx';
 import CoachProfile from './pages/coach/Profile.tsx';
-import CoachUserList from './pages/coach/CoachUserList.tsx';
+
 import MembershipPage from './pages/platform/membership.tsx';
 import ScrollToTop from './components/ScrollToTop.tsx';
 import CoachSelectionPage from './components/selectCoach.tsx';
+import PlanFormGenForMember from './components/PlanFormGenForMember.tsx';
 
 
 export const App = () => (
@@ -60,8 +60,7 @@ export const App = () => (
           <Route path="user_survey" element={<UserSurvey />} />
           <Route path="/user_info" element={<UserInfo />} />
           <Route path="quit_form" element={<PlanForm />} />
-          <Route path="/membership" element={<MembershipPage />} />
-          <Route path="/PremiumBlogPage" element={<PremiumBlogPage />} />
+          <Route path="plan-gen" element={<PlanFormGenForMember />} />
            <Route path="/membership" element={<MembershipPage />} />
            <Route path="/coach_select" element={<CoachSelectionPage/>} />
         </Route>
@@ -85,7 +84,7 @@ export const App = () => (
           <Route path="blog/edit/:id" element={<BlogFormPage />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="community" element={<Community />} />
-          <Route path="feedback" element={<FeedbackPage />} />
+          <Route path="feedback" element={<Feedback />} />
           {/* <Route path="user-profiles" element={<UserProfiles />} /> */}
           <Route path="badges" element={<Badges />} />
           <Route path="settings" element={<Settings />} />
@@ -103,7 +102,6 @@ export const App = () => (
           <Route path="dashboard" element={<CoachDashboard />} />
           <Route path="profile" element={<CoachProfile />} />  
           <Route path="*" element={<Navigate to="/coach/dashboard" replace />} />
-          <Route path="clients" element={<CoachUserList />} />
         </Route>
       </Routes>
     </Router>
