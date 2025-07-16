@@ -1,6 +1,6 @@
 // src/components/admin/FeedbackDetailModal.tsx
 import React, { useState, useEffect } from 'react';
-import { fetchFeedbackWithDetails, type FeedbackWithDetails } from '@/api/feedbackApi';
+import { fetchFeedbackWithDetails, fetchUserById, type FeedbackWithDetails } from '@/api/feedbackApi';
 
 interface FeedbackDetailModalProps {
   isOpen: boolean;
@@ -16,6 +16,18 @@ const FeedbackDetailModal: React.FC<FeedbackDetailModalProps> = ({
   onViewOtherFeedback
 }) => {
   const [feedback, setFeedback] = useState<FeedbackWithDetails | null>(null);
+  interface CoachUserInfo {
+    id: string;
+    fullName: string;
+    username: string;
+    email: string;
+    phoneNumber?: string;
+    dob?: string;
+    createdAt: string;
+    // add other fields if needed
+  }
+
+  const [coachUserInfo, setCoachUserInfo] = useState<CoachUserInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,6 +43,16 @@ const FeedbackDetailModal: React.FC<FeedbackDetailModalProps> = ({
       setError(null);
       const data = await fetchFeedbackWithDetails(feedbackId);
       setFeedback(data);
+
+      // Nếu là coach feedback và có thông tin coach, lấy thông tin user của coach
+      if (data.targetType === 'COACH' && data.coachInfo) {
+        try {
+          const coachUser = await fetchUserById(data.coachInfo.userId);
+          setCoachUserInfo(coachUser);
+        } catch (error) {
+          console.error('Error fetching coach user info:', error);
+        }
+      }
     } catch (err) {
       setError('Unable to load feedback details');
       console.error('Error loading feedback details:', err);
@@ -82,7 +104,7 @@ const FeedbackDetailModal: React.FC<FeedbackDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
@@ -168,21 +190,121 @@ const FeedbackDetailModal: React.FC<FeedbackDetailModalProps> = ({
                 )}
               </div>
 
-              {/* View Other Feedback Button (only for coach feedback) */}
+              {/* Coach Information (only for coach feedback) */}
               {feedback.targetType === 'COACH' && (
                 <div className="bg-green-50 p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Coach Feedback</h3>
-                      <p className="text-gray-600">View all feedback for this coach from other users</p>
-                    </div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900">Coach Information</h3>
                     <button
                       onClick={handleViewOtherFeedback}
-                      className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                      className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
                     >
                       View Other Feedback
                     </button>
                   </div>
+                  
+                  {feedback.coachInfo && coachUserInfo ? (
+                    <div className="space-y-4">
+                      {/* Coach Basic Info */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600">Coach Name</label>
+                          <p className="text-gray-900 font-semibold">{coachUserInfo.fullName}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600">Username</label>
+                          <p className="text-gray-900">{coachUserInfo.username}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600">Email</label>
+                          <p className="text-gray-900">{coachUserInfo.email}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600">Phone</label>
+                          <p className="text-gray-900">{coachUserInfo.phoneNumber || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600">Date of Birth</label>
+                          <p className="text-gray-900">{coachUserInfo.dob || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600">Coach ID</label>
+                          <p className="text-gray-900 text-sm font-mono break-all">{feedback.coachInfo.userId}</p>
+                        </div>
+                      </div>
+
+                      {/* Coach Professional Info */}
+                      <div className="border-t pt-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-600">Average Rating</label>
+                            <div className="flex items-center space-x-2">
+                              <span className={`text-lg font-bold ${getRatingColor(feedback.coachInfo.avgRating)}`}>
+                                {feedback.coachInfo.avgRating}/5
+                              </span>
+                              <div className="flex">
+                                {renderStars(Math.round(feedback.coachInfo.avgRating))}
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-600">Member Since</label>
+                            <p className="text-gray-900">{formatDate(coachUserInfo.createdAt)}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-4">
+                          <label className="block text-sm font-medium text-gray-600 mb-2">Qualification</label>
+                          <div className="bg-white p-3 rounded border">
+                            <p className="text-gray-900 whitespace-pre-wrap">
+                              {feedback.coachInfo.qualification || 'No qualification provided'}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-4">
+                          <label className="block text-sm font-medium text-gray-600 mb-2">Biography</label>
+                          <div className="bg-white p-3 rounded border max-h-24 overflow-y-auto">
+                            <p className="text-gray-900 whitespace-pre-wrap">
+                              {feedback.coachInfo.bio || 'No biography provided'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Membership Package Info */}
+                      {feedback.membershipPackage && (
+                        <div className="border-t pt-4">
+                          <label className="block text-sm font-medium text-gray-600 mb-2">Membership Package</label>
+                          <div className="bg-white p-3 rounded border">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                              <div>
+                                <span className="font-medium">Package:</span> {feedback.membershipPackage.packageTypeName}
+                              </div>
+                              <div>
+                                <span className="font-medium">Status:</span> 
+                                <span className={`ml-1 px-2 py-1 rounded text-xs ${
+                                  feedback.membershipPackage.active 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-red-100 text-red-800'
+                                }`}>
+                                  {feedback.membershipPackage.active ? 'Active' : 'Inactive'}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="font-medium">Start Date:</span> {formatDate(feedback.membershipPackage.startDate)}
+                              </div>
+                              <div>
+                                <span className="font-medium">End Date:</span> {formatDate(feedback.membershipPackage.endDate)}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">Coach information not available</p>
+                  )}
                 </div>
               )}
 
