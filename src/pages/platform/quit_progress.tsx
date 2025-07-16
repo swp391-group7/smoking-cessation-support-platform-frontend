@@ -17,7 +17,7 @@ import { Card } from '@/components/ui/card';
 
 
 // Define new page types
-type Page = 'dashboard' | 'history' | 'badges' |'noti' |'chat';
+type Page = 'dashboard' | 'history' | 'badges' | 'noti' | 'chat';
 
 export default function Quit_Progress() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
@@ -28,16 +28,11 @@ export default function Quit_Progress() {
 
   const reminders = [
     { time: "10:00 AM", text: "Stay strong! The first week is the hardest.", icon: "📘" },
-    
+
   ];
 
- 
 
 
-  const handleSendMessage = (message: string) => {
-    console.log("Message sent to coach:", message);
-    // TODO: Send message to coach API
-  };
 
   const pageVariants: Variants = {
     hidden: { opacity: 0, x: 20 },
@@ -53,11 +48,10 @@ export default function Quit_Progress() {
           {/* Dashboard */}
           <Button
             variant={currentPage === 'dashboard' ? 'default' : 'ghost'}
-            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${
-              currentPage === 'dashboard'
+            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${currentPage === 'dashboard'
                 ? 'bg-green-600 text-white shadow-sm hover:bg-green-700'
                 : 'text-green-700 hover:bg-gray-50 hover:text-green-700'
-            }`}
+              }`}
             onClick={() => setCurrentPage('dashboard')}
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -69,11 +63,10 @@ export default function Quit_Progress() {
           {/* History (moved to a separate page) */}
           <Button
             variant={currentPage === 'history' ? 'default' : 'ghost'}
-            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${
-              currentPage === 'history'
+            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${currentPage === 'history'
                 ? 'bg-green-600 text-white shadow-sm hover:bg-green-700'
                 : 'text-green-700 hover:bg-gray-50 hover:text-green-700'
-            }`}
+              }`}
             onClick={() => setCurrentPage('history')}
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -85,11 +78,10 @@ export default function Quit_Progress() {
           {/* Badges */}
           <Button
             variant={currentPage === 'badges' ? 'default' : 'ghost'}
-            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${
-              currentPage === 'badges'
+            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${currentPage === 'badges'
                 ? 'bg-green-600 text-white shadow-sm hover:bg-green-700'
                 : 'text-green-700 hover:bg-gray-50 hover:text-green-700'
-            }`}
+              }`}
             onClick={() => setCurrentPage('badges')}
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -97,30 +89,28 @@ export default function Quit_Progress() {
             </svg>
             Badges
           </Button>
-          
-           <Button
+
+          <Button
             variant={currentPage === 'noti' ? 'default' : 'ghost'}
-            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${
-              currentPage === 'noti'
+            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${currentPage === 'noti'
                 ? 'bg-green-600 text-white shadow-sm hover:bg-green-700'
                 : 'text-green-700 hover:bg-gray-50 hover:text-green-700'
-            }`}
+              }`}
             onClick={() => setCurrentPage('noti')}
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
             </svg>
-            Notification 
+            Notification
           </Button>
 
           {/* Coach Chat */}
           <Button
             variant={currentPage === 'chat' ? 'default' : 'ghost'}
-            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${
-              currentPage === 'chat'
+            className={`w-full justify-start text-base py-5 px-4 rounded-md transition-all duration-200 ease-in-out ${currentPage === 'chat'
                 ? 'bg-green-600 text-white shadow-sm hover:bg-green-700'
                 : 'text-green-700 hover:bg-gray-50 hover:text-green-700'
-            }`}
+              }`}
             onClick={() => setCurrentPage('chat')}
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -129,7 +119,7 @@ export default function Quit_Progress() {
             Chat with Coach
           </Button>
 
-           
+
         </nav>
       </Card>
 
@@ -152,8 +142,8 @@ export default function Quit_Progress() {
               <RemindersSidebar reminders={reminders} />
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <DailyCheckIn/>
-                <PlanStepProgress/>
+                <DailyCheckIn />
+                <PlanStepProgress />
               </div>
             </motion.div>
           )}
@@ -168,7 +158,7 @@ export default function Quit_Progress() {
               exit="exit"
               className="space-y-8"
             >
-              <HistorySidebar/> 
+              <HistorySidebar />
             </motion.div>
           )}
 
@@ -185,18 +175,18 @@ export default function Quit_Progress() {
             </motion.div>
           )}
 
-         {currentPage === 'chat' && (
-  <motion.div
-    key="chat"
-    variants={pageVariants}
-    initial="hidden"
-    animate="visible"
-    exit="exit"
-    className="flex-1 flex"        // <-- flex-1 để căng đầy
-  >
-    <CoachChat onSendMessage={handleSendMessage} />
-  </motion.div>
-)}
+          {currentPage === 'chat' && (
+            <motion.div
+              key="chat"
+              variants={pageVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="flex-1 flex"        // <-- flex-1 để căng đầy
+            >
+              <CoachChat />
+            </motion.div>
+          )}
 
         </AnimatePresence>
       </main>
