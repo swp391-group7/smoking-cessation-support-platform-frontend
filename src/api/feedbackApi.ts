@@ -42,6 +42,18 @@ export interface Coach {
   avgRating: number;
 }
 
+export interface MembershipPackage {
+  id: string;
+  userId: string;
+  packagetTypeId: string;
+  coachId: string;
+  packageTypeName: string;
+  startDate: string;
+  endDate: string;
+  createdAt: string | null;
+  active: boolean;
+}
+
 export interface Feedback {
   id: string;
   userId: string;
@@ -55,6 +67,8 @@ export interface Feedback {
 export interface FeedbackWithDetails extends Feedback {
   userInfo?: User;
   coachInfo?: Coach;
+  membershipPackage?: MembershipPackage;
+  coachId?: string; // thêm dòng này
 }
 
 export interface FeedbackStats {
@@ -90,7 +104,23 @@ export async function fetchUserById(userId: string): Promise<User> {
 }
 
 /**
- * Lấy feedback chi tiết với thông tin user
+ * Lấy thông tin coach theo ID
+ */
+export async function fetchCoachById(coachId: string): Promise<Coach> {
+  const { data } = await feedbackApi.get<Coach>(`/coaches/${coachId}`);
+  return data;
+}
+
+/**
+ * Lấy thông tin membership package theo ID
+ */
+export async function fetchMembershipPackageById(packageId: string): Promise<MembershipPackage> {
+  const { data } = await feedbackApi.get<MembershipPackage>(`/membership-packages/${packageId}`);
+  return data;
+}
+
+/**
+ * Lấy feedback chi tiết với thông tin user và coach (nếu có)
  */
 export async function fetchFeedbackWithDetails(id: string): Promise<FeedbackWithDetails> {
   const feedback = await fetchFeedbackById(id);
@@ -103,6 +133,21 @@ export async function fetchFeedbackWithDetails(id: string): Promise<FeedbackWith
   } catch (error) {
     console.error('Error fetching user info:', error);
   }
+
+  // Nếu là coach feedback, lấy thông tin coach và membership package
+  if (feedback.targetType === 'COACH') {
+  try {
+    const membershipPackage = await fetchMembershipPackageById(feedback.membershipPkgId);
+    feedbackWithDetails.membershipPackage = membershipPackage;
+
+    const coachInfo = await fetchCoachById(membershipPackage.coachId);
+    feedbackWithDetails.coachInfo = coachInfo;
+
+    feedbackWithDetails.coachId = coachInfo.userId; // Gắn coachId thủ công
+  } catch (error) {
+    console.error('Error fetching coach info:', error);
+  }
+}
 
   return feedbackWithDetails;
 }
