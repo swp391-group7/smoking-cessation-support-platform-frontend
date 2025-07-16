@@ -68,6 +68,7 @@ export interface FeedbackWithDetails extends Feedback {
   userInfo?: User;
   coachInfo?: Coach;
   membershipPackage?: MembershipPackage;
+  coachId?: string; // thêm dòng này
 }
 
 export interface FeedbackStats {
@@ -135,18 +136,18 @@ export async function fetchFeedbackWithDetails(id: string): Promise<FeedbackWith
 
   // Nếu là coach feedback, lấy thông tin coach và membership package
   if (feedback.targetType === 'COACH') {
-    try {
-      // Lấy thông tin membership package để có coachId
-      const membershipPackage = await fetchMembershipPackageById(feedback.membershipPkgId);
-      feedbackWithDetails.membershipPackage = membershipPackage;
+  try {
+    const membershipPackage = await fetchMembershipPackageById(feedback.membershipPkgId);
+    feedbackWithDetails.membershipPackage = membershipPackage;
 
-      // Lấy thông tin coach
-      const coachInfo = await fetchCoachById(membershipPackage.coachId);
-      feedbackWithDetails.coachInfo = coachInfo;
-    } catch (error) {
-      console.error('Error fetching coach info:', error);
-    }
+    const coachInfo = await fetchCoachById(membershipPackage.coachId);
+    feedbackWithDetails.coachInfo = coachInfo;
+
+    feedbackWithDetails.coachId = coachInfo.userId; // Gắn coachId thủ công
+  } catch (error) {
+    console.error('Error fetching coach info:', error);
   }
+}
 
   return feedbackWithDetails;
 }
