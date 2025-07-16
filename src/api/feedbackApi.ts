@@ -22,6 +22,26 @@ export const TargetType = {
 
 export type TargetType = typeof TargetType[keyof typeof TargetType];
 
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  dob: string;
+  sex: string | null;
+  avtarPath: string | null;
+  createdAt: string;
+  roleName: string;
+}
+
+export interface Coach {
+  userId: string;
+  bio: string;
+  qualification: string;
+  avgRating: number;
+}
+
 export interface Feedback {
   id: string;
   userId: string;
@@ -32,12 +52,33 @@ export interface Feedback {
   createdAt: string;
 }
 
+export interface FeedbackWithDetails extends Feedback {
+  userInfo?: User;
+  coachInfo?: Coach;
+}
+
 export interface FeedbackStats {
   coachAvgRating: number;
   systemAvgRating: number;
   totalFeedbacks: number;
   coachFeedbacks: number;
   systemFeedbacks: number;
+}
+
+/**
+ * Lấy thông tin user theo ID
+ */
+export async function fetchUserById(userId: string): Promise<User> {
+  const { data } = await feedbackApi.get<User>(`/users/get/${userId}`);
+  return data;
+}
+
+/**
+ * Lấy thông tin coach theo ID
+ */
+export async function fetchCoachById(coachId: string): Promise<Coach> {
+  const { data } = await feedbackApi.get<Coach>(`/coaches/${coachId}`);
+  return data;
 }
 
 /**
@@ -54,6 +95,37 @@ export async function fetchAllFeedbacks(): Promise<Feedback[]> {
 export async function fetchFeedbackById(id: string): Promise<Feedback> {
   const { data } = await feedbackApi.get<Feedback>(`/feedbacks/${id}`);
   return data;
+}
+
+/**
+ * Lấy feedback chi tiết với thông tin user và coach
+ */
+export async function fetchFeedbackWithDetails(id: string): Promise<FeedbackWithDetails> {
+  const feedback = await fetchFeedbackById(id);
+  const feedbackWithDetails: FeedbackWithDetails = { ...feedback };
+
+  try {
+    // Lấy thông tin user
+    const userInfo = await fetchUserById(feedback.userId);
+    feedbackWithDetails.userInfo = userInfo;
+
+    // Nếu là feedback cho coach, lấy thông tin coach từ membershipPkgId
+    // Giả sử membershipPkgId chứa thông tin về coach hoặc có cách khác để lấy coachId
+    if (feedback.targetType === 'COACH') {
+      try {
+        // Tạm thời sử dụng membershipPkgId làm coachId
+        // Bạn có thể cần điều chỉnh logic này dựa trên cấu trúc dữ liệu thực tế
+        const coachInfo = await fetchCoachById(feedback.membershipPkgId);
+        feedbackWithDetails.coachInfo = coachInfo;
+      } catch (error) {
+        console.error('Error fetching coach info:', error);
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching additional info:', error);
+  }
+
+  return feedbackWithDetails;
 }
 
 /**
