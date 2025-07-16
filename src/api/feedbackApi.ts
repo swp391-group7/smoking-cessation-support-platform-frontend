@@ -66,22 +66,6 @@ export interface FeedbackStats {
 }
 
 /**
- * Lấy thông tin user theo ID
- */
-export async function fetchUserById(userId: string): Promise<User> {
-  const { data } = await feedbackApi.get<User>(`/users/get/${userId}`);
-  return data;
-}
-
-/**
- * Lấy thông tin coach theo ID
- */
-export async function fetchCoachById(coachId: string): Promise<Coach> {
-  const { data } = await feedbackApi.get<Coach>(`/coaches/${coachId}`);
-  return data;
-}
-
-/**
  * Lấy tất cả feedbacks (dành cho admin)
  */
 export async function fetchAllFeedbacks(): Promise<Feedback[]> {
@@ -98,7 +82,15 @@ export async function fetchFeedbackById(id: string): Promise<Feedback> {
 }
 
 /**
- * Lấy feedback chi tiết với thông tin user và coach
+ * Lấy thông tin user theo ID
+ */
+export async function fetchUserById(userId: string): Promise<User> {
+  const { data } = await feedbackApi.get<User>(`/users/get/${userId}`);
+  return data;
+}
+
+/**
+ * Lấy feedback chi tiết với thông tin user
  */
 export async function fetchFeedbackWithDetails(id: string): Promise<FeedbackWithDetails> {
   const feedback = await fetchFeedbackById(id);
@@ -108,40 +100,11 @@ export async function fetchFeedbackWithDetails(id: string): Promise<FeedbackWith
     // Lấy thông tin user
     const userInfo = await fetchUserById(feedback.userId);
     feedbackWithDetails.userInfo = userInfo;
-
-    // Nếu là feedback cho coach, lấy thông tin coach từ membershipPkgId
-    // Giả sử membershipPkgId chứa thông tin về coach hoặc có cách khác để lấy coachId
-    if (feedback.targetType === 'COACH') {
-      try {
-        // Tạm thời sử dụng membershipPkgId làm coachId
-        // Bạn có thể cần điều chỉnh logic này dựa trên cấu trúc dữ liệu thực tế
-        const coachInfo = await fetchCoachById(feedback.membershipPkgId);
-        feedbackWithDetails.coachInfo = coachInfo;
-      } catch (error) {
-        console.error('Error fetching coach info:', error);
-      }
-    }
   } catch (error) {
-    console.error('Error fetching additional info:', error);
+    console.error('Error fetching user info:', error);
   }
 
   return feedbackWithDetails;
-}
-
-/**
- * Lấy feedbacks theo target type (SYSTEM hoặc COACH)
- */
-export async function fetchFeedbacksByType(type: TargetType): Promise<Feedback[]> {
-  const { data } = await feedbackApi.get<Feedback[]>(`/feedbacks/target/${type}`);
-  return data;
-}
-
-/**
- * Lấy feedbacks cho một coach cụ thể
- */
-export async function fetchFeedbacksByCoachId(coachId: string): Promise<Feedback[]> {
-  const { data } = await feedbackApi.get<Feedback[]>(`/feedbacks/coach/${coachId}`);
-  return data;
 }
 
 /**
