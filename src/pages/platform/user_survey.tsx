@@ -9,7 +9,7 @@ import { X } from "lucide-react";
 import { getUserPlans } from "@/api/userPlanApi";
 import type { UserPlan } from "@/api/userPlanApi";
 import { hasActiveMembership } from '@/api/membershipApi';
-// ID khảo sát cố định
+// Fixed survey ID
 const FIXED_SURVEY_ID = "bff1b96e-74e9-46a3-b46e-1b625531c1ad";
 
 type SurveyKey = "a1" | "a2" | "a3" | "a4" | "a5" | "a6" | "a7" | "a8";
@@ -25,7 +25,7 @@ interface FullSurvey {
   health_status: string;
   dependency_level: number;
   note: string;
-  // Lưu giá trị điểm cho mỗi câu trả lời khảo sát nội bộ
+  // Store point values for each internal survey answer
   a1: number | null;
   a2: number | null;
   a3: number | null;
@@ -55,23 +55,24 @@ const UserSurveyForm: React.FC = () => {
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FullSurvey, string>>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Trạng thái tải mới
-  const [submissionError, setSubmissionError] = useState<string | null>(null); // Trạng thái lỗi mới
+  const [isLoading, setIsLoading] = useState(false); // New loading state
+  const [submissionError, setSubmissionError] = useState<string | null>(null); // New error state
   const [surveyQuestions, setSurveyQuestions] = useState<SurveyQuestion[]>([]);
 
-  // Thêm state mới để kiểm tra survey đã tồn tại
+  // Add new state to check if survey already exists
   const [hasExistingSurvey, setHasExistingSurvey] = useState<boolean>(false);
   const [existingSurveyData, setExistingSurveyData] = useState<GetSurveyRequest | null>(null);
   const [isCheckingExistingSurvey, setIsCheckingExistingSurvey] = useState<boolean>(true);
   const [checkSurveyError, setCheckSurveyError] = useState<string | null>(null);
 
-  // Thêm state mới để điều khiển việc hiển thị form khảo sát lại
+  // Add new state to control whether to allow re-survey form display
   const [allowResurvey, setAllowResurvey] = useState<boolean>(false);
 
-  // Kiểm tra survey đã tồn tại khi component mount
- // Thêm state để check xem có plan nào đang hoạt động không
+  // Check for existing survey on component mount
+  // Add state to check if there is an active plan
   const [showActivePlanDialog, setShowActivePlanDialog] = useState(false);
   const [showConfirmRestart, setShowConfirmRestart] = useState(false);
+  const [showGenerateDraftPlanDialog, setShowGenerateDraftPlanDialog] = useState(false); // New state for draft plan dialog
 
   const [showMembershipDialog, setShowMembershipDialog] = useState(false);
 
@@ -84,16 +85,16 @@ const UserSurveyForm: React.FC = () => {
         setExistingSurveyData(existingData);
       } catch (error) {
         if (error instanceof AxiosError) {
-          // Nếu lỗi 404 có nghĩa là chưa có survey
+          // If 404 error, it means no survey exists yet
           if (error.response?.status === 404) {
             setHasExistingSurvey(false);
           } else {
-            console.error("Lỗi khi kiểm tra survey đã tồn tại:", error);
-            setCheckSurveyError("Không thể kiểm tra trạng thái survey. Vui lòng thử lại sau.");
+            console.error("Error checking existing survey:", error);
+            setCheckSurveyError("Could not check survey status. Please try again later.");
           }
         } else {
-          console.error("Lỗi không mong muốn khi kiểm tra survey:", error);
-          setCheckSurveyError("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+          console.error("Unexpected error checking survey:", error);
+          setCheckSurveyError("An error occurred. Please try again later.");
         }
       } finally {
         setIsCheckingExistingSurvey(false);
@@ -103,7 +104,7 @@ const UserSurveyForm: React.FC = () => {
     checkExistingSurvey();
   }, []);
 
-  // Lấy 8 câu hỏi đầu từ API
+  // Fetch first 8 questions from API
   useEffect(() => {
     getSurveyDetailById(FIXED_SURVEY_ID)
       .then((data: SurveyDetailDTO) => {
@@ -115,12 +116,12 @@ const UserSurveyForm: React.FC = () => {
         setSurveyQuestions(first8);
       })
       .catch(error => {
-        console.error("Lỗi khi lấy câu hỏi khảo sát:", error);
-        setSubmissionError("Không thể tải câu hỏi khảo sát. Vui lòng thử lại sau.");
+        console.error("Error fetching survey questions:", error);
+        setSubmissionError("Could not load survey questions. Please try again later.");
       });
   }, []);
 
-  // Xử lý thay đổi input (text, số, checkbox, select)
+  // Handle input changes (text, number, checkbox, select)
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -132,58 +133,58 @@ const UserSurveyForm: React.FC = () => {
         : value;
     setFormData(prev => ({ ...prev, [name]: newValue }));
     setErrors(prev => ({ ...prev, [name]: "" }));
-    setSubmissionError(null); // Xóa lỗi gửi khi input thay đổi
+    setSubmissionError(null); // Clear submission error on input change
   };
 
-  // Xử lý chọn đáp án câu hỏi + tính dependency_level
+  // Handle question answer selection + calculate dependency_level
   const handleQuestionChange = (key: SurveyKey, selectedPoint: number) => {
     setFormData(prev => {
-      // 1) Cập nhật đáp án mới (lưu điểm thay vì text)
+      // 1) Update the new answer (store points instead of text)
       const updated = { ...prev, [key]: selectedPoint };
 
-      // 2) Tính tổng điểm của 8 câu
+      // 2) Calculate total points of 8 questions
       const total = surveyQuestions.reduce((sum, { key: k }) => {
         const choicePoint = updated[k];
         return sum + (choicePoint || 0);
       }, 0);
 
-      // 3) Quy tổng điểm thành level (1–5)
+      // 3) Convert total points to level (1–5)
       let lvl = 1;
       if (total > 4) lvl = 2;
       if (total > 8) lvl = 3;
       if (total > 13) lvl = 4;
       if (total > 17) lvl = 5;
 
-      // 4) Trả về state mới gộp cả dependency_level
+      // 4) Return new state including dependency_level
       return { ...updated, dependency_level: lvl };
     });
     setErrors(prev => ({ ...prev, [key]: "" }));
-    setSubmissionError(null); // Xóa lỗi gửi khi input thay đổi
+    setSubmissionError(null); // Clear submission error on input change
   };
 
-  // Kiểm tra hợp lệ form trước khi submit
+  // Validate form before submission
   const validateForm = () => {
     const newErr: Partial<Record<keyof FullSurvey, string>> = {};
-    if (!formData.smoke_duration) newErr.smoke_duration = "Vui lòng nhập thời gian hút thuốc.";
-    if (formData.cigarettes_per_day <= 0) newErr.cigarettes_per_day = "Số điếu/ngày phải lớn hơn 0.";
-    if (formData.price_each <= 0) newErr.price_each = "Giá mỗi bao phải lớn hơn 0.";
-    if (!formData.health_status) newErr.health_status = "Vui lòng chọn tình trạng sức khỏe.";
+    if (!formData.smoke_duration) newErr.smoke_duration = "Please enter smoking duration.";
+    if (formData.cigarettes_per_day <= 0) newErr.cigarettes_per_day = "Cigarettes per day must be greater than 0.";
+    if (formData.price_each <= 0) newErr.price_each = "Price per pack must be greater than 0.";
+    if (!formData.health_status) newErr.health_status = "Please select health status.";
 
     let allQuestionsAnswered = true;
     surveyQuestions.forEach(({ key }, i) => {
       if (formData[key] === null) {
-        newErr[key] = `Vui lòng trả lời câu ${i + 1}.`;
+        newErr[key] = `Please answer question ${i + 1}.`;
         allQuestionsAnswered = false;
       }
     });
 
-    // Chỉ đặt lỗi dependency_level nếu các câu hỏi chưa được trả lời đầy đủ
+    // Only set dependency_level error if questions are not fully answered
     if (formData.dependency_level === 0 && allQuestionsAnswered) {
-      // Trường hợp này lý tưởng sẽ không xảy ra nếu tất cả các câu hỏi đều có điểm và được trả lời
-      // Nhưng nó là một phương án dự phòng tốt
-      newErr.dependency_level = "Không thể tính mức độ phụ thuộc. Vui lòng đảm bảo tất cả các câu hỏi đã được trả lời.";
+      // This case ideally won't happen if all questions have points and are answered
+      // But it's a good fallback
+      newErr.dependency_level = "Could not calculate dependency level. Please ensure all questions are answered.";
     } else if (!allQuestionsAnswered) {
-      newErr.dependency_level = "Vui lòng trả lời đủ 8 câu."; // Lỗi chính khi thiếu câu hỏi
+      newErr.dependency_level = "Please answer all 8 questions."; // Primary error when questions are missing
     }
 
     setErrors(newErr);
@@ -275,17 +276,17 @@ const handleSubmit = async (e: React.FormEvent) => {
     setIsLoading(false);
   }
 };
-  // Hàm để thử lại kiểm tra survey
+  // Function to retry survey check
   const handleRetryCheck = () => {
     setCheckSurveyError(null);
     setIsCheckingExistingSurvey(true);
-    // Trigger useEffect để kiểm tra lại
-    window.location.reload(); // Hoặc có thể tạo một function riêng để check lại
+    // Trigger useEffect to re-check
+    window.location.reload(); // Or you can create a separate function to re-check
   };
-  // Hàm xử lý khi người dùng xác nhận muốn khảo sát lại
+  // Function to handle user confirming re-survey
   const handleConfirmResurvey = () => {
     setAllowResurvey(true);
-    // Reset form data về trạng thái ban đầu
+    // Reset form data to initial state
     setFormData({
       smoke_duration: "",
       cigarettes_per_day: 0,
@@ -301,22 +302,42 @@ const handleSubmit = async (e: React.FormEvent) => {
     setIsSubmitted(false);
   };
   const navigate = useNavigate();
- const handleNextStep = async () => {
-  try {
-    const resp = await getUserPlans();
-    const plansArray: UserPlan[] = Array.isArray(resp) ? resp : [resp];
-    const hasActivePlan = plansArray.some((p) => p.status.toLowerCase() === "active");
-    
-    if (hasActivePlan) {
-      setShowActivePlanDialog(true);
-    } else {
-      navigate('/quit_plan');
+
+  // handleNextStep is now for "Generate draft plan"
+  const handleGenerateDraftPlan = async () => {
+    try {
+      const resp = await getUserPlans();
+      const plansArray: UserPlan[] = Array.isArray(resp) ? resp : [resp];
+      const hasActivePlan = plansArray.some((p) => p.status.toLowerCase() === "active");
+
+      if (hasActivePlan) {
+        setShowGenerateDraftPlanDialog(true); // Show the new dialog for draft plan
+      } else {
+        navigate('/plan-gen'); // No active plan, navigate directly
+      }
+    } catch (err) {
+      console.error("Error checking plans for draft generation:", err);
+      navigate('/plan-gen'); // Fallback navigation on error
     }
-  } catch (err) {
-    console.error("Error checking plans", err);
-    navigate('/quit_plan'); // Navigate to quit_plan if no existing plan
-  }
-};
+  };
+
+  // handleNextStep1 is for "Continue to Planning"
+  const handleNextStep1 = async () => {
+    try {
+      const resp = await getUserPlans();
+      const plansArray: UserPlan[] = Array.isArray(resp) ? resp : [resp];
+      const hasActivePlan = plansArray.some((p) => p.status.toLowerCase() === "active");
+
+      if (hasActivePlan) {
+        setShowActivePlanDialog(true); // Show the existing active plan dialog
+      } else {
+        navigate('/plan-gen'); // Navigate to plan-gen if no existing plan
+      }
+    } catch (err) {
+      console.error("Error checking plans", err);
+      navigate('/plan-gen'); // Navigate to plan-gen if no existing plan
+    }
+  };
 
 const confirmRestart = () => {
   setShowActivePlanDialog(false);
@@ -327,15 +348,21 @@ const handleRestart = () => {
   setShowConfirmRestart(false);
   navigate("/quit_plan");
 };
+
+const handleConfirmGenerateDraftPlan = () => {
+  setShowGenerateDraftPlanDialog(false); // Close the dialog
+  navigate('/plan-gen'); // Navigate to plan-gen
+};
+
 const dialogs = (
   <>
-    {/* Active plan dialog */}
+    {/* Active plan dialog (for "Continue to Planning" button) */}
     <AlertDialog
       open={showActivePlanDialog}
       onOpenChange={() => setShowActivePlanDialog(false)}
     >
-      <AlertDialogContent className="bg-white text-emerald-700 border border-emerald-300 shadow-xl rounded-lg">
-        <AlertDialogHeader className="relative">
+      <AlertDialogContent className="bg-white text-green-800 border border-green-300 shadow-xl rounded-lg max-w-md mx-auto p-6">
+        <AlertDialogHeader className="relative text-center">
           {/* Keep the close button for the first dialog */}
           <button
             onClick={() => setShowActivePlanDialog(false)}
@@ -344,12 +371,15 @@ const dialogs = (
           >
             <X className="h-5 w-5" />
           </button>
-          <AlertDialogTitle className="text-emerald-800 text-2xl font-bold mb-2 pt-6 text-center">
-            You already have an active plan!
+          <AlertDialogTitle className="text-green-800 text-2xl font-bold mb-2 pt-6 flex items-center justify-center">
+            <svg className="w-8 h-8 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Active Plan Detected!
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-emerald-600 text-base leading-relaxed text-center">
+          <AlertDialogDescription className="text-gray-700 text-base leading-relaxed">
             Our system detected that you already have an active quit smoking
-            plan. Do you want to continue with the current plan or create a new
+            plan. Do you want to continue with your current plan or create a new
             one?
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -357,13 +387,13 @@ const dialogs = (
         <AlertDialogFooter className="pt-4 flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
           <AlertDialogAction
             onClick={() => navigate("/quit_progress")}
-            className="bg-emerald-700 text-white hover:bg-emerald-800 transition rounded-lg px-5 py-2 font-medium"
+            className="bg-green-700 text-white hover:bg-green-800 transition rounded-lg px-5 py-2 font-medium"
           >
             Continue Current Plan
           </AlertDialogAction>
           <AlertDialogAction
             onClick={confirmRestart}
-            className="bg-white text-emerald-700 border border-emerald-600 hover:bg-emerald-50 transition rounded-lg px-5 py-2 font-medium"
+            className="bg-white text-green-700 border border-green-600 hover:bg-green-50 transition rounded-lg px-5 py-2 font-medium"
           >
             Create New Plan
           </AlertDialogAction>
@@ -371,18 +401,21 @@ const dialogs = (
       </AlertDialogContent>
     </AlertDialog>
 
-    {/* Confirm restart dialog */}
+    {/* Confirm restart dialog (triggered by "Create New Plan" from Active Plan dialog) */}
     <AlertDialog
       open={showConfirmRestart}
       onOpenChange={() => setShowConfirmRestart(false)}
     >
-      <AlertDialogContent className="bg-white text-emerald-700 border border-emerald-300 shadow-xl rounded-lg">
-        <AlertDialogHeader className="relative">
-          <AlertDialogTitle className="text-emerald-800 text-2xl font-bold mb-2 text-center">
+      <AlertDialogContent className="bg-white text-green-800 border border-green-300 shadow-xl rounded-lg max-w-md mx-auto p-6">
+        <AlertDialogHeader className="relative text-center">
+          <AlertDialogTitle className="text-green-800 text-2xl font-bold mb-2 flex items-center justify-center">
+            <svg className="w-8 h-8 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
             Confirm New Plan?
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-emerald-600 text-base leading-relaxed text-center">
-            Creating a new plan will end the current one. Are you sure you want
+          <AlertDialogDescription className="text-gray-700 text-base leading-relaxed">
+            Creating a new plan will end your current active plan. Are you sure you want
             to proceed?
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -403,36 +436,78 @@ const dialogs = (
       </AlertDialogContent>
     </AlertDialog>
 
-<AlertDialog open={showMembershipDialog} onOpenChange={setShowMembershipDialog}>
-  <AlertDialogContent className="bg-white text-gray-800 rounded-lg shadow-xl p-6 max-w-sm mx-auto">
-    <AlertDialogHeader className="mb-6">
-      <AlertDialogTitle className="text-2xl font-extrabold text-green-700">
-        You have a draft quit plan!
-      </AlertDialogTitle>
-      <AlertDialogDescription className="text-gray-600 mt-2 text-base">
-        Based on the survey you just completed, we detected you already have a draft quit plan. Would you like to go to the Quit Plan Generator now?
-      </AlertDialogDescription>
-    </AlertDialogHeader>
-    <AlertDialogFooter className="flex flex-col sm:flex-row-reverse justify-end gap-3 mt-4">
-      <AlertDialogAction
-        onClick={() => navigate('/plan-gen')}
-        className="w-full sm:w-auto bg-green-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition ease-in-out duration-150"
-      >
-        Go to Quit Generator
-      </AlertDialogAction>
-      <AlertDialogCancel
-        onClick={() => setShowMembershipDialog(false)}
-        className="w-full sm:w-auto bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-opacity-50 transition ease-in-out duration-150"
-      >
-        Stay Here
-      </AlertDialogCancel>
-    </AlertDialogFooter>
-  </AlertDialogContent>
-</AlertDialog>
+    {/* New: Draft Plan Generation Confirmation Dialog */}
+    <AlertDialog
+      open={showGenerateDraftPlanDialog}
+      onOpenChange={() => setShowGenerateDraftPlanDialog(false)}
+    >
+      <AlertDialogContent className="bg-white text-green-800 border border-green-300 shadow-xl rounded-lg max-w-md mx-auto p-6">
+        <AlertDialogHeader className="relative text-center">
+          <button
+            onClick={() => setShowGenerateDraftPlanDialog(false)}
+            className="absolute top-2 right-2 p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <AlertDialogTitle className="text-green-800 text-2xl font-bold mb-2 pt-6 flex items-center justify-center">
+            <svg className="w-8 h-8 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Confirm Draft Plan Generation
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-gray-700 text-base leading-relaxed">
+            You currently have an active quit plan. Generating a new draft plan will not affect your active plan, but you will be working on a separate draft. Do you wish to proceed?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="pt-4 flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+          <AlertDialogCancel
+            onClick={() => setShowGenerateDraftPlanDialog(false)}
+            className="bg-gray-200 text-gray-700 hover:bg-gray-300 transition rounded-lg px-5 py-2 font-medium"
+          >
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleConfirmGenerateDraftPlan}
+            className="bg-green-700 text-white hover:bg-green-800 transition rounded-lg px-5 py-2 font-medium"
+          >
+            Proceed to Generator
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <AlertDialog open={showMembershipDialog} onOpenChange={setShowMembershipDialog}>
+      <AlertDialogContent className="bg-white text-gray-800 rounded-lg shadow-xl p-6 max-w-sm mx-auto">
+        <AlertDialogHeader className="mb-6">
+          <AlertDialogTitle className="text-2xl font-extrabold text-green-700">
+            You have a draft quit plan!
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-gray-600 mt-2 text-base">
+            Based on the survey you just completed, we detected you already have a draft quit plan. Would you like to go to the Quit Plan Generator now?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex flex-col sm:flex-row-reverse justify-end gap-3 mt-4">
+          <AlertDialogAction
+            onClick={() => navigate('/plan-gen')}
+            className="w-full sm:w-auto bg-green-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition ease-in-out duration-150"
+          >
+            Go to Quit Generator
+          </AlertDialogAction>
+          <AlertDialogCancel
+            onClick={() => setShowMembershipDialog(false)}
+            className="w-full sm:w-auto bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-opacity-50 transition ease-in-out duration-150"
+          >
+            Stay Here
+          </AlertDialogCancel>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
 
   </>
 );
-  // Hiển thị loading khi đang kiểm tra survey
+  // Display loading when checking survey
   if (isCheckingExistingSurvey) {
     return (
       <div className="max-w-3xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-blue-100 text-center">
@@ -441,29 +516,29 @@ const dialogs = (
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          <span className="text-lg font-medium text-gray-700">Đang kiểm tra trạng thái khảo sát...</span>
+          <span className="text-lg font-medium text-gray-700">Checking survey status...</span>
         </div>
       </div>
     );
   }
 
-  // Hiển thị lỗi khi kiểm tra survey
+  // Display error when checking survey
   if (checkSurveyError) {
     return (
       <div className="max-w-3xl mx-auto mt-8 bg-white shadow-lg rounded-xl p-8 border border-red-100 text-center">
-        <h1 className="text-2xl font-semibold text-red-700 mb-4">Có lỗi xảy ra</h1>
+        <h1 className="text-2xl font-semibold text-red-700 mb-4">An Error Occurred</h1>
         <p className="text-lg text-gray-800 mb-6">{checkSurveyError}</p>
         <button
           onClick={handleRetryCheck}
           className="bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-800 transition"
         >
-          Thử lại
+          Retry
         </button>
       </div>
     );
   }
 
-  // Hiển thị thông báo đã có survey (với tùy chọn khảo sát lại)
+  // Display survey completed message (with re-survey option)
 if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
     return (
       <> {dialogs}
@@ -523,10 +598,16 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button
-              onClick={handleNextStep}
+              onClick={handleNextStep1}
               className="bg-green-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-800 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg"
             >
               Continue to Planning &rarr;
+            </button>
+            <button
+              onClick={handleGenerateDraftPlan} 
+              className="bg-green-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-800 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+            >
+              Generate draft plan &rarr;
             </button>
 
             {/* Resurvey Button with AlertDialog */}
@@ -579,10 +660,10 @@ if (isSubmitted) {
       <h1 className="text-3xl font-semibold text-green-700 mb-4">Thank you!</h1>
       <p className="text-lg text-gray-800 mb-6">Your survey has been submitted successfully.</p>
       <p className="text-md text-gray-600 mb-4">Your feedback is very valuable!</p>
-      
+
       {/* Loading indicator */}
       <div className="flex items-center justify-center">
-        <svg className="animate-spin h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24">
+        <svg className="animate-spin h-5 w-5 mr-3 text-green-600" fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
@@ -698,130 +779,83 @@ if (isSubmitted) {
             <svg className="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9.207a1 1 0 011.414 0l.006.006a.998.998 0 01-.006 1.414l-2.071 2.071a.999.999 0 01-1.414-1.414l.006-.006A.998.998 0 018.228 9.207zM15 15l1.414-1.414a1 1 0 011.414 0l.006.006a.998.998 0 01-.006 1.414l-2.071 2.071a.999.999 0 01-1.414-1.414l.006-.006A.998.998 0 0115 15z" />
             </svg>
-            Understanding Your Smoking Habits
+            Understanding Your Dependency
           </h2>
-          {surveyQuestions.map(({ key, question, options }, idx) => (
-            <div key={key} className={`mb-6 p-4 border rounded-md ${errors[key] ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
-              }`}>
-              <p className="font-medium mb-3">
-                <span className="font-semibold text-green-700">{idx + 1}.</span> {question} <span className="text-red-500">*</span>
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {options.map(({ text, point }, optionIndex) => (
-                  <label key={`${key}-${point}-${optionIndex}`} className="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-green-50">
+          {surveyQuestions.map((q) => (
+            <div key={q.key} className="mb-6 p-4 border border-gray-200 rounded-md bg-white">
+              <p className="text-lg font-medium text-gray-800 mb-3">{q.question} <span className="text-red-500">*</span></p>
+              <div className="flex flex-wrap gap-3">
+                {q.options.map((option) => (
+                  <label key={option.text} className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full cursor-pointer hover:bg-green-100 transition-colors duration-200">
                     <input
                       type="radio"
-                      name={key}
-                      value={point}
-                      checked={formData[key] === point}
-                      onChange={() => handleQuestionChange(key, point)}
-                      className="accent-green-600"
+                      name={q.key}
+                      value={option.point}
+                      checked={formData[q.key] === option.point}
+                      onChange={() => handleQuestionChange(q.key, option.point)}
+                      className="accent-green-600 w-4 h-4"
                     />
-                    <span>{text}</span>
+                    <span className="text-gray-700">{option.text}</span>
                   </label>
                 ))}
               </div>
-              {errors[key] && <p className="text-red-500 mt-2">{errors[key]}</p>}
+              {errors[q.key] && <p className="text-red-500 text-sm mt-2">{errors[q.key]}</p>}
             </div>
           ))}
+          {errors.dependency_level && <p className="text-red-500 text-sm mt-2">{errors.dependency_level}</p>}
         </div>
 
-        {/* --- Overall Dependency Level --- */}
+        {/* --- Additional Notes --- */}
         <div className="p-5 border border-gray-200 rounded-lg shadow-sm bg-gray-50 mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <svg className="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2zM21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.11C6.233 14.9 8.95 14 12 14c4.97 0 9-3.582 9-8s-4.03-8-9-8-9 3.582-9 8c0 1.48.51 2.906 1.396 4.192l-.128.283a.5.5 0 00-.094.137l-2.732 6.136a.5.5 0 00.672.672l6.136-2.732a.5.5 0 00.137-.094l.283-.128A10.014 10.014 0 0012 21c4.97 0 9-3.582 9-8z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
-            Overall Dependency Level <span className="text-red-500">*</span>
+            Additional Notes (Optional)
           </h2>
-          <div className={`flex items-center justify-between px-4 py-6 bg-white rounded-xl shadow-md ${errors.dependency_level ? 'border-2 border-red-500' : ''
-            }`}>
-            <span className="font-medium text-gray-700">Low</span>
-            <div className="flex gap-4">
-              {[1, 2, 3, 4, 5].map(lvl => {
-                const colors = ["#A8E6CF", "#DCE775", "#FFF59D", "#FFAB91", "#EF9A9A"];
-                const isSel = formData.dependency_level === lvl;
-                return (
-                  <div key={lvl} className="relative">
-                    <div
-                      title={`Level ${lvl}`}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold transition ${isSel ? 'ring-4 ring-offset-2 ring-green-700 scale-110' : ''
-                        }`}
-                      style={{ backgroundColor: colors[lvl - 1] }}
-                    >
-                      {isSel && (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="block text-center text-sm text-gray-600 mt-1">{lvl}</span>
-                  </div>
-                );
-              })}
-            </div>
-            <span className="font-medium text-gray-700">High</span>
-          </div>
-          {errors.dependency_level && <p className="text-red-500 mt-2">{errors.dependency_level}</p>}
-        </div>
-
-        {/* --- Notes (optional) --- */}
-        <div className="p-5 border border-gray-200 rounded-lg shadow-sm bg-gray-50 mb-8">
-          <label htmlFor="note" className="block mb-2 text-lg font-medium text-gray-700">
-            Notes (optional)
-          </label>
           <textarea
             id="note"
             name="note"
-            rows={4}
+            placeholder="Any other information you'd like to share..."
             value={formData.note}
             onChange={handleChange}
-            className="w-full p-2 border rounded-md focus:ring-green-500 focus:border-green-500"
-          />
+            rows={4}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+          ></textarea>
         </div>
 
-        {/* --- Summary of your entries --- */}
-        <div className="mb-8 p-6 bg-green-50 rounded-lg border border-green-200">
-          <h2 className="text-xl font-semibold text-green-800 mb-4">Summary of Your Responses</h2>
-          <p><strong>Smoking duration:</strong> {formData.smoke_duration || 'Not entered'}</p>
-          <p><strong>Cigarettes per day:</strong> {formData.cigarettes_per_day > 0 ? formData.cigarettes_per_day : 'Not entered'}</p>
-          <p><strong>Price per pack:</strong> {formData.price_each > 0 ? formData.price_each : 'Not entered'}</p>
-          <p><strong>Tried to quit:</strong> {formData.tried_to_quit ? 'Yes' : 'No'}</p>
-          <p><strong>Health status:</strong> {formData.health_status || 'Not selected'}</p>
-          <p><strong>Dependency level:</strong> {formData.dependency_level > 0 ? formData.dependency_level : 'Not selected'}</p>
-          {surveyQuestions.map((q, i) => (
-            <p key={`summary-${i}`}>
-              <strong>Question {i + 1}:</strong> {
-                formData[`a${i + 1}` as SurveyKey] !== null
-                  ? q.options.find(opt => opt.point === formData[`a${i + 1}` as SurveyKey])?.text || 'Invalid answer'
-                  : 'Not answered'
-              }
-            </p>
-          ))}
-        </div>
+        {submissionError && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md relative mb-4" role="alert">
+            <strong className="font-bold">Error!</strong>
+            <span className="block sm:inline"> {submissionError}</span>
+          </div>
+        )}
 
-        {/* --- Submit --- */}
-        <div className="text-center">
-          {submissionError && (
-            <p className="text-red-600 mb-4 text-lg font-medium">{submissionError}</p>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className={`w-full py-3 rounded-lg font-semibold text-white text-lg transition-all duration-300 ease-in-out
+            ${isLoading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-700 hover:bg-green-800 shadow-lg hover:shadow-xl transform hover:scale-105"
+            }`}
+        >
+          {isLoading ? (
+            <span className="flex items-center justify-center">
+              <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Submitting...
+            </span>
+          ) : (
+            "Submit Survey"
           )}
-          <button
-            type="submit"
-            className="bg-emerald-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Submitting...' : 'Submit Survey'}
-          </button>
-        </div>
+        </button>
       </form>
-
-      
     </div>
-     
-     </>
-
+    </>
   );
-
 };
 
 export default UserSurveyForm;
