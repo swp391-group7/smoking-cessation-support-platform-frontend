@@ -37,6 +37,7 @@ const LoginPage: React.FC = () => {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("role", user.role);
       localStorage.setItem("userId", user.id);
+      
 
       toast.success("Login successful!", {
         position: "top-center",
