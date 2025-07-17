@@ -1,19 +1,6 @@
-// src/api/userApi.ts
-import axios from 'axios';
 
-export const userApi = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-    headers: { 'Content-Type': 'application/json' },
-});
-
-// Gắn JWT tự động cho mọi request
-userApi.interceptors.request.use(config => {
-    const token = localStorage.getItem('token');
-    if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
+import baseApi from './BaseApi';
+export const userApi =baseApi;
 
 export interface UserInfo  {
     id: string;

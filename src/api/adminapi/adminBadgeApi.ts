@@ -1,20 +1,7 @@
 // src/api/adminapi/adminBadgeApi.ts
-import axios from 'axios';
-
-const badgeApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-badgeApi.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// import axios from 'axios';
+import baseApi from '../BaseApi';
+const badgeApi =baseApi;
 
 export interface BadgeRequest {
   badgeName: string;

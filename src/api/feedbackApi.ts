@@ -1,19 +1,6 @@
-// src/api/feedbackApi.ts
-import axios from 'axios';
+import baseApi from './BaseApi';
 
-const feedbackApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-  headers: { 'Content-Type': 'application/json' },
-});
-
-// Gắn JWT tự động
-feedbackApi.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+const feedbackApi = baseApi;
 
 export const TargetType = {
   SYSTEM: 'SYSTEM',

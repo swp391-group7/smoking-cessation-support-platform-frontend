@@ -1,18 +1,7 @@
-import axios from 'axios';
 
-// Create an axios instance similar to blogApi, with automatic JWT attachment
-export const usersurveyApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-  headers: { 'Content-Type': 'application/json' },
-});
+import baseApi from './BaseApi';
+const usersurveyApi =baseApi;
 
-usersurveyApi.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 // DTO returned from backend for answers
 export interface AnswerDTO {

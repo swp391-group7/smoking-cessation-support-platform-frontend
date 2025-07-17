@@ -1,22 +1,6 @@
+import baseApi from './BaseApi';
 
-import axios from 'axios';
-
-//tạo instance của axios 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// tự động gắn jwt lên header 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+const api = baseApi;
 export interface CreateDailyCheckinRequest {
   planId: string;
   planStepId: string;

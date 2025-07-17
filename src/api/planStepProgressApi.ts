@@ -1,21 +1,6 @@
-import axios from 'axios';
 
-//tạo instance của axios 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// tự động gắn jwt lên header 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import baseApi from './BaseApi';
+const api =baseApi;
 
 export interface QuitPlanStepDto {
     id: string;
