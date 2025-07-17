@@ -40,6 +40,7 @@ import MembershipPage from './pages/platform/membership.tsx';
 import ScrollToTop from './components/ScrollToTop.tsx';
 import CoachSelectionPage from './components/selectCoach.tsx';
 import PlanFormGenForMember from './components/PlanFormGenForMember.tsx';
+import CoachClients from './pages/coach/CoachClients.tsx';
 
 
 export const App = () => (
@@ -101,6 +102,7 @@ export const App = () => (
         >
           <Route path="dashboard" element={<CoachDashboard />} />
           <Route path="profile" element={<CoachProfile />} />  
+          <Route path="clients" element={<CoachClients />} />
           <Route path="*" element={<Navigate to="/coach/dashboard" replace />} />
         </Route>
       </Routes>
