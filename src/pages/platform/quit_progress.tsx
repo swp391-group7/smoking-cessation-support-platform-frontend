@@ -22,9 +22,7 @@ export default function Quit_Progress() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [unreadMessageCount, setUnreadMessageCount] = useState(0); // State để lưu số tin nhắn chưa đọc
 
-  const reminders = [
-    { time: "10:00 AM", text: "Stay strong! The first week is the hardest.", icon: "📘" },
-  ];
+
 
   const pageVariants: Variants = {
     hidden: { opacity: 0, x: 20 },
@@ -130,7 +128,7 @@ export default function Quit_Progress() {
               className="space-y-8"
             >
               <ProgressOverview />
-              <RemindersSidebar reminders={reminders} />
+              <RemindersSidebar  />
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <DailyCheckIn />
                 <PlanStepProgress />
