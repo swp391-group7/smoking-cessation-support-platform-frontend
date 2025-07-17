@@ -6,7 +6,6 @@ import Topbar from "@/components/coach/Topbar";
 import {
   LayoutDashboard,
   Users,
-  MessageCircle,
 } from "lucide-react";
 
 const menuItems = [
@@ -27,13 +26,7 @@ const menuItems = [
         description: "Manage your clients",
         badge: null,
       },
-      {
-        name: "Chat Room",
-        path: "/coach/chat/1", // default userId
-        icon: MessageCircle,
-        description: "Chat with users",
-        badge: null,
-      },
+     
     ],
   },
 ];
@@ -77,7 +70,7 @@ const CoachLayout: React.FC = () => {
               height: "calc(100vh - 64px)",
             }}
           >
-            <div className="max-w-7xl mx-auto">
+            <div className="w-full h-full">
               <Outlet />
             </div>
           </main>
