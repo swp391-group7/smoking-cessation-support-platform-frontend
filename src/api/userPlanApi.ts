@@ -152,3 +152,31 @@ export async function generateSamplePlan(): Promise<GeneratedPlan> {
   );
   return data;
 }
+
+
+export interface QuitPlanDto {
+  id: string;
+  userId: string;
+  userSurveyId: string;
+  startDate: string;           // e.g. "2025-07-17"
+  method: string;              // e.g. "GRADUAL" | "IMMEDIATE"
+  targetDate: string;          // e.g. "2025-07-17"
+  createAt: string;            // ISO timestamp
+  status: string;              // e.g. "draft" | "active" | "completed"
+  updatedAt: string;           // ISO timestamp
+  currentZeroStreak: number;
+  maxZeroStreak: number;
+}
+
+/**
+ * Fetch all quit‑plans for a given user
+ * GET /quit-plans/users/{userId}/plans
+ */
+export const getPlansByUser = async (
+  userId: string
+): Promise<QuitPlanDto[]> => {
+  const response = await userPlanApi.get<QuitPlanDto[]>(
+    `/quit-plans/users/${userId}/plans`
+  );
+  return response.data;
+};

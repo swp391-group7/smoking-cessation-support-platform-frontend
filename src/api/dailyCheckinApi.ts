@@ -43,3 +43,56 @@ export const createDailyCheckin = async (
   );
   return response.data;
 };
+
+// --- User DTO coming back from /membership-packages/coach/{coachId}/users ---
+export interface UserDto {
+  id: string;
+  username: string;
+  password: string | null;
+  email: string;
+  providerId?: string;
+  fullName: string;
+  phoneNumber: string;
+  dob: string;          // ISO date
+  sex: string;
+  avatarPath: string;
+  preStatus: boolean;
+  createdAt: string;    // ISO timestamp
+  roleName: string;
+}
+
+// --- GET all users assigned to a coach ---
+export const getUsersByCoach = async (
+  coachId: string
+): Promise<UserDto[]> => {
+  const response = await api.get<UserDto[]>(
+    `/membership-packages/coach/${coachId}/users`
+  );
+  return response.data;
+};
+
+export interface MembershipPackageDto {
+  id: string;
+  userId: string;
+  packageTypeId: string;
+  coachId: string;
+  packageTypeName: string;
+  startDate: string;    // ISO timestamp
+  endDate: string;      // ISO timestamp
+  createdAt: string;    // ISO timestamp
+  active: boolean;
+}
+
+/**
+ * Fetch all membership packages for a specific user under a specific coach
+ * GET /membership-packages/coach/{coachId}/user/{userId}/memberships
+ */
+export const getUserMemberships = async (
+  coachId: string,
+  userId: string
+): Promise<MembershipPackageDto[]> => {
+  const response = await api.get<MembershipPackageDto[]>(
+    `/membership-packages/coach/${coachId}/user/${userId}/memberships`
+  );
+  return response.data;
+};
