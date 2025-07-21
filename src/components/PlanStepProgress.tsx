@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, Target } from 'lucide-react';
-import { motion, AnimatePresence,type Variants } from 'framer-motion'; // Import Variants type
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import {
   Dialog,
   DialogContent,
@@ -32,37 +32,84 @@ const PlanStepProgress: React.FC = () => {
         setSteps(data);
 
         const today = new Date();
-        const idx = data.findIndex(step => {
+        today.setHours(0, 0, 0, 0); // Đặt về đầu ngày để so sánh chính xác
+
+        let activeStepIndex = 0;
+        let foundActiveStep = false;
+
+        for (let i = 0; i < data.length; i++) {
+          const step = data[i];
           const start = new Date(step.stepStartDate);
-          const end = new Date(step.stepEndDate);
-          return today >= start && today <= end;
-        });
-        setCurrentStepIndex(idx >= 0 ? idx : (data.length > 0 ? data.length - 1 : 0));
+          start.setHours(0, 0, 0, 0);
+          const endDate = new Date(step.stepEndDate);
+          endDate.setHours(23, 59, 59, 999);
+
+          // Nếu ngày hiện tại nằm trong khoảng của bước này
+          if (today >= start && today <= endDate) {
+            activeStepIndex = i;
+            foundActiveStep = true;
+            break;
+          }
+        }
+
+        // Nếu không tìm thấy bước nào đang active (tức là tất cả các bước đã qua hoặc chưa tới)
+        if (!foundActiveStep && data.length > 0) {
+            const firstStepStartDate = new Date(data[0].stepStartDate);
+            firstStepStartDate.setHours(0,0,0,0);
+            const lastStepEndDate = new Date(data[data.length - 1].stepEndDate);
+            lastStepEndDate.setHours(23,59,59,999);
+
+            if (today < firstStepStartDate) {
+                // Nếu ngày hiện tại trước ngày bắt đầu của bước đầu tiên, vẫn coi là ở bước 0
+                activeStepIndex = 0;
+            } else if (today > lastStepEndDate) {
+                // Nếu ngày hiện tại sau ngày kết thúc của bước cuối cùng, coi là ở bước cuối cùng
+                activeStepIndex = data.length - 1;
+            }
+        } else if (data.length === 0) {
+            activeStepIndex = 0; // Xử lý trường hợp không có bước nào
+        }
+
+        setCurrentStepIndex(activeStepIndex);
+
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch quit plan or steps:", err);
       }
     })();
   }, []);
 
-  const now = new Date().getTime();
+  const now = new Date().getTime(); // Thời gian hiện tại theo milliseconds
+
   let progressPercentage = 0;
-  if (steps.length) {
-    const completedCount = steps.slice(0, currentStepIndex).length;
+
+  if (steps.length > 0) {
     const current = steps[currentStepIndex];
     if (current) {
-        const start = new Date(current.stepStartDate).getTime();
-        const end = new Date(current.stepEndDate).getTime();
-        const fraction = start < end ? Math.min(Math.max((now - start) / (end - start), 0), 1) : 0;
-        progressPercentage = Math.round(((completedCount + fraction) / steps.length) * 100);
-    } else if (currentStepIndex === steps.length - 1 && steps[currentStepIndex]) {
-        progressPercentage = 100;
+      const planStartDate = new Date(steps[0].stepStartDate);
+      planStartDate.setHours(0,0,0,0);
+      const planEndDate = new Date(steps[steps.length - 1].stepEndDate);
+      planEndDate.setHours(23,59,59,999);
+
+      // Tính tổng thời lượng của toàn bộ kế hoạch (từ bắt đầu bước 1 đến kết thúc bước cuối cùng)
+      const totalPlanDuration = planEndDate.getTime() - planStartDate.getTime();
+
+      if (totalPlanDuration > 0) {
+        // Tính thời gian đã trôi qua kể từ khi kế hoạch bắt đầu
+        let elapsedTime = now - planStartDate.getTime();
+        // Đảm bảo elapsedTime không âm (nếu chưa đến ngày bắt đầu) và không vượt quá totalPlanDuration
+        elapsedTime = Math.max(0, Math.min(elapsedTime, totalPlanDuration));
+
+        progressPercentage = Math.round((elapsedTime / totalPlanDuration) * 100);
+      } else if (steps.length === 1 && now >= new Date(steps[0].stepStartDate).getTime()) {
+        // Xử lý trường hợp chỉ có 1 bước và đã đến/qua ngày bắt đầu
+        progressPercentage = 100; // Hoặc một giá trị tùy thuộc vào bạn muốn thể hiện
+      }
+
     } else {
-        progressPercentage = 0;
+      progressPercentage = 0;
     }
   }
 
-  // Framer Motion variants for the arrows
-  // Explicitly type arrowVariants as Variants
   const arrowVariants: Variants = {
     hidden: { opacity: 0, pathLength: 0 },
     visible: {
@@ -70,7 +117,7 @@ const PlanStepProgress: React.FC = () => {
       pathLength: 1,
       transition: {
         duration: 0.8,
-        ease: "easeInOut" // "string" is usually fine, but explicit typing helps
+        ease: "easeInOut"
       }
     },
     completed: {
@@ -147,9 +194,25 @@ const PlanStepProgress: React.FC = () => {
         {/* Steps Timeline with Animated Arrows */}
         <div className="relative flex items-center justify-between mb-4 px-6">
           {steps.map((step, index) => {
+            const stepEndDate = new Date(step.stepEndDate);
+            stepEndDate.setHours(23, 59, 59, 999);
+
             const isCurrent = index === currentStepIndex;
-            const completed = index < currentStepIndex || (isCurrent && progressPercentage === 100);
-            const bg = completed || isCurrent ? 'bg-green-500' : 'bg-gray-300';
+            // Bước đã hoàn thành: ngày hiện tại đã qua ngày kết thúc của bước đó
+            const isCompletedStep = now > stepEndDate.getTime();
+
+            // Màu nền và biểu tượng
+            let bgClass = 'bg-gray-300'; // Mặc định là xám (chưa tới)
+            let iconContent: React.ReactNode = index + 1; // Mặc định là số bước
+
+            if (isCompletedStep) {
+              bgClass = 'bg-green-500'; // Bước đã hoàn thành
+              iconContent = <CheckCircle className="w-5 h-5" />;
+            } else if (isCurrent) {
+              bgClass = 'bg-green-400'; // Bước hiện tại (sáng lên)
+              iconContent = index + 1; // Vẫn hiển thị số, không tick
+            }
+
 
             return (
               <React.Fragment key={step.id}>
@@ -158,15 +221,15 @@ const PlanStepProgress: React.FC = () => {
                   onClick={() => setSelectedStep(step)}
                 >
                   <div
-                    className={`${bg} w-8 h-8 rounded-full flex items-center justify-center text-white`}
+                    className={`${bgClass} w-8 h-8 rounded-full flex items-center justify-center text-white`}
                   >
-                    {completed ? <CheckCircle className="w-5 h-5" /> : index + 1}
+                    {iconContent}
                   </div>
                   <span
                     className={`mt-2 text-xs text-center w-24 truncate ${
-                      completed || isCurrent
+                      isCompletedStep
                         ? 'text-green-800 font-medium'
-                        : 'text-gray-600'
+                        : (isCurrent ? 'text-green-700 font-medium' : 'text-gray-600')
                     }`}
                   >
                     {step.stepDescription}
@@ -182,13 +245,13 @@ const PlanStepProgress: React.FC = () => {
                         viewBox="0 0 100 10"
                         preserveAspectRatio="none"
                         initial="hidden"
-                        // Ensure 'completed' state is distinct for the type checker, or just use 'visible' if functionally same
-                        animate={index < currentStepIndex ? "completed" : (isCurrent ? "visible" : "hidden")}
+                        // Mũi tên được animate nếu bước TRƯỚC NÓ đã hoàn thành hoặc là bước hiện tại
+                        animate={(isCompletedStep || isCurrent) ? "completed" : "hidden"}
                         key={`arrow-${index}-${currentStepIndex}`}
                       >
                         <motion.path
                           d="M 0 5 L 90 5 M 85 2 L 90 5 L 85 8"
-                          stroke={index < currentStepIndex ? "#10B981" : (isCurrent ? "#34D399" : "#D1D5DB")}
+                          stroke={(isCompletedStep || isCurrent) ? "#10B981" : "#D1D5DB"}
                           strokeWidth="2"
                           fill="none"
                           variants={arrowVariants}

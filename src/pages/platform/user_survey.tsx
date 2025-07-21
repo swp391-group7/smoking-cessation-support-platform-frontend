@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { X } from "lucide-react";
 import { getUserPlans } from "@/api/userPlanApi";
 import type { UserPlan } from "@/api/userPlanApi";
-
+import { hasActiveMembership } from '@/api/membershipApi';
 // ID khảo sát cố định
 const FIXED_SURVEY_ID = "bff1b96e-74e9-46a3-b46e-1b625531c1ad";
 
@@ -72,6 +72,12 @@ const UserSurveyForm: React.FC = () => {
  // Thêm state để check xem có plan nào đang hoạt động không
   const [showActivePlanDialog, setShowActivePlanDialog] = useState(false);
   const [showConfirmRestart, setShowConfirmRestart] = useState(false);
+
+  const [showMembershipDialog, setShowMembershipDialog] = useState(false);
+
+  const [showActivePlanDialogGen, setShowActivePlanDialogGen] = useState(false);
+const [showConfirmRestartGen, setShowConfirmRestartGen] = useState(false);
+
   useEffect(() => {
     const checkExistingSurvey = async () => {
       try {
@@ -157,6 +163,33 @@ const UserSurveyForm: React.FC = () => {
     setErrors(prev => ({ ...prev, [key]: "" }));
     setSubmissionError(null); // Xóa lỗi gửi khi input thay đổi
   };
+  const handleGeneratePlan = async () => {
+  try {
+    const resp = await getUserPlans();
+    const plansArray: UserPlan[] = Array.isArray(resp) ? resp : [resp];
+    const hasActivePlan = plansArray.some((p) => p.status.toLowerCase() === "active");
+    
+    if (hasActivePlan) {
+      setShowActivePlanDialogGen(true);
+    } else {
+      navigate('/plan-gen');
+    }
+  } catch (err) {
+    console.error("Error checking plans", err);
+    navigate('/plan-gen'); // Navigate to quit-gen if no existing plan
+  }
+};
+
+// 3. Thêm functions để xử lý dialog cho Generate Plan
+const confirmRestartGen = () => {
+  setShowActivePlanDialogGen(false);
+  setShowConfirmRestartGen(true);
+};
+
+const handleRestartGen = () => {
+  setShowConfirmRestartGen(false);
+  navigate("/plan-gen");
+};
 
   // Kiểm tra hợp lệ form trước khi submit
   const validateForm = () => {
@@ -187,6 +220,7 @@ const UserSurveyForm: React.FC = () => {
     return Object.keys(newErr).length === 0;
   };
 
+// Updated handleSubmit with active membership check
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setSubmissionError(null);
@@ -198,7 +232,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   setIsLoading(true);
 
   try {
-    // Ánh xạ formData sang payload CreateSurveyRequest
+    // 1) Map formData to payload
     const payload: CreateSurveyRequest = {
       smokeDuration: formData.smoke_duration,
       cigarettesPerDay: formData.cigarettes_per_day,
@@ -207,25 +241,24 @@ const handleSubmit = async (e: React.FormEvent) => {
       healthStatus: formData.health_status,
       dependencyLevel: formData.dependency_level,
       note: formData.note,
-      a1: surveyQuestions.find(q => q.key === "a1")?.options.find(opt => opt.point === formData.a1)?.text || "",
-      a2: surveyQuestions.find(q => q.key === "a2")?.options.find(opt => opt.point === formData.a2)?.text || "",
-      a3: surveyQuestions.find(q => q.key === "a3")?.options.find(opt => opt.point === formData.a3)?.text || "",
-      a4: surveyQuestions.find(q => q.key === "a4")?.options.find(opt => opt.point === formData.a4)?.text || "",
-      a5: surveyQuestions.find(q => q.key === "a5")?.options.find(opt => opt.point === formData.a5)?.text || "",
-      a6: surveyQuestions.find(q => q.key === "a6")?.options.find(opt => opt.point === formData.a6)?.text || "",
-      a7: surveyQuestions.find(q => q.key === "a7")?.options.find(opt => opt.point === formData.a7)?.text || "",
-      a8: surveyQuestions.find(q => q.key === "a8")?.options.find(opt => opt.point === formData.a8)?.text || "",
+      a1: surveyQuestions.find(q => q.key === "a1")?.options.find(o => o.point === formData.a1)?.text || "",
+      a2: surveyQuestions.find(q => q.key === "a2")?.options.find(o => o.point === formData.a2)?.text || "",
+      a3: surveyQuestions.find(q => q.key === "a3")?.options.find(o => o.point === formData.a3)?.text || "",
+      a4: surveyQuestions.find(q => q.key === "a4")?.options.find(o => o.point === formData.a4)?.text || "",
+      a5: surveyQuestions.find(q => q.key === "a5")?.options.find(o => o.point === formData.a5)?.text || "",
+      a6: surveyQuestions.find(q => q.key === "a6")?.options.find(o => o.point === formData.a6)?.text || "",
+      a7: surveyQuestions.find(q => q.key === "a7")?.options.find(o => o.point === formData.a7)?.text || "",
+      a8: surveyQuestions.find(q => q.key === "a8")?.options.find(o => o.point === formData.a8)?.text || "",
     };
 
+    // 2) Submit survey
     await createSurvey(payload);
-    
-    // Thay vì chỉ set isSubmitted = true, bạn cần:
-    // 1. Hiển thị thông báo thành công tạm thời
+
+    // 3) Show temporary thank-you state
     setIsSubmitted(true);
-    
-    // 2. Sau 3 giây, tự động chuyển sang trạng thái "existing survey"
+
+    // 4) After thank-you, set existing survey state
     setTimeout(() => {
-      // Cập nhật state để hiển thị như đã có existing survey
       setHasExistingSurvey(true);
       setExistingSurveyData({
         smokeDuration: payload.smokeDuration,
@@ -244,16 +277,29 @@ const handleSubmit = async (e: React.FormEvent) => {
         a7: payload.a7,
         a8: payload.a8,
       });
-      setIsSubmitted(false); // Tắt thông báo cảm ơn
+      setAllowResurvey(false);
+      setIsSubmitted(false);
     }, 1500);
-    
+
+    // 5) Check active membership and show dialog or navigate
+    const storedUserId = localStorage.getItem('userId');
+    if (!storedUserId) {
+      throw new Error('User ID not found in localStorage');
+    }
+
+    const hasMembership = await hasActiveMembership(storedUserId);
+    if (hasMembership) {
+      setShowMembershipDialog(true);
+    } else {
+      navigate('/plan-gen');
+    }
   } catch (error) {
     if (error instanceof AxiosError) {
-      console.error("Lỗi khi gửi khảo sát:", error);
-      setSubmissionError(error.response?.data?.message || "Không thể gửi khảo sát. Vui lòng thử lại.");
+      console.error("Error submitting survey:", error);
+      setSubmissionError(error.response?.data?.message || "Failed to submit survey. Please try again.");
     } else {
-      console.error("Một lỗi không mong muốn đã xảy ra:", error);
-      setSubmissionError("Một lỗi không mong muốn đã xảy ra. Vui lòng thử lại.");
+      console.error("Unexpected error:", error);
+      setSubmissionError("An unexpected error occurred. Please try again.");
     }
   } finally {
     setIsLoading(false);
@@ -386,6 +432,106 @@ const dialogs = (
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+
+<AlertDialog open={showMembershipDialog} onOpenChange={setShowMembershipDialog}>
+  <AlertDialogContent className="bg-white text-gray-800 rounded-lg shadow-xl p-6 max-w-sm mx-auto">
+    <AlertDialogHeader className="mb-6">
+      <AlertDialogTitle className="text-2xl font-extrabold text-green-700">
+        You have a draft quit plan!
+      </AlertDialogTitle>
+      <AlertDialogDescription className="text-gray-600 mt-2 text-base">
+        Based on the survey you just completed, we detected you already have a draft quit plan. Would you like to go to the Quit Plan Generator now?
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter className="flex flex-col sm:flex-row-reverse justify-end gap-3 mt-4">
+      <AlertDialogAction
+        onClick={() => navigate('/plan-gen')}
+        className="w-full sm:w-auto bg-green-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition ease-in-out duration-150"
+      >
+        Go to Quit Generator
+      </AlertDialogAction>
+      <AlertDialogCancel
+        onClick={() => setShowMembershipDialog(false)}
+        className="w-full sm:w-auto bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-opacity-50 transition ease-in-out duration-150"
+      >
+        Stay Here
+      </AlertDialogCancel>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+
+<AlertDialog
+  open={showActivePlanDialogGen}
+  onOpenChange={() => setShowActivePlanDialogGen(false)}
+>
+  <AlertDialogContent className="bg-white text-emerald-700 border border-emerald-300 shadow-xl rounded-lg">
+    <AlertDialogHeader className="relative">
+      <button
+        onClick={() => setShowActivePlanDialogGen(false)}
+        className="absolute top-2 right-2 p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+        aria-label="Close"
+      >
+        <X className="h-5 w-5" />
+      </button>
+      <AlertDialogTitle className="text-emerald-800 text-2xl font-bold mb-2 pt-6 text-center">
+        You already have an active plan!
+      </AlertDialogTitle>
+      <AlertDialogDescription className="text-emerald-600 text-base leading-relaxed text-center">
+        Our system detected that you already have an active quit smoking
+        plan. Do you want to continue with the current plan or generate a new
+        one?
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+
+    <AlertDialogFooter className="pt-4 flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+      <AlertDialogAction
+        onClick={() => navigate("/quit_progress")}
+        className="bg-emerald-700 text-white hover:bg-emerald-800 transition rounded-lg px-5 py-2 font-medium"
+      >
+        Continue Current Plan
+      </AlertDialogAction>
+      <AlertDialogAction
+        onClick={confirmRestartGen}
+        className="bg-white text-emerald-700 border border-emerald-600 hover:bg-emerald-50 transition rounded-lg px-5 py-2 font-medium"
+      >
+        Generate New Plan
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+
+{/* Confirm restart dialog for Generate Plan */}
+<AlertDialog
+  open={showConfirmRestartGen}
+  onOpenChange={() => setShowConfirmRestartGen(false)}
+>
+  <AlertDialogContent className="bg-white text-emerald-700 border border-emerald-300 shadow-xl rounded-lg">
+    <AlertDialogHeader className="relative">
+      <AlertDialogTitle className="text-emerald-800 text-2xl font-bold mb-2 text-center">
+        Generate New Plan?
+      </AlertDialogTitle>
+      <AlertDialogDescription className="text-emerald-600 text-base leading-relaxed text-center">
+        Generating a new plan will end the current one. Are you sure you want
+        to proceed?
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter className="pt-4 flex justify-center space-x-3">
+      <AlertDialogCancel
+        onClick={() => setShowConfirmRestartGen(false)}
+        className="bg-gray-200 text-gray-700 hover:bg-gray-300 transition rounded-lg px-5 py-2 font-medium"
+      >
+        Cancel
+      </AlertDialogCancel>
+      <AlertDialogAction
+        onClick={handleRestartGen}
+        className="bg-red-600 text-white hover:bg-red-700 transition rounded-lg px-5 py-2 font-medium"
+      >
+        Confirm
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+
   </>
 );
   // Hiển thị loading khi đang kiểm tra survey
@@ -484,6 +630,12 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
             >
               Continue to Planning &rarr;
             </button>
+            <button
+  onClick={handleGeneratePlan}
+  className="bg-green-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-800 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+>
+  Generate New Plan ⚡
+</button>
 
             {/* Resurvey Button with AlertDialog */}
             <AlertDialog>

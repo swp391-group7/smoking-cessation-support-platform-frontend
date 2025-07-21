@@ -15,6 +15,7 @@ const AdminBadgeForm: React.FC<Props> = ({ onBack, onSuccess }) => {
     badgeName: '',
     badgeDescription: '',
     badgeImageUrl: '',
+    condition: '' // Thêm trường điều kiện
   });
 
   const [loading, setLoading] = useState(false);
@@ -60,6 +61,13 @@ const AdminBadgeForm: React.FC<Props> = ({ onBack, onSuccess }) => {
         value={form.badgeImageUrl}
         onChange={handleChange}
         placeholder="Image URL"
+        required
+      />
+      <Input
+        name="condition"
+        value={form.condition}
+        onChange={handleChange}
+        placeholder="Condition to Earn Badge"
         required
       />
       <div className="flex justify-between">

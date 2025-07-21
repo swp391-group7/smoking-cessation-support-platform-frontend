@@ -20,7 +20,7 @@ type PlanType = "Cold Turkey" | "Gradual Reduction"; // Ensure PlanType is defin
 interface StageItemProps {
   stage: Stage;
   index: number;
-  planType: PlanType;
+  planType?: PlanType;
   onUpdate: (id: string, field: keyof Stage, value: any) => void;
   onRemove: (id: string) => void;
   overallStartDate: Date | null;

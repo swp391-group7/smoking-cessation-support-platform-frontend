@@ -114,9 +114,10 @@ export const HeaderNavbar: React.FC = () => {
                       {currentUser.avatarUrl ? (
                         <AvatarImage src={currentUser.avatarUrl} alt="avatar" />
                       ) : (
-                        <AvatarFallback className="text-white text-lg uppercase">
-                          {currentUser.full_name.charAt(0)}
-                        </AvatarFallback>
+                       <AvatarFallback className="…">
+  {(currentUser.full_name ?? "").charAt(0) || "?"}
+</AvatarFallback>
+
                       )}
                     </Avatar>
                   </button>

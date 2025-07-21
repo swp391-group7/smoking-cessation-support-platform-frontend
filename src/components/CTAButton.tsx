@@ -16,7 +16,7 @@ const CTAButton = () => {
     >
       <Button
         className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-10 rounded-full text-xl shadow-lg transition-all duration-300 ease-in-out"
-        onClick={() => navigate('/user_survey')} // Thay đổi đường dẫn nếu cần
+        onClick={() => navigate('/user_survey')} 
       >
         Start your journey now!
       </Button>

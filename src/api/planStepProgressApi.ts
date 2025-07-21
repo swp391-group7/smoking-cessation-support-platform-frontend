@@ -1,21 +1,6 @@
-import axios from 'axios';
 
-//tạo instance của axios 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// tự động gắn jwt lên header 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import baseApi from './BaseApi';
+const api =baseApi;
 
 export interface QuitPlanStepDto {
     id: string;
@@ -32,3 +17,27 @@ export const getPlanSteps = async (planId: string): Promise<QuitPlanStepDto[]> =
   const response = await api.get<QuitPlanStepDto[]>(`/quit-plan_step/${planId}/all`);
   return response.data;
 }
+
+export interface CessationProgressDto {
+  id: string;
+  planId: string;
+  planStepId: string;
+  status: 'COMPLETED' | 'MISSED' | string;
+  mood: string;
+  cigarettesSmoked: number;
+  note: string;
+  logDate: string;   // ISO date, e.g. "2025-07-17"
+}
+
+/**
+ * Fetch all cessation‑progress records for a given plan‑step
+ * GET /cessation-progress/by-step-id/{planStepId}
+ */
+export const getProgressByStepId = async (
+  planStepId: string
+): Promise<CessationProgressDto[]> => {
+  const response = await api.get<CessationProgressDto[]>(
+    `/cessation-progress/by-step-id/${planStepId}`
+  );
+  return response.data;
+};

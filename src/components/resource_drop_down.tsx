@@ -68,6 +68,14 @@ export const ResourcDropdown: React.FC = () => {
             Guides 
           </NavLink>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <NavLink
+            to="/PremiumBlogPage"
+            className="block w-full px-2 py-1 text-sm text-gray-700 hover:bg-emerald-100"
+          >
+            Premium Blog Page
+          </NavLink>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

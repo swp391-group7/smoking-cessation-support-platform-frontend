@@ -1,29 +1,17 @@
 // src/api/userBadgeApi.ts
 
-import axios from 'axios';
+
 import { userApi } from '@/api/userApi';
 
-const userBadgeApi = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
 
-userBadgeApi.interceptors.request.use(config => {
-    const token = localStorage.getItem('token');
-    if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
 
 export interface UserEarnedBadgeDetails {
-    id: string; // ID của định nghĩa huy hiệu
-    badgeName: string;
-    badgeDescription: string;
-    badgeImageUrl: string;
-    createdAt: string; // Ngày tạo định nghĩa huy hiệu
+  id: string;
+  badgeName: string;
+  badgeDescription: string;
+  badgeImageUrl: string;
+  condition: number; // Điều kiện để nhận huy hiệu
+  createdAt: string; // Ngày tạo huy hiệu // Ngày tạo định nghĩa huy hiệu
 }
 
 // Interface cho đối tượng badge lồng bên trong khi trao huy hiệu
@@ -68,6 +56,11 @@ export async function getAllBadgesOfUser(userId: string): Promise<UserEarnedBadg
  */
 export async function getAllBadgesOfCurrentUser(): Promise<UserEarnedBadgeDetails[]> {
     const { data } = await userApi.get<UserEarnedBadgeDetails[]>(`/user-badges/user/current`);
+    return data;
+}
+
+export async function getAllBadgesByUserId(userId: string): Promise<UserEarnedBadgeDetails[]> {
+    const { data } = await userApi.get<UserEarnedBadgeDetails[]>(`/user-badges/user/${userId}`);
     return data;
 }
 

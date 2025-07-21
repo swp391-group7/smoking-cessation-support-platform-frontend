@@ -7,7 +7,6 @@ import HeaderNavbar from "./components/HeaderNavbar";
 export const MainLayout = () => (
   <div className="min-h-screen flex flex-col">
     <HeaderNavbar/>
-    
     <main className="flex-grow">
       <Outlet />
     </main>

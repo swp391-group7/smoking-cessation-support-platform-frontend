@@ -1,31 +1,20 @@
 // src/api/blogApi.ts
-import axios from 'axios';
+import baseApi from './BaseApi';
 
-const blogApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-  headers: { 'Content-Type': 'application/json' },
-});
-
-// Gắn JWT tự động, giống auth.ts
-blogApi.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+const blogApi = baseApi;
 
 export const BlogType = {
   HEALTH: 'HEALTH',
   SMOKEQUIT: 'SMOKEQUIT',
-  SMOKEHARM: 'SMOKEHARM'
+  SMOKEHARM: 'SMOKEHARM',
+  PREMIUM: 'PREMIUM', // Thêm type mới cho premium user
 } as const;
 
 export type BlogType = typeof BlogType[keyof typeof BlogType];
 
 export interface BlogPost {
   id: string;
-  blog_type: BlogType;
+  blog_type: BlogType; 
   title: string;
   content: string;
   imageUrl: string;

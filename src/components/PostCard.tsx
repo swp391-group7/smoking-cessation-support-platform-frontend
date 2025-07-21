@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BlogPost } from '@/api/blog';
@@ -9,6 +8,7 @@ interface PostCardProps {
   isLoading: boolean;
 }
 
+// Sử dụng PostCardProps để định nghĩa props cho component
 export default function PostCard({ post, isLoading }: PostCardProps) {
   const getTypeLabel = (type: string) => {
     switch (type) {
@@ -20,6 +20,20 @@ export default function PostCard({ post, isLoading }: PostCardProps) {
         return 'Smoke Harm';
       default:
         return type;
+    }
+  };
+
+  // Hàm để lấy màu sắc dựa trên loại bài viết
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'HEALTH':
+        return 'bg-blue-100 text-blue-800';
+      case 'SMOKEQUIT':
+        return 'bg-green-100 text-green-800';
+      case 'SMOKEHARM':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -47,7 +61,7 @@ export default function PostCard({ post, isLoading }: PostCardProps) {
             className="w-full h-40 object-cover rounded mb-4"
           />
           <div className="flex items-center gap-2 mb-2">
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+            <span className={`${getTypeColor(post.blog_type)} px-2 py-1 rounded-full text-xs font-medium`}>
               {getTypeLabel(post.blog_type)}
             </span>
           </div>

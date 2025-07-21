@@ -28,7 +28,7 @@ const Topbar: React.FC<TopbarProps> = ({ sidebarOpen, toggleSidebar }) => {
               </div>
               <input
                 type="text"
-                placeholder="Tìm kiếm trong hệ thống..."
+                placeholder="Search..."
                 className="block w-full pl-12 pr-4 py-3 border border-slate-200/60 rounded-2xl leading-5 bg-white/60 backdrop-blur-sm placeholder-slate-400 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/30 transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
               />
             </div>

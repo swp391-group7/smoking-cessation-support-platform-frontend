@@ -1,18 +1,7 @@
-import axios from 'axios';
 
-// Create an axios instance similar to blogApi, with automatic JWT attachment
-export const usersurveyApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-  headers: { 'Content-Type': 'application/json' },
-});
+import baseApi from './BaseApi';
+const usersurveyApi =baseApi;
 
-usersurveyApi.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 // DTO returned from backend for answers
 export interface AnswerDTO {
@@ -84,9 +73,30 @@ export async function getSurveyByUserId(): Promise<GetSurveyRequest> {
   return data;
 }
 
+export interface UserSurveyDto {
+  id: string;
+  userId: string;
+  smokeDuration: string;
+  cigarettesPerDay: number;
+  priceEach: number;
+  triedToQuit: boolean;
+  healthStatus: string;
+  a1: string;
+  a2: string;
+  a3: string;
+  a4: string;
+  a5: string;
+  a6: string;
+  a7: string;
+  a8: string;
+  dependencyLevel: number;
+  note: string;
+  createAt: string; // ISO 8601 format
+}
+
 /** Lấy tất cả khảo sát của một người dùng theo ID */
-export async function getAllSurveysOfUser(userId: string): Promise<SurveyDetailDTO[]> {
-    const { data } = await usersurveyApi.get<SurveyDetailDTO[]>(
+export async function getAllSurveysOfUser(userId: string): Promise<UserSurveyDto[]> {
+    const { data } = await usersurveyApi.get<UserSurveyDto[]>(
         `/user-surveys/get-all-surveys-of-user/${userId}`
     );
     return data;

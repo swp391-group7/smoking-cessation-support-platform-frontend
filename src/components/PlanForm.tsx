@@ -30,8 +30,9 @@ export const PlanForm: React.FC = () => {
   const planId = state?.planId as string || sessionStorage.getItem('currentDraftPlanId');
   const navigate = useNavigate();
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+ const today = new Date();
+today.setDate(today.getDate() + 1);
+today.setHours(0, 0, 0, 0);
 
   const { handleSubmit, control, watch, reset } = useForm<PlanFormType>({
     defaultValues: { overallStart: today, overallEnd: null }
@@ -252,7 +253,7 @@ export const PlanForm: React.FC = () => {
 
   const getMinOverallEndDate = () => {
     const m = new Date(overallStart); 
-    m.setDate(m.getDate() + 56); 
+    m.setDate(m.getDate() + 14); 
     return m;
   };
 
@@ -336,7 +337,7 @@ export const PlanForm: React.FC = () => {
 
           <div>
             <label className="block text-sm font-medium text-blue-800 mb-2">
-              Ngày dự kiến cai (Tối thiểu 8 tuần)
+              Ngày dự kiến cai (Tối thiểu 2 tuần)
             </label>
             <Controller
               control={control}

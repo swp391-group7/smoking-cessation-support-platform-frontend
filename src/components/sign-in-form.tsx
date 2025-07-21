@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaFacebookF, FaGoogle } from "react-icons/fa";
+import { FaFacebookF } from "react-icons/fa";
 import { register as registerApi } from "../api/auth";
 import { Toaster, toast } from "sonner";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 // 1️ Import react-hook-form + zod + zodResolver
 import { useForm } from "react-hook-form";
@@ -223,10 +224,7 @@ export const SignUpForm: React.FC = () => {
             <FaFacebookF className="text-blue-600 mr-1" />
             Facebook
           </button>
-          <button className="w-28 flex items-center justify-center border border-gray-300 py-1 rounded-2xl hover:bg-gray-50 transition text-sm">
-            <FaGoogle className="text-red-500 mr-1" />
-            Google
-          </button>
+          <GoogleLoginButton />
         </div>
       </div>
     </div>
