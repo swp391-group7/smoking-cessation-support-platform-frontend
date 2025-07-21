@@ -339,312 +339,312 @@ const CoachClients: React.FC = () => {
     }
 
     return (
-         <>
-    {showUserModal && <UserInfoModal />}
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-4">Manage Clients</h1>
+        <>
+            {showUserModal && <UserInfoModal />}
+            <div className="min-h-screen bg-gray-50 p-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h1 className="text-2xl font-bold text-gray-800 mb-4">Manage Clients</h1>
 
-                    {/* Search bar */}
-                    <div className="relative mb-4">
-                        <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-                        <input
-                            type="text"
-                            placeholder="Search by name or email..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        />
-                        {searchQuery && (
-                            <button
-                                onClick={() => setSearchQuery('')}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                        <p className="text-gray-600">
-                            {searchQuery ? `${filteredUsers.length} results found` : `Total: ${users.length} clients`}
-                        </p>
-                        {searchQuery && (
-                            <button
-                                onClick={() => setSearchQuery('')}
-                                className="text-sm text-green-600 hover:text-green-800"
-                            >
-                                Clear filter
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                <div className="space-y-4">
-                    {filteredUsers.length === 0 ? (
-                        <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                            <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-600">
-                                {searchQuery ? 'No matching clients found' : 'No clients yet'}
-                            </p>
-                        </div>
-                    ) : (
-                        filteredUsers.map((userData) => (
-                            <div key={userData.user.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                                <div
-                                    className="p-4 border-l-4 border-green-500 cursor-pointer hover:bg-gray-50 transition-colors"
-                                    onClick={() => toggleExpanded('users', userData.user.id)}
+                        {/* Search bar */}
+                        <div className="relative mb-4">
+                            <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                            <input
+                                type="text"
+                                placeholder="Search by name or email..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            />
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                                <User className="w-5 h-5 text-green-600" />
+                                    <X className="w-5 h-5" />
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                            <p className="text-gray-600">
+                                {searchQuery ? `${filteredUsers.length} results found` : `Total: ${users.length} clients`}
+                            </p>
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    className="text-sm text-green-600 hover:text-green-800"
+                                >
+                                    Clear filter
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        {filteredUsers.length === 0 ? (
+                            <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                                <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                                <p className="text-gray-600">
+                                    {searchQuery ? 'No matching clients found' : 'No clients yet'}
+                                </p>
+                            </div>
+                        ) : (
+                            filteredUsers.map((userData) => (
+                                <div key={userData.user.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                                    <div
+                                        className="p-4 border-l-4 border-green-500 cursor-pointer hover:bg-gray-50 transition-colors"
+                                        onClick={() => toggleExpanded('users', userData.user.id)}
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center space-x-3">
+                                                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                                    <User className="w-5 h-5 text-green-600" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-semibold text-gray-800">{userData.user.fullName}</h3>
+                                                    <p className="text-sm text-gray-600">{userData.user.email}</p>
+                                                </div>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); openUserModal(userData); }}
+                                                    className="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                                                >
+                                                    View Details
+                                                </button>
                                             </div>
-                                            <div>
-                                                <h3 className="text-lg font-semibold text-gray-800">{userData.user.fullName}</h3>
-                                                <p className="text-sm text-gray-600">{userData.user.email}</p>
-                                            </div>
-                                         <button
-    onClick={(e) => { e.stopPropagation(); openUserModal(userData); }}
-    className="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
->
-    View Details
-</button>
-                                        </div>
-                                        <div className="flex items-center space-x-4">
-                                            <div className="text-right">
-                                                <p className="text-sm text-gray-500">
-                                                    {userData.surveys.length} surveys • {userData.plans.length} plans
-                                                </p>
-                                                {userData.memberships.length > 0 && (
-                                                    <p className="text-xs text-green-600">
-                                                        {formatDate(userData.memberships[0].startDate)} - {formatDate(userData.memberships[0].endDate)}
+                                            <div className="flex items-center space-x-4">
+                                                <div className="text-right">
+                                                    <p className="text-sm text-gray-500">
+                                                        {userData.surveys.length} surveys • {userData.plans.length} plans
                                                     </p>
-                                                )}
-                                            </div>
-                                            {expanded.users.has(userData.user.id) ?
-                                                <ChevronDown className="w-5 h-5 text-gray-500" /> :
-                                                <ChevronRight className="w-5 h-5 text-gray-500" />
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {expanded.users.has(userData.user.id) && (
-                                    <div className="border-t bg-gray-50">
-                                        <div className="flex border-b">
-                                            <button
-                                                className={`flex-1 py-3 px-4 text-sm font-medium ${selectedTab[userData.user.id] === 'surveys' || !selectedTab[userData.user.id]
-                                                    ? 'text-green-600 bg-white border-b-2 border-green-500'
-                                                    : 'text-gray-600 hover:text-gray-800'
-                                                    }`}
-                                                onClick={() => setSelectedTab(prev => ({ ...prev, [userData.user.id]: 'surveys' }))}
-                                            >
-                                                <FileText className="w-4 h-4 inline mr-2" />
-                                                Surveys ({userData.surveys.length})
-                                            </button>
-                                            <button
-                                                className={`flex-1 py-3 px-4 text-sm font-medium ${selectedTab[userData.user.id] === 'plans'
-                                                    ? 'text-green-600 bg-white border-b-2 border-green-500'
-                                                    : 'text-gray-600 hover:text-gray-800'
-                                                    }`}
-                                                onClick={() => setSelectedTab(prev => ({ ...prev, [userData.user.id]: 'plans' }))}
-                                            >
-                                                <Calendar className="w-4 h-4 inline mr-2" />
-                                                Plans ({userData.plans.length})
-                                            </button>
-                                        </div>
-
-                                        <div className="p-4">
-                                            {(selectedTab[userData.user.id] === 'surveys' || !selectedTab[userData.user.id]) && (
-                                                <div className="space-y-3">
-                                                    {userData.surveys.length === 0 ? (
-                                                        <p className="text-gray-500 text-center py-4">No surveys yet</p>
-                                                    ) : (
-                                                        userData.surveys.map((survey) => (
-                                                            <div key={survey.id} className="bg-white p-4 rounded-lg border">
-                                                                <div className="flex justify-between items-start mb-2">
-                                                                    <h4 className="font-medium text-gray-800">Survey on {formatDate(survey.createAt)}</h4>
-                                                                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor('completed')}`}>
-                                                                        Completed
-                                                                    </span>
-                                                                </div>
-                                                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                                                    <div>
-                                                                        <p className="text-gray-600">Smoke duration: <span className="font-medium">{survey.smokeDuration}</span></p>
-                                                                        <p className="text-gray-600">Cigarettes/day: <span className="font-medium">{survey.cigarettesPerDay}</span></p>
-                                                                    </div>
-                                                                    <div>
-                                                                        <p className="text-gray-600">Dependency level: <span className="font-medium">{survey.dependencyLevel}/10</span></p>
-                                                                        <p className="text-gray-600">Health status: <span className="font-medium">{survey.healthStatus}</span></p>
-                                                                    </div>
-                                                                </div>
-                                                                {survey.note && (
-                                                                    <p className="text-gray-600 text-sm mt-2">Note: {survey.note}</p>
-                                                                )}
-                                                            </div>
-                                                        ))
+                                                    {userData.memberships.length > 0 && (
+                                                        <p className="text-xs text-green-600">
+                                                            {formatDate(userData.memberships[0].startDate)} - {formatDate(userData.memberships[0].endDate)}
+                                                        </p>
                                                     )}
                                                 </div>
-                                            )}
+                                                {expanded.users.has(userData.user.id) ?
+                                                    <ChevronDown className="w-5 h-5 text-gray-500" /> :
+                                                    <ChevronRight className="w-5 h-5 text-gray-500" />
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                            {selectedTab[userData.user.id] === 'plans' && (
-                                                <div className="space-y-3">
-                                                    {userData.plans.length === 0 ? (
-                                                        <p className="text-gray-500 text-center py-4">No plans yet</p>
-                                                    ) : (
-                                                        userData.plans.map((plan) => (
-                                                            <div key={plan.id} className="bg-white rounded-lg border overflow-hidden">
-                                                                <div
-                                                                    className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                                                                    onClick={() => {
-                                                                        toggleExpanded('plans', plan.id);
-                                                                        loadPlanData(plan.id);
-                                                                    }}
-                                                                >
-                                                                    <div className="flex justify-between items-start">
-                                                                        <div className="flex-1">
-                                                                            <div className="flex items-center space-x-2 mb-2">
-                                                                                <h4 className="font-medium text-gray-800">
-                                                                                    Plan ({plan.method === 'GRADUAL' ? 'Gradual' : 'Abrupt'})
-                                                                                </h4>
-                                                                                <span className={`px-2 py-1 rounded-full text-xs flex items-center space-x-1 ${getStatusColor(plan.status)}`}>
-                                                                                    {getStatusIcon(plan.status)}
-                                                                                    <span className="capitalize">{plan.status}</span>
-                                                                                </span>
-                                                                                {plan.status === 'active' && (
-                                                                                    <button
-                                                                                        onClick={(e) => {
-                                                                                            e.stopPropagation(); // Ngăn không cho expand/collapse plan
-                                                                                            const membershipStartDate = userData.memberships[0].startDate;
-                                                                                            navigate('/coach/coachchat', {
-                                                                                                state: {
-                                                                                                    planId: plan.id,
-                                                                                                    userId: userData.user.id,
+                                    {expanded.users.has(userData.user.id) && (
+                                        <div className="border-t bg-gray-50">
+                                            <div className="flex border-b">
+                                                <button
+                                                    className={`flex-1 py-3 px-4 text-sm font-medium ${selectedTab[userData.user.id] === 'surveys' || !selectedTab[userData.user.id]
+                                                        ? 'text-green-600 bg-white border-b-2 border-green-500'
+                                                        : 'text-gray-600 hover:text-gray-800'
+                                                        }`}
+                                                    onClick={() => setSelectedTab(prev => ({ ...prev, [userData.user.id]: 'surveys' }))}
+                                                >
+                                                    <FileText className="w-4 h-4 inline mr-2" />
+                                                    Surveys ({userData.surveys.length})
+                                                </button>
+                                                <button
+                                                    className={`flex-1 py-3 px-4 text-sm font-medium ${selectedTab[userData.user.id] === 'plans'
+                                                        ? 'text-green-600 bg-white border-b-2 border-green-500'
+                                                        : 'text-gray-600 hover:text-gray-800'
+                                                        }`}
+                                                    onClick={() => setSelectedTab(prev => ({ ...prev, [userData.user.id]: 'plans' }))}
+                                                >
+                                                    <Calendar className="w-4 h-4 inline mr-2" />
+                                                    Plans ({userData.plans.length})
+                                                </button>
+                                            </div>
 
-                                                                                                    membershipStartDate,
-                                                                                                    avatarUrl: userData.user.avatarPath, // hoặc avatarPath tùy theo tên field
-                                                                                                    fullName: userData.user.fullName // có thể thêm cả fullName nếu cần
-                                                                                                }
-                                                                                            });
-                                                                                        }}
-                                                                                        className="px-3 py-1 bg-green-600 text-white text-xs rounded-full hover:bg-green-700 transition-colors flex items-center space-x-1"
-                                                                                    >
-                                                                                        <span>Chat</span>
-                                                                                    </button>
-                                                                                )}
-                                                                            </div>
-                                                                            <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                                                                                <div>
-                                                                                    <p>Start Date: {formatDate(plan.startDate)}</p>
-                                                                                    <p>Target Date: {formatDate(plan.targetDate)}</p>
-                                                                                </div>
-                                                                                <div>
-                                                                                    <p>Current Streak: {plan.currentZeroStreak} days</p>
-                                                                                    <p>Max Streak: {plan.maxZeroStreak} days</p>
-                                                                                </div>
-                                                                            </div>
+                                            <div className="p-4">
+                                                {(selectedTab[userData.user.id] === 'surveys' || !selectedTab[userData.user.id]) && (
+                                                    <div className="space-y-3">
+                                                        {userData.surveys.length === 0 ? (
+                                                            <p className="text-gray-500 text-center py-4">No surveys yet</p>
+                                                        ) : (
+                                                            userData.surveys.map((survey) => (
+                                                                <div key={survey.id} className="bg-white p-4 rounded-lg border">
+                                                                    <div className="flex justify-between items-start mb-2">
+                                                                        <h4 className="font-medium text-gray-800">Survey on {formatDate(survey.createAt)}</h4>
+                                                                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor('completed')}`}>
+                                                                            Completed
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                                                        <div>
+                                                                            <p className="text-gray-600">Smoke duration: <span className="font-medium">{survey.smokeDuration}</span></p>
+                                                                            <p className="text-gray-600">Cigarettes/day: <span className="font-medium">{survey.cigarettesPerDay}</span></p>
                                                                         </div>
-                                                                        <div className="ml-4">
-                                                                            {expanded.plans.has(plan.id) ?
-                                                                                <ChevronDown className="w-5 h-5 text-gray-500" /> :
-                                                                                <ChevronRight className="w-5 h-5 text-gray-500" />
-                                                                            }
+                                                                        <div>
+                                                                            <p className="text-gray-600">Dependency level: <span className="font-medium">{survey.dependencyLevel}/10</span></p>
+                                                                            <p className="text-gray-600">Health status: <span className="font-medium">{survey.healthStatus}</span></p>
                                                                         </div>
                                                                     </div>
+                                                                    {survey.note && (
+                                                                        <p className="text-gray-600 text-sm mt-2">Note: {survey.note}</p>
+                                                                    )}
                                                                 </div>
+                                                            ))
+                                                        )}
+                                                    </div>
+                                                )}
 
-                                                                {expanded.plans.has(plan.id) && planData[plan.id] && (
-                                                                    <div className="border-t bg-gray-50 p-4">
-                                                                        <h5 className="font-medium text-gray-800 mb-3">
-                                                                            Steps ({planData[plan.id].steps.length})
-                                                                        </h5>
-                                                                        <div className="space-y-2">
-                                                                            {planData[plan.id].steps.map((step) => (
-                                                                                <div key={step.id} className="bg-white rounded-lg border">
-                                                                                    <div
-                                                                                        className="p-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                                                                                        onClick={() => {
-                                                                                            toggleExpanded('steps', step.id);
-                                                                                            loadStepData(step.id);
-                                                                                        }}
-                                                                                    >
-                                                                                        <div className="flex justify-between items-start">
-                                                                                            <div className="flex-1">
-                                                                                                <div className="flex items-center space-x-2 mb-1">
-                                                                                                    <span className="text-sm font-medium text-gray-800">
-                                                                                                        Step {step.stepNumber}
-                                                                                                    </span>
-                                                                                                    <span className={`px-2 py-1 rounded-full text-xs flex items-center space-x-1 ${getStatusColor(step.status)}`}>
-                                                                                                        {getStatusIcon(step.status)}
-                                                                                                        <span className="capitalize">{step.status}</span>
-                                                                                                    </span>
-                                                                                                </div>
-                                                                                                <p className="text-sm text-gray-600 mb-1">{step.stepDescription}</p>
-                                                                                                <div className="text-xs text-gray-500">
-                                                                                                    <span>{formatDate(step.stepStartDate)} - {formatDate(step.stepEndDate)}</span>
-                                                                                                    <span className="mx-2">•</span>
-                                                                                                    <span>Target: {step.targetCigarettesPerDay} cigarettes/day</span>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <div className="ml-4">
-                                                                                                {expanded.steps.has(step.id) ?
-                                                                                                    <ChevronDown className="w-4 h-4 text-gray-500" /> :
-                                                                                                    <ChevronRight className="w-4 h-4 text-gray-500" />
-                                                                                                }
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
+                                                {selectedTab[userData.user.id] === 'plans' && (
+                                                    <div className="space-y-3">
+                                                        {userData.plans.length === 0 ? (
+                                                            <p className="text-gray-500 text-center py-4">No plans yet</p>
+                                                        ) : (
+                                                            userData.plans.map((plan) => (
+                                                                <div key={plan.id} className="bg-white rounded-lg border overflow-hidden">
+                                                                    <div
+                                                                        className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                                                                        onClick={() => {
+                                                                            toggleExpanded('plans', plan.id);
+                                                                            loadPlanData(plan.id);
+                                                                        }}
+                                                                    >
+                                                                        <div className="flex justify-between items-start">
+                                                                            <div className="flex-1">
+                                                                                <div className="flex items-center space-x-2 mb-2">
+                                                                                    <h4 className="font-medium text-gray-800">
+                                                                                        Plan ({plan.method === 'GRADUAL' ? 'Gradual' : 'Abrupt'})
+                                                                                    </h4>
+                                                                                    <span className={`px-2 py-1 rounded-full text-xs flex items-center space-x-1 ${getStatusColor(plan.status)}`}>
+                                                                                        {getStatusIcon(plan.status)}
+                                                                                        <span className="capitalize">{plan.status}</span>
+                                                                                    </span>
+                                                                                    {plan.status === 'active' && (
+                                                                                        <button
+                                                                                            onClick={(e) => {
+                                                                                                e.stopPropagation(); // Ngăn không cho expand/collapse plan
+                                                                                                const membershipStartDate = userData.memberships[0].startDate;
+                                                                                                navigate('/coach/coachchat', {
+                                                                                                    state: {
+                                                                                                        planId: plan.id,
+                                                                                                        userId: userData.user.id,
 
-                                                                                    {expanded.steps.has(step.id) && stepData[step.id] && (
-                                                                                        <div className="border-t bg-gray-25 p-3">
-                                                                                            <h6 className="font-medium text-gray-800 mb-2 flex items-center">
-                                                                                                <TrendingUp className="w-4 h-4 mr-1" />
-                                                                                                Progress ({stepData[step.id].progress.length})
-                                                                                            </h6>
-                                                                                            <div className="space-y-2 max-h-48 overflow-y-auto">
-                                                                                                {stepData[step.id].progress.length === 0 ? (
-                                                                                                    <p className="text-gray-500 text-sm text-center py-2">No progress data yet</p>
-                                                                                                ) : (
-                                                                                                    stepData[step.id].progress.map((progress) => (
-                                                                                                        <div key={progress.id} className="bg-white p-2 rounded border text-sm">
-                                                                                                            <div className="flex justify-between items-start mb-1">
-                                                                                                                <span className="font-medium">{formatDate(progress.logDate)}</span>
-                                                                                                                <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(progress.status)}`}>
-                                                                                                                    {progress.status}
-                                                                                                                </span>
-                                                                                                            </div>
-                                                                                                            <div className="text-gray-600">
-                                                                                                                <p>Cigarettes smoked: {progress.cigarettesSmoked}</p>
-                                                                                                                <p>Mood: {progress.mood}</p>
-                                                                                                                {progress.note && <p>Note: {progress.note}</p>}
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    ))
-                                                                                                )}
-                                                                                            </div>
-                                                                                        </div>
+                                                                                                        membershipStartDate,
+                                                                                                        avatarUrl: userData.user.avatarPath, // hoặc avatarPath tùy theo tên field
+                                                                                                        fullName: userData.user.fullName // có thể thêm cả fullName nếu cần
+                                                                                                    }
+                                                                                                });
+                                                                                            }}
+                                                                                            className="px-3 py-1 bg-green-600 text-white text-xs rounded-full hover:bg-green-700 transition-colors flex items-center space-x-1"
+                                                                                        >
+                                                                                            <span>Chat</span>
+                                                                                        </button>
                                                                                     )}
                                                                                 </div>
-                                                                            ))}
+                                                                                <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                                                                                    <div>
+                                                                                        <p>Start Date: {formatDate(plan.startDate)}</p>
+                                                                                        <p>Target Date: {formatDate(plan.targetDate)}</p>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <p>Current Streak: {plan.currentZeroStreak} days</p>
+                                                                                        <p>Max Streak: {plan.maxZeroStreak} days</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="ml-4">
+                                                                                {expanded.plans.has(plan.id) ?
+                                                                                    <ChevronDown className="w-5 h-5 text-gray-500" /> :
+                                                                                    <ChevronRight className="w-5 h-5 text-gray-500" />
+                                                                                }
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                )}
-                                                            </div>
-                                                        ))
-                                                    )}
-                                                </div>
-                                            )}
+
+                                                                    {expanded.plans.has(plan.id) && planData[plan.id] && (
+                                                                        <div className="border-t bg-gray-50 p-4">
+                                                                            <h5 className="font-medium text-gray-800 mb-3">
+                                                                                Steps ({planData[plan.id].steps.length})
+                                                                            </h5>
+                                                                            <div className="space-y-2">
+                                                                                {planData[plan.id].steps.map((step) => (
+                                                                                    <div key={step.id} className="bg-white rounded-lg border">
+                                                                                        <div
+                                                                                            className="p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                                                                                            onClick={() => {
+                                                                                                toggleExpanded('steps', step.id);
+                                                                                                loadStepData(step.id);
+                                                                                            }}
+                                                                                        >
+                                                                                            <div className="flex justify-between items-start">
+                                                                                                <div className="flex-1">
+                                                                                                    <div className="flex items-center space-x-2 mb-1">
+                                                                                                        <span className="text-sm font-medium text-gray-800">
+                                                                                                            Step {step.stepNumber}
+                                                                                                        </span>
+                                                                                                        <span className={`px-2 py-1 rounded-full text-xs flex items-center space-x-1 ${getStatusColor(step.status)}`}>
+                                                                                                            {getStatusIcon(step.status)}
+                                                                                                            <span className="capitalize">{step.status}</span>
+                                                                                                        </span>
+                                                                                                    </div>
+                                                                                                    <p className="text-sm text-gray-600 mb-1">{step.stepDescription}</p>
+                                                                                                    <div className="text-xs text-gray-500">
+                                                                                                        <span>{formatDate(step.stepStartDate)} - {formatDate(step.stepEndDate)}</span>
+                                                                                                        <span className="mx-2">•</span>
+                                                                                                        <span>Target: {step.targetCigarettesPerDay} cigarettes/day</span>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div className="ml-4">
+                                                                                                    {expanded.steps.has(step.id) ?
+                                                                                                        <ChevronDown className="w-4 h-4 text-gray-500" /> :
+                                                                                                        <ChevronRight className="w-4 h-4 text-gray-500" />
+                                                                                                    }
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                        {expanded.steps.has(step.id) && stepData[step.id] && (
+                                                                                            <div className="border-t bg-gray-25 p-3">
+                                                                                                <h6 className="font-medium text-gray-800 mb-2 flex items-center">
+                                                                                                    <TrendingUp className="w-4 h-4 mr-1" />
+                                                                                                    Progress ({stepData[step.id].progress.length})
+                                                                                                </h6>
+                                                                                                <div className="space-y-2 max-h-48 overflow-y-auto">
+                                                                                                    {stepData[step.id].progress.length === 0 ? (
+                                                                                                        <p className="text-gray-500 text-sm text-center py-2">No progress data yet</p>
+                                                                                                    ) : (
+                                                                                                        stepData[step.id].progress.map((progress) => (
+                                                                                                            <div key={progress.id} className="bg-white p-2 rounded border text-sm">
+                                                                                                                <div className="flex justify-between items-start mb-1">
+                                                                                                                    <span className="font-medium">{formatDate(progress.logDate)}</span>
+                                                                                                                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(progress.status)}`}>
+                                                                                                                        {progress.status}
+                                                                                                                    </span>
+                                                                                                                </div>
+                                                                                                                <div className="text-gray-600">
+                                                                                                                    <p>Cigarettes smoked: {progress.cigarettesSmoked}</p>
+                                                                                                                    <p>Mood: {progress.mood}</p>
+                                                                                                                    {progress.note && <p>Note: {progress.note}</p>}
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        ))
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            ))
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-                        )))}
+                                    )}
+                                </div>
+                            )))}
+                    </div>
                 </div>
             </div>
-        </div>
-    </>
+        </>
     );
 };
 
