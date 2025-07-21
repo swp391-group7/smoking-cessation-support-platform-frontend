@@ -17,21 +17,32 @@ interface Stage {
 
 type PlanType = "Cold Turkey" | "Gradual Reduction"; // Ensure PlanType is defined here or imported
 
+// interface StageItemProps {
+//   stage: Stage;
+//   index: number;
+//   planType?: PlanType;
+//   onUpdate: (id: string, field: keyof Stage, value: any) => void;
+//   onRemove: (id: string) => void;
+//   overallStartDate: Date | null;
+//   overallEndDate: Date | null;
+//   prevStageEnd: Date | null; // This will be the linking point
+// }
 interface StageItemProps {
   stage: Stage;
   index: number;
   planType?: PlanType;
-  onUpdate: (id: string, field: keyof Stage, value: any) => void;
+  // onUpdate giờ generic, value có kiểu Stage[K]
+  onUpdate: <K extends keyof Stage>(id: string, field: K, value: Stage[K]) => void;
   onRemove: (id: string) => void;
   overallStartDate: Date | null;
   overallEndDate: Date | null;
-  prevStageEnd: Date | null; // This will be the linking point
+  prevStageEnd: Date | null;
 }
+
 
 export const StageItem: React.FC<StageItemProps> = ({
   stage,
   index,
-  planType,
   onUpdate,
   onRemove,
   overallStartDate,
