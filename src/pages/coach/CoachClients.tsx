@@ -108,7 +108,7 @@ const CoachClients: React.FC = () => {
         if (!selectedUser) return null;
 
         return (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
                 <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                     <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
                         <h2 className="text-xl font-bold text-gray-800 flex items-center">
@@ -339,6 +339,8 @@ const CoachClients: React.FC = () => {
     }
 
     return (
+         <>
+    {showUserModal && <UserInfoModal />}
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-7xl mx-auto">
                 <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -403,6 +405,12 @@ const CoachClients: React.FC = () => {
                                                 <h3 className="text-lg font-semibold text-gray-800">{userData.user.fullName}</h3>
                                                 <p className="text-sm text-gray-600">{userData.user.email}</p>
                                             </div>
+                                         <button
+    onClick={(e) => { e.stopPropagation(); openUserModal(userData); }}
+    className="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+>
+    View Details
+</button>
                                         </div>
                                         <div className="flex items-center space-x-4">
                                             <div className="text-right">
@@ -514,7 +522,7 @@ const CoachClients: React.FC = () => {
                                                                                                 state: {
                                                                                                     planId: plan.id,
                                                                                                     userId: userData.user.id,
-                                                                                                    
+
                                                                                                     membershipStartDate,
                                                                                                     avatarUrl: userData.user.avatarPath, // hoặc avatarPath tùy theo tên field
                                                                                                     fullName: userData.user.fullName // có thể thêm cả fullName nếu cần
@@ -636,6 +644,7 @@ const CoachClients: React.FC = () => {
                 </div>
             </div>
         </div>
+    </>
     );
 };
 
