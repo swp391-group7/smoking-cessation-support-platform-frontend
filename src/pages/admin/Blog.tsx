@@ -1,5 +1,5 @@
 //pages/admin/blog.tsx
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PaginationControl from '@/components/PaginationControl';
 import { Button } from '@/components/ui/button';
