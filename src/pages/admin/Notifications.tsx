@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import NotificationTabs from "@/components/admin/NotificationTabs";
 
 export default function Notifications() {

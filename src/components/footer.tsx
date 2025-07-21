@@ -1,5 +1,5 @@
 // src/components/Footer.tsx
-import React from "react";
+
 import Logo from "@/assets/logo.png";
 import {
   FaTwitter,

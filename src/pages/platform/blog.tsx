@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import FilterBar from '@/components/FilterBar';
 import LatestPost from '@/components/LastestPost';
 import PostGrid from '@/components/PostGrid';

@@ -1,6 +1,6 @@
 // src/pages/platform/PlanFormGenForMember.tsx
 import React, { useState, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -13,7 +13,7 @@ import {
 import { hasActiveMembership } from "@/api/membershipApi";
 import type { GeneratedPlan, GeneratedStep, UpdateStepData } from "@/api/userPlanApi";
 import { Button } from "@/components/ui/button";
-import { DatePicker } from "@/components/ui/date-picker"; // Still needed for initial date setting, but not for display
+// import { DatePicker } from "@/components/ui/date-picker"; // Still needed for initial date setting, but not for display
 import { ChevronLeft, Sparkles, Target, Calendar, Save } from "lucide-react";
 import { toast } from "sonner";
 
@@ -44,7 +44,7 @@ export const PlanFormGenForMember: React.FC = () => {
   const [hasGenerated, setHasGenerated] = useState(false);
   const [isCheckingMembership, setIsCheckingMembership] = useState(true);
 
-  const { handleSubmit, control, setValue, watch } = useForm<PlanFormType>();
+  const { handleSubmit, setValue, watch } = useForm<PlanFormType>();
 
   const showError = (msg: string) => toast.error(msg);
   const showSuccess = (msg: string) => toast.success(msg);
@@ -95,7 +95,7 @@ export const PlanFormGenForMember: React.FC = () => {
         // Call deleteDraftSteps and deleteDraftPlan with the specific planId
         // This assumes your backend API requires the planId for deletion.
         await deleteDraftSteps(storedPlanId);
-        await deleteDraftPlan(storedPlanId);
+        await deleteDraftPlan();
         console.log(`Successfully cleaned up draft plan (ID: ${storedPlanId}) and steps.`);
       } else {
         console.log('No specific draft plan ID found in localStorage. Nothing to delete by ID.');
@@ -124,8 +124,8 @@ export const PlanFormGenForMember: React.FC = () => {
         month: '2-digit',
         year: 'numeric'
       });
-    } catch (error) {
-      console.error("Invalid date string:", dateString);
+    } catch (err) {
+      console.error("Invalid date string:", dateString,err);
       return "Invalid Date";
     }
   };

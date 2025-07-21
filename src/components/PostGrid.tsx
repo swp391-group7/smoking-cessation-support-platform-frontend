@@ -1,4 +1,4 @@
-import React from 'react';
+
 import PostCard from './PostCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { BlogPost } from '@/api/blog';
