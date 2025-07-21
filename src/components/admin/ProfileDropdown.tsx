@@ -102,7 +102,7 @@ const ProfileDropdown: React.FC = () => {
               className="flex items-center w-full px-4 py-3 text-sm font-medium text-slate-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 hover:text-slate-800 transition-all duration-200 group"
             >
               <User className="w-4 h-4 mr-3 text-slate-400 group-hover:text-emerald-500 transition-colors" /> 
-              Thông tin cá nhân
+              Personal Information
             </button>
             
             <div className="border-t border-slate-100/60 my-2"></div>
@@ -112,7 +112,7 @@ const ProfileDropdown: React.FC = () => {
               className="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-700 transition-all duration-200 group"
             >
               <LogOut className="w-4 h-4 mr-3 group-hover:scale-110 transition-transform" /> 
-              Đăng xuất
+              Logout
             </button>
           </div>
         </div>

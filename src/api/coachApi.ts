@@ -1,20 +1,6 @@
+import baseApi from './BaseApi';
 
-// src/api/blogApi.ts
-import axios from 'axios';
-
-const coachApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-  headers: { 'Content-Type': 'application/json' },
-});
-
-// Gắn JWT tự động, giống auth.ts
-coachApi.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+const coachApi = baseApi;
 
 export interface CoachDto  {
     userId : string ;

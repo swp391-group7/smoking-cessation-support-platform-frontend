@@ -1,22 +1,6 @@
+import baseApi from './BaseApi';
 
-import axios from 'axios';
-
-//tạo instance của axios 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// tự động gắn jwt lên header 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+const api = baseApi;
 export interface CreateDailyCheckinRequest {
   planId: string;
   planStepId: string;
@@ -56,6 +40,59 @@ export const createDailyCheckin = async (
   const response = await api.post<CreateCheckinResponse>(
     '/cessation-progress/create',
     payload
+  );
+  return response.data;
+};
+
+// --- User DTO coming back from /membership-packages/coach/{coachId}/users ---
+export interface UserDto {
+  id: string;
+  username: string;
+  password: string | null;
+  email: string;
+  providerId?: string;
+  fullName: string;
+  phoneNumber: string;
+  dob: string;          // ISO date
+  sex: string;
+  avatarPath: string;
+  preStatus: boolean;
+  createdAt: string;    // ISO timestamp
+  roleName: string;
+}
+
+// --- GET all users assigned to a coach ---
+export const getUsersByCoach = async (
+  coachId: string
+): Promise<UserDto[]> => {
+  const response = await api.get<UserDto[]>(
+    `/membership-packages/coach/${coachId}/users`
+  );
+  return response.data;
+};
+
+export interface MembershipPackageDto {
+  id: string;
+  userId: string;
+  packageTypeId: string;
+  coachId: string;
+  packageTypeName: string;
+  startDate: string;    // ISO timestamp
+  endDate: string;      // ISO timestamp
+  createdAt: string;    // ISO timestamp
+  active: boolean;
+}
+
+/**
+ * Fetch all membership packages for a specific user under a specific coach
+ * GET /membership-packages/coach/{coachId}/user/{userId}/memberships
+ */
+export const getUserMemberships = async (
+  coachId: string,
+  userId: string
+): Promise<MembershipPackageDto[]> => {
+  const response = await api.get<MembershipPackageDto[]>(
+    `/membership-packages/coach/${coachId}/user/${userId}/memberships`
   );
   return response.data;
 };

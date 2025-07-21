@@ -1,19 +1,7 @@
-// src/api/userPlanApi.ts
-import axios from 'axios';
 
-const userPlanApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-  headers: { 'Content-Type': 'application/json' },
-});
+import baseApi from './BaseApi';
+const userPlanApi =baseApi;
 
-// Gắn JWT tự động cho mọi request
-userPlanApi.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 export interface UserPlan {
   id: string;
@@ -84,6 +72,12 @@ export async function createDefaultStep(planId: string): Promise<PlanStep> {
   );
   return data;
 }
+export async function createDefaultStep1(planId: string): Promise<GeneratedStep> {
+  const { data } = await userPlanApi.post<GeneratedStep>(
+    `/quit-plan_step/${planId}/create-default`
+  );
+  return data;
+}
 
 export async function deleteDraftSteps(planId: string): Promise<void> {
   await userPlanApi.delete(`/quit-plan_step/${planId}/delete-drafts`);
@@ -121,3 +115,68 @@ export async function getActivePlanOfAnUser(userId: string): Promise<UserPlan | 
     );
     return data;
 }
+// --- add these interfaces at the top of the file ---
+export interface GeneratedStep {
+  id: string;
+  quitPlanId: string;
+  stepNumber: number;
+  stepStartDate: string;
+  stepEndDate: string;
+  targetCigarettesPerDay: number;
+  stepDescription: string;
+  status: string;
+  createAt: string;
+}
+
+export interface GeneratedPlan {
+  id: string;
+  userId: string;
+  userSurveyId: string; // ID của survey đã dùng để tạo plan
+  startDate: string;
+  targetDate: string;
+  method: string;
+  status: string;
+  currentZeroStreak: number;
+  maxZeroStreak: number;
+  createAt: string;
+  steps: GeneratedStep[];
+}
+
+// --- add this function alongside your other exports ---
+/**
+ * Generate a sample (draft) quit plan + steps for the current member
+ */
+export async function generateSamplePlan(): Promise<GeneratedPlan> {
+  const { data } = await userPlanApi.post<GeneratedPlan>(
+    '/quit-plans/generate-from-survey'
+  );
+  return data;
+}
+
+
+export interface QuitPlanDto {
+  id: string;
+  userId: string;
+  userSurveyId: string;
+  startDate: string;           // e.g. "2025-07-17"
+  method: string;              // e.g. "GRADUAL" | "IMMEDIATE"
+  targetDate: string;          // e.g. "2025-07-17"
+  createAt: string;            // ISO timestamp
+  status: string;              // e.g. "draft" | "active" | "completed"
+  updatedAt: string;           // ISO timestamp
+  currentZeroStreak: number;
+  maxZeroStreak: number;
+}
+
+/**
+ * Fetch all quit‑plans for a given user
+ * GET /quit-plans/users/{userId}/plans
+ */
+export const getPlansByUser = async (
+  userId: string
+): Promise<QuitPlanDto[]> => {
+  const response = await userPlanApi.get<QuitPlanDto[]>(
+    `/quit-plans/users/${userId}/plans`
+  );
+  return response.data;
+};

@@ -1,2 +1,2 @@
-const Community = () => <div>💬 Quản lý cộng đồng / diễn đàn / chia sẻ</div>;
+const Community = () => <div>💬 Community/ Forum/ Share</div>;
 export default Community;

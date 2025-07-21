@@ -1,18 +1,7 @@
-import axios from 'axios';
 
-const blogApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-  headers: { 'Content-Type': 'application/json' },
-});
+import baseApi from './BaseApi';
 
-// Gắn JWT tự động, giống auth.ts
-blogApi.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+const blogApi = baseApi;
 
 export interface BadgeDto {
   id: string;

@@ -75,6 +75,9 @@ const UserSurveyForm: React.FC = () => {
 
   const [showMembershipDialog, setShowMembershipDialog] = useState(false);
 
+  const [showActivePlanDialogGen, setShowActivePlanDialogGen] = useState(false);
+const [showConfirmRestartGen, setShowConfirmRestartGen] = useState(false);
+
   useEffect(() => {
     const checkExistingSurvey = async () => {
       try {
@@ -160,6 +163,33 @@ const UserSurveyForm: React.FC = () => {
     setErrors(prev => ({ ...prev, [key]: "" }));
     setSubmissionError(null); // Xóa lỗi gửi khi input thay đổi
   };
+  const handleGeneratePlan = async () => {
+  try {
+    const resp = await getUserPlans();
+    const plansArray: UserPlan[] = Array.isArray(resp) ? resp : [resp];
+    const hasActivePlan = plansArray.some((p) => p.status.toLowerCase() === "active");
+    
+    if (hasActivePlan) {
+      setShowActivePlanDialogGen(true);
+    } else {
+      navigate('/plan-gen');
+    }
+  } catch (err) {
+    console.error("Error checking plans", err);
+    navigate('/plan-gen'); // Navigate to quit-gen if no existing plan
+  }
+};
+
+// 3. Thêm functions để xử lý dialog cho Generate Plan
+const confirmRestartGen = () => {
+  setShowActivePlanDialogGen(false);
+  setShowConfirmRestartGen(true);
+};
+
+const handleRestartGen = () => {
+  setShowConfirmRestartGen(false);
+  navigate("/plan-gen");
+};
 
   // Kiểm tra hợp lệ form trước khi submit
   const validateForm = () => {
@@ -261,7 +291,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     if (hasMembership) {
       setShowMembershipDialog(true);
     } else {
-      navigate('/quit-gen');
+      navigate('/plan-gen');
     }
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -415,7 +445,7 @@ const dialogs = (
     </AlertDialogHeader>
     <AlertDialogFooter className="flex flex-col sm:flex-row-reverse justify-end gap-3 mt-4">
       <AlertDialogAction
-        onClick={() => navigate('/quit-gen')}
+        onClick={() => navigate('/plan-gen')}
         className="w-full sm:w-auto bg-green-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition ease-in-out duration-150"
       >
         Go to Quit Generator
@@ -426,6 +456,78 @@ const dialogs = (
       >
         Stay Here
       </AlertDialogCancel>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+
+<AlertDialog
+  open={showActivePlanDialogGen}
+  onOpenChange={() => setShowActivePlanDialogGen(false)}
+>
+  <AlertDialogContent className="bg-white text-emerald-700 border border-emerald-300 shadow-xl rounded-lg">
+    <AlertDialogHeader className="relative">
+      <button
+        onClick={() => setShowActivePlanDialogGen(false)}
+        className="absolute top-2 right-2 p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+        aria-label="Close"
+      >
+        <X className="h-5 w-5" />
+      </button>
+      <AlertDialogTitle className="text-emerald-800 text-2xl font-bold mb-2 pt-6 text-center">
+        You already have an active plan!
+      </AlertDialogTitle>
+      <AlertDialogDescription className="text-emerald-600 text-base leading-relaxed text-center">
+        Our system detected that you already have an active quit smoking
+        plan. Do you want to continue with the current plan or generate a new
+        one?
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+
+    <AlertDialogFooter className="pt-4 flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+      <AlertDialogAction
+        onClick={() => navigate("/quit_progress")}
+        className="bg-emerald-700 text-white hover:bg-emerald-800 transition rounded-lg px-5 py-2 font-medium"
+      >
+        Continue Current Plan
+      </AlertDialogAction>
+      <AlertDialogAction
+        onClick={confirmRestartGen}
+        className="bg-white text-emerald-700 border border-emerald-600 hover:bg-emerald-50 transition rounded-lg px-5 py-2 font-medium"
+      >
+        Generate New Plan
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+
+{/* Confirm restart dialog for Generate Plan */}
+<AlertDialog
+  open={showConfirmRestartGen}
+  onOpenChange={() => setShowConfirmRestartGen(false)}
+>
+  <AlertDialogContent className="bg-white text-emerald-700 border border-emerald-300 shadow-xl rounded-lg">
+    <AlertDialogHeader className="relative">
+      <AlertDialogTitle className="text-emerald-800 text-2xl font-bold mb-2 text-center">
+        Generate New Plan?
+      </AlertDialogTitle>
+      <AlertDialogDescription className="text-emerald-600 text-base leading-relaxed text-center">
+        Generating a new plan will end the current one. Are you sure you want
+        to proceed?
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter className="pt-4 flex justify-center space-x-3">
+      <AlertDialogCancel
+        onClick={() => setShowConfirmRestartGen(false)}
+        className="bg-gray-200 text-gray-700 hover:bg-gray-300 transition rounded-lg px-5 py-2 font-medium"
+      >
+        Cancel
+      </AlertDialogCancel>
+      <AlertDialogAction
+        onClick={handleRestartGen}
+        className="bg-red-600 text-white hover:bg-red-700 transition rounded-lg px-5 py-2 font-medium"
+      >
+        Confirm
+      </AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
 </AlertDialog>
@@ -528,6 +630,12 @@ if (hasExistingSurvey && existingSurveyData && !allowResurvey) {
             >
               Continue to Planning &rarr;
             </button>
+            <button
+  onClick={handleGeneratePlan}
+  className="bg-green-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-800 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+>
+  Generate New Plan ⚡
+</button>
 
             {/* Resurvey Button with AlertDialog */}
             <AlertDialog>

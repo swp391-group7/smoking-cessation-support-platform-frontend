@@ -1,22 +1,9 @@
 // src/api/userBadgeApi.ts
 
-import axios from 'axios';
+
 import { userApi } from '@/api/userApi';
 
-const userBadgeApi = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
 
-userBadgeApi.interceptors.request.use(config => {
-    const token = localStorage.getItem('token');
-    if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
 
 export interface UserEarnedBadgeDetails {
   id: string;

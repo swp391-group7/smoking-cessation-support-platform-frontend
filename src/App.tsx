@@ -10,7 +10,6 @@ import Quit_Plan from './pages/platform/quit_plan.tsx';
 import UserSurvey from './pages/platform/user_survey.tsx';
 import BlogPost from './pages/platform/blog.tsx';
 import UserInfo from './pages/platform/user_info.tsx';
-import PremiumBlogPage from './pages/platform/PremiumBlogPage.tsx';
 
 // Admin pages
 import AdminLayout from './components/admin/Adminlayout.tsx';
@@ -36,10 +35,13 @@ import CoachLayout from './components/coach/CoachLayout.tsx';
 import CoachProtectedRoute from './components/coach/CoachProtectedRoute';
 import CoachDashboard from './pages/coach/CoachDashboard.tsx';
 import CoachProfile from './pages/coach/Profile.tsx';
-import CoachUserList from './pages/coach/CoachUserList.tsx';
+
 import MembershipPage from './pages/platform/membership.tsx';
 import ScrollToTop from './components/ScrollToTop.tsx';
 import CoachSelectionPage from './components/selectCoach.tsx';
+import PlanFormGenForMember from './components/PlanFormGenForMember.tsx';
+import CoachClients from './pages/coach/CoachClients.tsx';
+import CoachChatMember from './pages/coach/CoachChatMember.tsx';
 
 
 export const App = () => (
@@ -60,8 +62,7 @@ export const App = () => (
           <Route path="user_survey" element={<UserSurvey />} />
           <Route path="/user_info" element={<UserInfo />} />
           <Route path="quit_form" element={<PlanForm />} />
-          <Route path="/membership" element={<MembershipPage />} />
-          <Route path="/PremiumBlogPage" element={<PremiumBlogPage />} />
+          <Route path="plan-gen" element={<PlanFormGenForMember />} />
            <Route path="/membership" element={<MembershipPage />} />
            <Route path="/coach_select" element={<CoachSelectionPage/>} />
         </Route>
@@ -102,8 +103,9 @@ export const App = () => (
         >
           <Route path="dashboard" element={<CoachDashboard />} />
           <Route path="profile" element={<CoachProfile />} />  
+          <Route path="clients" element={<CoachClients />} />
+          <Route path="coachchat" element={<CoachChatMember />} />
           <Route path="*" element={<Navigate to="/coach/dashboard" replace />} />
-          <Route path="clients" element={<CoachUserList />} />
         </Route>
       </Routes>
     </Router>
