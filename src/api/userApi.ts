@@ -15,7 +15,9 @@ export interface UserInfo  {
     roleName?: string;
 }
 
-export interface RegisterUserRequest extends Omit<UserInfo, 'id'> {}
+export type RegisterUserRequest = Omit<UserInfo, 'id'> ;
+
+
 export interface FrontendUpdateRequestBody {
     fullName?: string;
     email?: string;

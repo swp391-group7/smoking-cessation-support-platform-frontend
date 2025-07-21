@@ -47,12 +47,16 @@ const Dashboard: React.FC = () => {
 
         const ageGroupData = await getAgeGroupStatistics();
         setAgeGroupStats(ageGroupData);
-      } catch (err: any) {
-        setError(err.message || "Đã xảy ra lỗi khi tải dữ liệu dashboard.");
-        console.error("Lỗi khi tải dữ liệu dashboard:", err);
-      } finally {
-        setLoading(false);
-      }
+      } catch (err) {
+  if (err instanceof Error) {
+    setError(err.message);
+    console.error("Lỗi khi tải dữ liệu dashboard:", err);
+  } else {
+    setError("Đã xảy ra lỗi khi tải dữ liệu dashboard.");
+    console.error("Lỗi khi tải dữ liệu dashboard (non-Error):", err);
+  }
+}
+
     };
 
     fetchData();
@@ -138,7 +142,7 @@ const Dashboard: React.FC = () => {
                 contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '8px', padding: '10px' }}
                 labelStyle={{ color: '#333', fontWeight: 'bold' }}
                 itemStyle={{ color: '#666' }}
-                formatter={(value: number, name: string) => [`${value} người dùng`, 'Số lượng']}
+                formatter={(value: number) => [`${value} người dùng`, 'Số lượng']}
               />
               <Legend wrapperStyle={{ paddingTop: '20px' }} />
               <Line
@@ -174,7 +178,7 @@ const Dashboard: React.FC = () => {
                   nameKey="gender"
                   label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                 >
-                  {genderStats.map((entry, index) => (
+                  {genderStats.map((_, index) => (
                     <Cell key={`cell-gender-${index}`} fill={COLORS_GENDER[index % COLORS_GENDER.length]} />
                   ))}
                 </Pie>
@@ -209,7 +213,7 @@ const Dashboard: React.FC = () => {
                   nameKey="ageGroup"
                   label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                 >
-                  {ageGroupStats.map((entry, index) => (
+                  {ageGroupStats.map((_, index) => (
                     <Cell key={`cell-age-${index}`} fill={COLORS_AGE_GROUP[index % COLORS_AGE_GROUP.length]} />
                   ))}
                 </Pie>
