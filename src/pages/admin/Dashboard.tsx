@@ -31,36 +31,31 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null); // Reset lỗi trước khi fetch mới
+useEffect(() => {
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [monthlyData, genderData, ageGroupData] = await Promise.all([
+        getMonthlyUserStatistics(selectedYear),
+        getGenderStatistics(),
+        getAgeGroupStatistics(),
+      ]);
+      setMonthlyStats(monthlyData);
+      setGenderStats(genderData);
+      setAgeGroupStats(ageGroupData);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setError(message);
+      console.error('Dashboard fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        // Fetch monthly data based on selectedYear
-        const monthlyData = await getMonthlyUserStatistics(selectedYear);
-        setMonthlyStats(monthlyData);
+  fetchData();
+}, [selectedYear]);
 
-        // Fetch gender and age group data (these don't depend on year)
-        const genderData = await getGenderStatistics();
-        setGenderStats(genderData);
-
-        const ageGroupData = await getAgeGroupStatistics();
-        setAgeGroupStats(ageGroupData);
-      } catch (err) {
-  if (err instanceof Error) {
-    setError(err.message);
-    console.error("Lỗi khi tải dữ liệu dashboard:", err);
-  } else {
-    setError("Đã xảy ra lỗi khi tải dữ liệu dashboard.");
-    console.error("Lỗi khi tải dữ liệu dashboard (non-Error):", err);
-  }
-}
-
-    };
-
-    fetchData();
-  }, [selectedYear]); // Re-run effect when selectedYear changes
 
   // Xử lý thay đổi năm từ input
   const handleYearChange = (event: React.ChangeEvent<HTMLInputElement>) => {
