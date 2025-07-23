@@ -7,11 +7,13 @@ import UserProfile from "./UserProfiles";
 
 export default function UserManagement() {
     const [users, setUsers] = useState<UserInfo[]>([]);
+    const [filteredUsers, setFilteredUsers] = useState<UserInfo[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedUserIdForDetail, setSelectedUserIdForDetail] = useState<string | null>(null);
     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
+    const [searchTerm, setSearchTerm] = useState<string>("");
 
     // Function to fetch all users from the API
     const fetchUsers = async () => {
@@ -24,6 +26,7 @@ export default function UserManagement() {
                 username: user.email.split('@')[0] 
             }));
             setUsers(augmentedUsers);
+            setFilteredUsers(augmentedUsers); // Initialize filtered users
         } catch (err) {
             console.error("Failed to fetch users:", err);
             setError("Failed to load users. Please try again.");
@@ -31,6 +34,22 @@ export default function UserManagement() {
             setLoading(false);
         }
     };
+
+    // Filter users based on search term
+    useEffect(() => {
+        if (searchTerm.trim() === "") {
+            setFilteredUsers(users);
+        } else {
+            const filtered = users.filter(user =>
+                user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.username.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            setFilteredUsers(filtered);
+        }
+        // Reset selections when search changes
+        setSelectedUserIds([]);
+    }, [searchTerm, users]);
 
     // Fetch users on component mount
     useEffect(() => {
@@ -76,6 +95,16 @@ export default function UserManagement() {
         }
     };
 
+    // Handle search input change
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
+    };
+
+    // Clear search
+    const clearSearch = () => {
+        setSearchTerm("");
+    };
+
     return (
         <div className="p-6 space-y-6 min-h-screen bg-gray-50 font-sans">
             {/* Header */}
@@ -85,6 +114,39 @@ export default function UserManagement() {
                     <p className="text-sm text-gray-500">User account and activity management</p>
                 </div>
                 <p className="text-sm text-gray-400">/ Users</p>
+            </div>
+
+            {/* Search Bar */}
+            <div className="bg-white p-4 rounded-xl shadow-lg">
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="Search by full name, email, or username..."
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                    />
+                    {searchTerm && (
+                        <button
+                            onClick={clearSearch}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    )}
+                </div>
+                {searchTerm && (
+                    <p className="mt-2 text-sm text-gray-600">
+                        Found {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''} matching "{searchTerm}"
+                    </p>
+                )}
             </div>
 
             {/* Action Buttons */}
@@ -112,7 +174,7 @@ export default function UserManagement() {
             )}
 
             {/* User Table */}
-            {!loading && !error && users.length > 0 && (
+            {!loading && !error && filteredUsers.length > 0 && (
                 <div className="bg-white p-6 rounded-xl shadow-lg overflow-x-auto">
                     <table className="min-w-full text-sm text-left text-gray-700">
                         <thead className="text-xs text-green-700 uppercase bg-green-50 rounded-t-lg">
@@ -123,13 +185,13 @@ export default function UserManagement() {
                                         className="form-checkbox h-4 w-4 text-green-600 rounded focus:ring-green-500"
                                         onChange={(e) => {
                                             if (e.target.checked) {
-                                                setSelectedUserIds(users.map(user => user.id));
+                                                setSelectedUserIds(filteredUsers.map(user => user.id));
                                             } else {
                                                 setSelectedUserIds([]);
                                             }
                                         }}
-                                        checked={selectedUserIds.length === users.length && users.length > 0}
-                                        disabled={users.length === 0}
+                                        checked={selectedUserIds.length === filteredUsers.length && filteredUsers.length > 0}
+                                        disabled={filteredUsers.length === 0}
                                     />
                                 </th>
                                 <th scope="col" className="px-6 py-3">UID</th>
@@ -140,7 +202,7 @@ export default function UserManagement() {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.map((user) => (
+                            {filteredUsers.map((user) => (
                                 <tr key={user.id} className="bg-white border-b hover:bg-gray-50">
                                     <td className="w-4 p-4">
                                         <input
@@ -174,6 +236,18 @@ export default function UserManagement() {
                             ))}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {!loading && !error && filteredUsers.length === 0 && users.length > 0 && (
+                <div className="text-center py-8 text-gray-600">
+                    No users found matching "{searchTerm}". 
+                    <button 
+                        onClick={clearSearch}
+                        className="ml-2 text-green-600 hover:text-green-800 underline"
+                    >
+                        Clear search
+                    </button>
                 </div>
             )}
 
