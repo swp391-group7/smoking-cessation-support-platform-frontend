@@ -88,3 +88,75 @@ export const getAgeGroupStatistics = async (): Promise<AgeGroupStatistic[]> => {
     }
   }
 };
+
+
+
+
+
+// --- Thêm 2 interface mới cho payment ---
+export interface PaymentSummary {
+  totalAmount: number;  // tổng số tiền (USD)
+  totalCount:  number;  // tổng số giao dịch
+}
+
+export interface MonthlyPaymentStat {
+  month:       number;       // 1 = Jan, …, 12 = Dec
+  totalAmount: number | null; // nếu không có giao dịch thì null
+  count:       number;       // số giao dịch trong tháng
+}
+
+// --- Thêm 2 hàm gọi API mới ---
+
+/**
+ * Lấy tổng số tiền và tổng số giao dịch
+ * GET /api/payments/summary
+ */
+export const getPaymentSummary = async (): Promise<PaymentSummary> => {
+  try {
+    const { data } = await dashboardApi.get<PaymentSummary>('/api/payments/summary');
+    return data;
+  } catch (error: unknown) {
+    console.error('Lỗi khi gọi API getPaymentSummary:', error);
+    throw error;
+  }
+};
+
+/**
+ * Lấy thống kê tổng tiền và số giao dịch theo từng tháng trong năm
+ * GET /api/payments/stats?year=2025
+ */
+export const getMonthlyPaymentStats = async (year: number): Promise<MonthlyPaymentStat[]> => {
+  try {
+    const response = await dashboardApi.get<MonthlyPaymentStat[]>('/api/payments/stats', {
+      params: { year }
+    });
+    return response.data;
+  } catch (error: unknown) {
+    console.error('Lỗi khi gọi API getMonthlyPaymentStats:', error);
+    throw error;
+  }
+};
+
+// --- Interface cho quit‑plans counts ---
+export interface QuitPlanCounts {
+  active:    number;
+  cancelled: number;
+  completed: number;
+}
+
+// --- Hàm gọi API /quit-plans/counts ---
+export const getQuitPlanCounts = async (): Promise<QuitPlanCounts> => {
+  try {
+    const { data } = await dashboardApi.get<QuitPlanCounts>('/quit-plans/counts');
+    return data;
+  } catch (error: unknown) {
+    console.error('Lỗi khi gọi API getQuitPlanCounts:', error);
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || `Server lỗi ${error.response?.status}`);
+    }
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Lỗi không xác định khi lấy thống kê quit plans');
+  }
+};

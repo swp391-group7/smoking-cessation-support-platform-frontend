@@ -18,12 +18,14 @@ export default function UserProfile() {
     fullName: "",
     phoneNumber: "",
     dob: "",
+    sex: "",
     avatarPath: "",
     password: ""
   });
 
   const [editing, setEditing] = useState<EditingField>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  
 
   useEffect(() => {
     getCurrentUser()
@@ -45,23 +47,30 @@ export default function UserProfile() {
   const handleSave = async () => {
     try {
       // Chuẩn bị payload cho backend (loại trừ ID và có thể là username)
-      const { id, username, ...rest  } = formData; // Trích xuất id và username
-      
-      const payload: FrontendUpdateRequestBody = {
-      fullName: rest.fullName,
-      email: rest.email,
-      phoneNumber: rest.phoneNumber,
-      dob: rest.dob,
-      avatarPath: rest.avatarPath,
-      };
+      const { fullName, email, phoneNumber, dob, avatarPath } = formData;
+
+const payload: FrontendUpdateRequestBody = {
+  fullName,
+  email,
+  phoneNumber,
+  dob,
+  avatarPath,
+};
+
       
       await updateUser(payload);
       toast.success("🎉 Update successful!");
       setEditing(null);
-    } catch (err: any) {
-      console.error(err.response?.data || err);
-      toast.error(err.response?.data?.message || "❌ Update failed. Please try again.");
-    }
+   } catch (err) {
+  if (err instanceof Error) {
+    console.error(err);
+    toast.error(err.message);
+  } else {
+    console.error(err);
+    toast.error("❌ Update failed. Please try again.");
+  }
+}
+
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
