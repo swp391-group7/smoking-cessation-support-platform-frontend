@@ -42,6 +42,7 @@ import CoachSelectionPage from './components/selectCoach.tsx';
 import PlanFormGenForMember from './components/PlanFormGenForMember.tsx';
 import CoachClients from './pages/coach/CoachClients.tsx';
 import CoachChatMember from './pages/coach/CoachChatMember.tsx';
+import FeedbackPlatform from './components/FeedBackPlatform.tsx';
 
 
 export const App = () => (
@@ -65,6 +66,7 @@ export const App = () => (
           <Route path="plan-gen" element={<PlanFormGenForMember />} />
            <Route path="/membership" element={<MembershipPage />} />
            <Route path="/coach_select" element={<CoachSelectionPage/>} />
+          <Route path="feedback_platform" element={<FeedbackPlatform />} />
         </Route>
 
         {/* Admin Route + Bảo vệ bằng role admin */}
