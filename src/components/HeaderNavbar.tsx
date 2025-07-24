@@ -5,6 +5,7 @@ import {
   User as UserIcon,
   CreditCard as CreditCardIcon,
   LogOut as LogOutIcon,
+  MessageSquare as FeedbackIcon,
   X as CloseIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -171,6 +172,19 @@ export const HeaderNavbar: React.FC = () => {
                         >
                           <CreditCardIcon className="w-5 h-5 mr-3 text-emerald-600" /> {/* Green icon */}
                           Membership Plan
+                        </Button>
+                      </li>
+                       <li>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start px-4 py-2 text-base text-gray-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center h-auto" // Green hover
+                          onClick={() => {
+                            setSidebarOpen(false);
+                            navigate("/feedback_platform");
+                          }}
+                        >
+                          <FeedbackIcon className="w-5 h-5 mr-3 text-emerald-600" /> {/* Green icon */}
+                          Platform Feedback 
                         </Button>
                       </li>
                     </ul>
