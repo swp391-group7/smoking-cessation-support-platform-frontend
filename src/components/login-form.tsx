@@ -42,6 +42,7 @@ const LoginPage: React.FC = () => {
       toast.success("Login successful!", {
         position: "top-center",
         description: `Welcome ${user.full_name}`,
+        duration: 1500,
       });
 
       const redirectPath = {
@@ -70,7 +71,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <Toaster />
+      <Toaster richColors/>
 
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg px-6 py-8">
         <h1 className="text-3xl font-bold text-center text-emerald-800 mb-6">Login</h1>

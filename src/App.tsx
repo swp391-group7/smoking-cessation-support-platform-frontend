@@ -43,11 +43,12 @@ import PlanFormGenForMember from './components/PlanFormGenForMember.tsx';
 import CoachClients from './pages/coach/CoachClients.tsx';
 import CoachChatMember from './pages/coach/CoachChatMember.tsx';
 import FeedbackPlatform from './components/FeedBackPlatform.tsx';
+import CoachesManagement from './pages/admin/Coaches.tsx';
 
 
 export const App = () => (
   <>
-    <Toaster />
+    <Toaster richColors />
     <Router>
        <ScrollToTop/>
       <Routes>
@@ -81,6 +82,7 @@ export const App = () => (
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
+          <Route path="coaches" element={<CoachesManagement />} />
           <Route path="profile" element={<AdminProfile />} />
           <Route path="membership" element={<Membership />} />
           <Route path="blog" element={<BlogAdminPage />} />
