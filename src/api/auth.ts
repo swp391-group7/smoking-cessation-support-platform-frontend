@@ -34,6 +34,9 @@ interface SignUpCredentials {
   password: string;
   fullName: string;
   email: string;
+  dob: string; // Ngày sinh, định dạng YYYY-MM-DD
+  sex: string;
+  phoneNumber: string;
 }
 
 interface SignUpResponse {

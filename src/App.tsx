@@ -47,7 +47,7 @@ import FeedbackPlatform from './components/FeedBackPlatform.tsx';
 
 export const App = () => (
   <>
-    <Toaster />
+    <Toaster richColors />
     <Router>
        <ScrollToTop/>
       <Routes>
