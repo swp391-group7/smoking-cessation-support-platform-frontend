@@ -15,6 +15,7 @@ export interface UserInfo  {
     roleName?: string;
 }
 
+
 export type RegisterUserRequest = Omit<UserInfo, 'id'> ;
 
 

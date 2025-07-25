@@ -36,6 +36,12 @@ const menuItems = [
         description: "Manage members",
       },
       {
+        name: "Coaches",
+        path: "/admin/coaches",
+        icon: Users,
+        description: "Manage coaches",
+      },
+      {
         name: "Survey Management", 
         path: "/admin/survey-management",
         icon: FileText,
@@ -47,6 +53,8 @@ const menuItems = [
         icon: CreditCard,
         description: "Subscription plans",
       },
+      
+      
     ],
   },
   {
