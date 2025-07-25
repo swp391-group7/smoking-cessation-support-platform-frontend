@@ -132,6 +132,7 @@ today.setHours(0, 0, 0, 0);
     
     if (last?.end) {
       newStart = new Date(last.end);
+       newStart.setDate(newStart.getDate() + 1); // Cộng 1 ngày
     } else if (!stages.length) {
       newStart = overallStart;
     } else {
@@ -193,10 +194,16 @@ today.setHours(0, 0, 0, 0);
         } else {
           // Các stage sau bắt đầu từ ngày kết thúc stage trước
           const prevStage = newStages[index - 1];
+           let nextStartDate = overallStart;
+        if (prevStage.end) {
+          nextStartDate = new Date(prevStage.end);
+          nextStartDate.setDate(nextStartDate.getDate() + 1);
+        }
           return { 
             ...stage, 
             start: prevStage.end || overallStart,
             title: `Giai đoạn ${index + 1}`
+            
           };
         }
       });
@@ -238,12 +245,18 @@ today.setHours(0, 0, 0, 0);
         
         // Cập nhật ngày bắt đầu cho stage tiếp theo
         if (idx < prev.length - 1) {
-          const nextStageIndex = idx + 1;
-          setTimeout(() => {
-            setStages(current => current.map((stage, index) => 
-              index === nextStageIndex ? { ...stage, start: d } : stage
-            ));
-          }, 0);
+        const nextStageIndex = idx + 1;
+        setTimeout(() => {
+          setStages(current => current.map((stage, index) => {
+            if (index === nextStageIndex) {
+              const nextStartDate = new Date(d);
+              nextStartDate.setDate(nextStartDate.getDate() + 1); // Cộng 1 ngày
+              return { ...stage, start: nextStartDate };
+            }
+            return stage;
+          }));
+        }, 0);
+
         }
       }
       
